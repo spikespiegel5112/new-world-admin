@@ -17,6 +17,10 @@ router.beforeEach((to, from, next) => {
         store.dispatch('GetInfo').then(res => { // 拉取用户信息
           next()
         }).catch((err) => {
+          Message({
+            message: '获取信息失败',
+            type: 'error'
+          })
           store.dispatch('FedLogOut').then(() => {
             Message.error(err || 'Verification failed, please login again')
             next({ path: '/' })

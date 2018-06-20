@@ -1,10 +1,13 @@
 import { login, logout, getInfo } from '@/api/login'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, getLoginId, setLoginId, removeLoginId } from '@/utils/auth'
+import { Message } from 'element-ui'
 
 const user = {
   state: {
     token: getToken(),
-    name: '',
+    login_id: getLoginId(),
+    nick_name: '',
+    image: '',
     avatar: '',
     roles: []
   },
@@ -13,8 +16,14 @@ const user = {
     SET_TOKEN: (state, token) => {
       state.token = token
     },
-    SET_NAME: (state, name) => {
-      state.name = name
+    SET_LOGIN_ID: (state, login_id) => {
+      state.login_id = login_id
+    },
+    SET_NICK_NAME: (state, nick_name) => {
+      state.nick_name = nick_name
+    },
+    SET_IMAGE: (state, image) => {
+      state.image = image
     },
     SET_AVATAR: (state, avatar) => {
       state.avatar = avatar
@@ -30,9 +39,10 @@ const user = {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
         login(username, userInfo.password).then(response => {
-          const data = response.data
-          setToken(data.token)
-          commit('SET_TOKEN', data.token)
+          setToken(response.access_token)
+          setLoginId(username)
+          commit('SET_TOKEN', response.access_token)
+          commit('SET_LOGIN_ID', userInfo.username)
           resolve()
         }).catch(error => {
           reject(error)
@@ -43,16 +53,26 @@ const user = {
     // 获取用户信息
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
-        getInfo(state.token).then(response => {
-          const data = response.data
+        getInfo(getLoginId()).then(response => {
+          if (response.result) {
+            commit('SET_NICK_NAME', response.jsonstr.nickName)
+            commit('SET_IMAGE', response.jsonstr.image)
+            resolve(response)
+          } else {
+            Message({
+              message: '获取信息失败',
+              type: 'error'
+            })
+          }
+          /* const data = response.data
           if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
             commit('SET_ROLES', data.roles)
           } else {
             reject('getInfo: roles must be a non-null array !')
           }
-          commit('SET_NAME', data.name)
+          commit('SET_LOGIN_ID', data.name)
           commit('SET_AVATAR', data.avatar)
-          resolve(response)
+          resolve(response)*/
         }).catch(error => {
           reject(error)
         })
@@ -66,6 +86,7 @@ const user = {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
           removeToken()
+          removeLoginId()
           resolve()
         }).catch(error => {
           reject(error)
@@ -78,6 +99,7 @@ const user = {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
         removeToken()
+        removeLoginId()
         resolve()
       })
     }
