@@ -72,6 +72,19 @@ export const constantRouterMap = [
     ]
   },
 
+  {
+    path: '/advertising',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'From',
+        component: () => import('@/views/form/index'),
+        meta: { title: '广告', icon: 'form' }
+      }
+    ]
+  },
+
   { path: '*', redirect: '/404', hidden: true }
 ]
 
