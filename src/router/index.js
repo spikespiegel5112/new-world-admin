@@ -71,6 +71,33 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/task',
+    component: Layout,
+    redirect: '/task/tryplay',
+    name: '任务墙',
+    meta: { title: '任务墙', icon: 'table' },
+    children: [
+      {
+        path: 'tryplay/index',
+        name: '下载试玩',
+        component: () => import('@/views/task/tryplay/index'),
+        meta: { title: '下载试玩', icon: 'table' }
+      },
+      {
+        path: 'bankcard/index',
+        name: '银行办卡',
+        component: () => import('@/views/task/bankcard/index'),
+        meta: { title: '银行办卡', icon: 'table' }
+      },
+      {
+        path: 'register/index',
+        name: '注册赚钱',
+        component: () => import('@/views/task/register/index'),
+        meta: { title: '注册赚钱', icon: 'table' }
+      }
+    ]
+  },
 
   {
     path: '/advertising',
