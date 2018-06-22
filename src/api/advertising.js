@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function findList(query) {
   return request({
-    url: 'http://127.0.0.1:9013/1.0.0/advertising/list',
+    url: '/advertising-service/1.0.0/advertising/list',
     method: 'get',
     params: query
   })
@@ -26,7 +26,7 @@ export function createAdvertising(data) {
 
 export function updateAdvertising(data) {
   return request({
-    url: 'http://127.0.0.1:9013/1.0.0/advertising/update',
+    url: '/advertising-service/1.0.0/advertising/update',
     method: 'post',
     data
   })
@@ -34,7 +34,7 @@ export function updateAdvertising(data) {
 
 export function deleteAdvertising(id) {
   return request({
-    url: 'http://127.0.0.1:9013/1.0.0/advertising/' + id,
+    url: '/advertising-service/1.0.0/advertising/' + id,
     method: 'delete'
   })
 }
