@@ -11,14 +11,12 @@
         <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key">
         </el-option>
       </el-select>
-      <!-- <el-select @change='handleFilter' style="width: 140px" class="filter-item" v-model="listQuery.sort">
+      <el-select @change='handleFilter' style="width: 140px" class="filter-item" v-model="listQuery.sort">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key">
         </el-option>
-      </el-select> -->
+      </el-select>
       <el-button class="filter-item" type="primary" v-waves icon="el-icon-search" @click="handleFilter">{{$t('table.search')}}</el-button>
       <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-edit">{{$t('table.add')}}</el-button>
-      <!-- <el-button class="filter-item" type="primary" :loading="downloadLoading" v-waves icon="el-icon-download" @click="handleDownload">{{$t('table.export')}}</el-button> -->
-      <!-- <el-checkbox class="filter-item" style='margin-left:15px;' @change='tableKey=tableKey+1' v-model="showReviewer">{{$t('table.reviewer')}}</el-checkbox> -->
     </div>
 
     <el-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit highlight-current-row
@@ -39,22 +37,34 @@
           <!-- <span class="link-type" @click="handleUpdate(scope.row)">{{scope.row.url}}</span> -->
         </template>
       </el-table-column>
+      <el-table-column align="center" :label="$t('table.video')">
+        <template slot-scope="scope">
+          <span class="link-type">{{scope.row.video}}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" :label="$t('table.type')">
         <template slot-scope="scope">
           <el-tag>{{scope.row.location | typeFilter}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('table.date')">
+      <el-table-column align="center" :label="$t('table.endDate')">
         <template slot-scope="scope">
-          <span>{{scope.row.createDate}}</span>
+          <span>{{scope.row.endDate}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column class-name="status-col" :label="$t('table.status')" width="100">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.status | statusFilter">{{scope.row.status | statusFilterName}}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('table.actions')" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>
-          <el-button v-if="scope.row.status!='published'" size="mini" type="success" @click="handleModifyStatus(scope.row,'published')">{{$t('table.publish')}}
+          <router-link :to="'/advertising/edit/'+scope.row.id"><el-button type="primary" size="mini">{{$t('table.edit')}}</el-button></router-link>
+          <el-button v-if="scope.row.status=='0'" size="mini" type="success" @click="handleModifyStatus(scope.row,'1')">{{$t('table.publish')}}
           </el-button>
-          <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(scope.row,'deleted')">{{$t('table.delete')}}
+           <el-button v-if="scope.row.status=='1'" size="mini" @click="handleModifyStatus(scope.row,'0')">{{$t('table.draft')}}
+          </el-button>
+          <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleDelete(scope.row)">{{$t('table.delete')}}
           </el-button>
         </template>
       </el-table-column>
@@ -115,7 +125,7 @@
 </template>
 
 <script>
-import { findList, createAdvertising, updateAdvertising } from '@/api/advertising'
+import { findList, createAdvertising, updateAdvertising, deleteAdvertising } from '@/api/advertising'
 import waves from '@/directive/waves' // 水波纹指令
 
 const calendarTypeOptions = [
@@ -183,9 +193,15 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
+        0: 'info',
+        1: 'success'
+      }
+      return statusMap[status]
+    },
+    statusFilterName(status) {
+      const statusMap = {
+        0: '草稿',
+        1: '发布'
       }
       return statusMap[status]
     },
@@ -218,11 +234,13 @@ export default {
       this.getList()
     },
     handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作成功',
-        type: 'success'
-      })
       row.status = status
+      updateAdvertising(row).then(response => {
+        this.$message({
+          message: '操作成功',
+          type: 'success'
+        })
+      })
     },
     resetTemp() {
       this.temp = {
@@ -295,11 +313,13 @@ export default {
       })
     },
     handleDelete(row) {
-      this.$notify({
-        title: '成功',
-        message: '删除成功',
-        type: 'success',
-        duration: 2000
+      deleteAdvertising(row.id).then(response => {
+        this.$notify({
+          title: '成功',
+          message: '删除成功',
+          type: 'success',
+          duration: 2000
+        })
       })
       const index = this.list.indexOf(row)
       this.list.splice(index, 1)

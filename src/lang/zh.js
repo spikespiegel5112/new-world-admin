@@ -117,7 +117,9 @@ export default {
     cancel: '取 消',
     confirm: '确 定',
     image: '图片',
-    url: '链接'
+    url: '链接',
+    video: '视频',
+    endDate: '结束时间'
   },
   errorLog: {
     tips: '请点击右上角bug小图标',

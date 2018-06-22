@@ -117,7 +117,9 @@ export default {
     cancel: 'Cancel',
     confirm: 'Confirm',
     image: 'Image',
-    url: 'URL'
+    url: 'URL',
+    video: 'Video',
+    endDate: 'End Date'
   },
   errorLog: {
     tips: 'Please click the bug icon in the upper right corner',

@@ -26,8 +26,15 @@ export function createAdvertising(data) {
 
 export function updateAdvertising(data) {
   return request({
-    url: '/advertising/update',
+    url: 'http://127.0.0.1:9013/1.0.0/advertising/update',
     method: 'post',
     data
+  })
+}
+
+export function deleteAdvertising(id) {
+  return request({
+    url: 'http://127.0.0.1:9013/1.0.0/advertising/' + id,
+    method: 'delete'
   })
 }
