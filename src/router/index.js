@@ -125,6 +125,22 @@ export const constantRouterMap = [
     ]
   },
 
+  {
+    path: '/betterdiscount',
+    component: Layout,
+    name: '好折扣',
+    meta: { title: '好折扣', icon: 'table' },
+    children: [
+      {
+        path: 'betterdiscount/index',
+        name: '好折扣商品列表',
+        component: () => import('@/views/betterdiscount/index'),
+        meta: { title: '好折扣商品列表', icon: 'table' }
+
+      }
+    ]
+  },
+
   { path: '*', redirect: '/404', hidden: true }
 ]
 
