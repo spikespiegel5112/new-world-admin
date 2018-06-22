@@ -5,9 +5,24 @@ import request from '@/utils/request'
  */
 export function getTryPlayList(params) {
   return request({
-    url: '/task-service/1.0.0/task/getalltasklist/13120998513/1',
+    url: 'task-service/1.0.0/task/bk/gettryplaylist',
     method: 'get',
-    params
+    params: params
+  })
+}
+// 保存 下载试玩任务
+export function saveTryPlay(data) {
+  return request({
+    url: 'task-service/1.0.0/task/bk/saveTryPlay',
+    method: 'post',
+    data
+  })
+}
+// 上、下架任务
+export function changeStatus(id, isShow) {
+  return request({
+    url: 'task-service/1.0.0/task/bk/changeStatus/ ' + id + '/' + isShow + '',
+    method: 'post'
   })
 }
 
@@ -16,9 +31,9 @@ export function getTryPlayList(params) {
  */
 export function getBankCardList(params) {
   return request({
-    url: '/task-service/1.0.0/cardtask/getalltasklist/13120998513/1',
+    url: 'task-service/1.0.0/cardtask/bk/getbankcardlist',
     method: 'get',
-    params
+    params: params
   })
 }
 
@@ -27,8 +42,8 @@ export function getBankCardList(params) {
  */
 export function getResterList(params) {
   return request({
-    url: '/task-service/1.0.0/register/getalltasklist/13120998513/1',
+    url: 'task-service/1.0.0/register/bk/getregisterlist',
     method: 'get',
-    params
+    params: params
   })
 }
