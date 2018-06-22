@@ -82,19 +82,19 @@ export const constantRouterMap = [
         path: 'tryplay/index',
         name: '下载试玩',
         component: () => import('@/views/task/tryplay/index'),
-        meta: { title: '下载试玩', icon: 'table' }
+        meta: { title: '下载试玩', icon: 'list' }
       },
       {
         path: 'bankcard/index',
         name: '银行办卡',
         component: () => import('@/views/task/bankcard/index'),
-        meta: { title: '银行办卡', icon: 'table' }
+        meta: { title: '银行办卡', icon: 'list' }
       },
       {
         path: 'register/index',
         name: '注册赚钱',
         component: () => import('@/views/task/register/index'),
-        meta: { title: '注册赚钱', icon: 'table' }
+        meta: { title: '注册赚钱', icon: 'list' }
       }
     ]
   },
