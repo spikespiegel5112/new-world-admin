@@ -102,12 +102,25 @@ export const constantRouterMap = [
   {
     path: '/advertising',
     component: Layout,
+    redirect: '/advertising/list',
+    name: 'advertising',
+    meta: {
+      title: '广告',
+      icon: 'table'
+    },
     children: [
       {
-        path: 'index',
-        name: 'From',
-        component: () => import('@/views/form/index'),
-        meta: { title: '广告', icon: 'form' }
+        path: 'create',
+        name: 'createAdvertising',
+        component: () => import('@/views/advertising/create'),
+        meta: { title: '添加广告', icon: 'edit' }
+      },
+      // { path: 'edit/:id(\\d+)', component: () => import('@/views/advertising/edit'), name: 'editAdvertising', meta: { title: '修改广告', noCache: true }, hidden: true },
+      {
+        path: 'list',
+        name: 'advertisingList',
+        component: () => import('@/views/advertising/list'),
+        meta: { title: '广告列表', icon: 'list' }
       }
     ]
   },
