@@ -26,14 +26,14 @@
           <span>{{scope.row.id}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('table.image')">
+      <el-table-column align="center" :label="$t('table.image')" width="100px">
         <template slot-scope="scope">
-          <img :src="scope.row.image+'-style_100x100'">
+          <img :src="scope.row.image+'-style_25x25'">
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('table.url')">
+      <el-table-column align="center" height="10px" :label="$t('table.url')">
         <template slot-scope="scope">
-          <span class="link-type">{{scope.row.url}}</span>
+          <span class="link-type"></span><!--{{scope.row.url}}-->
           <!-- <span class="link-type" @click="handleUpdate(scope.row)">{{scope.row.url}}</span> -->
         </template>
       </el-table-column>
