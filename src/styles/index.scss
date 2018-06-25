@@ -3,6 +3,8 @@
 @import './transition.scss';
 @import './element-ui.scss';
 @import './sidebar.scss';
+@import './common.scss';
+
 
 body {
   height: 100%;
@@ -74,5 +76,8 @@ a:hover {
 }
 
 .app-container {
-  padding: 20px;
+  padding: 0 40px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
