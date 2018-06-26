@@ -1,9 +1,10 @@
 <template>
   <div class="app-container">
     <div class="common-filter-wrapper">
-      <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item">
+      <el-input @keyup.enter.native="handleFilter" placeholder="任务名称" style="width: 200px;" class="filter-item"
+                v-model="listQuery.keyword">
       </el-input>
-      <el-button class="filter-item" type="primary" v-waves icon="el-icon-search" @click="handleFilter">查询</el-button>
+      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
       <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary"
                  icon="el-icon-edit">新增
       </el-button>
@@ -23,11 +24,10 @@
       </el-table-column>
       <el-table-column label="Icon" align="center" width="100">
         <template slot-scope="scope">
-          {{scope.row.iconPath}}
-          <img :src="scope.row.iconPath+'-style_213x144'" width="80">
+          <img :src="scope.row.iconPath+'-style_100x100'" width="80">
         </template>
       </el-table-column>
-      <el-table-column align="center" class-name="status-col" label="积分" width="70">
+      <el-table-column align="center" class-name="status-col" label="积分" width="60">
         <template slot-scope="scope">
           {{scope.row.bounty}}
         </template>
@@ -42,9 +42,24 @@
           {{scope.row.surplusNum}}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="提交时间" width="80">
+      <el-table-column align="center" label="试玩时长" width="80">
         <template slot-scope="scope">
-          <!--{{scope.row.submitPath}}-->
+          {{scope.row.tryplayTimeLength}}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="开始/结束时间">
+        <template slot-scope="scope">
+          {{scope.row.startDate}}<br> {{scope.row.endDate}}
+        </template>
+      </el-table-column>
+      <el-table-column label="APK下载地址">
+        <template slot-scope="scope">
+          {{scope.row.ApkPath}}
+        </template>
+      </el-table-column>
+      <el-table-column label="应用包名">
+        <template slot-scope="scope">
+          {{scope.row.packageName}}
         </template>
       </el-table-column>
       <el-table-column label="状态" width="50">
@@ -99,6 +114,20 @@
             <el-button size="small" type="primary" plain>上传</el-button>
           </el-upload>
         </el-form-item>
+        <el-form-item label="Apk下载地址" prop="name">
+          <el-input v-model="temp.name"></el-input>
+        </el-form-item>
+        <el-form-item label="Apk包名" prop="name">
+          <el-input v-model="temp.name"></el-input>
+        </el-form-item>
+        <el-form-item label="开始时间" prop="startDate">
+          <el-date-picker v-model="temp.startDate" type="date" placeholder="开始日期" :picker-options="pickerOptions0">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="结束时间" prop="endDate">
+          <el-date-picker v-model="temp.endDate" type="date" placeholder="结束日期" :picker-options="pickerOptions1">
+          </el-date-picker>
+        </el-form-item>
         <el-form-item label="描述">
           <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="Please input"
                     v-model="temp.note">
@@ -116,7 +145,7 @@
 </template>
 
 <script>
-  import {getBankCardList, changeStatus} from '@/api/task'
+  import {getTryPlayList, saveTryPlay, changeStatus} from '@/api/task'
 
   export default {
     data() {
@@ -192,7 +221,7 @@
     methods: {
       fetchData() {
         this.listLoading = true
-        getBankCardList(this.listQuery).then(response => {
+        getTryPlayList(this.listQuery).then(response => {
           this.list = response.content
           this.total = response.totalElements
           this.listLoading = false
@@ -245,6 +274,22 @@
         })
       },
       createData() {
+        this.$refs['dataForm'].validate((valid) => {
+          if (valid) {
+            this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
+            this.temp.author = 'vue-element-admin'
+            saveTryPlay(this.temp).then(() => {
+              this.list.unshift(this.temp)
+              this.dialogFormVisible = false
+              this.$notify({
+                title: '成功',
+                message: '创建成功',
+                type: 'success',
+                duration: 2000
+              })
+            })
+          }
+        })
       },
       handleUpdate(row) {
         this.temp = Object.assign({}, row) // copy obj
