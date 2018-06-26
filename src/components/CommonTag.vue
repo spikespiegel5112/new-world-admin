@@ -1,10 +1,10 @@
 <template>
   <el-row class="common-tag-wrapper">
-    <el-col :span="2">iOS</el-col>
+    <el-col :span="2">{{title}}</el-col>
     <el-col :span="22">
       <el-tag
-        :key="item"
-        v-for="item in dynamicTags"
+        :key="index"
+        v-for="(item, index) in dynamicTags"
         closable
         :disable-transitions="false"
         @close="handleClose(item)">
@@ -83,11 +83,11 @@
         }
         this.inputVisible = false;
         this.inputValue = '';
-        this.$emit('change', this.dynamicTags)
+        this.$emit('add', this.dynamicTags)
       },
       handleClose(tag) {
         this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
-        this.$emit('change', this.dynamicTags)
+        this.$emit('delete', this.dynamicTags)
       },
       showInput() {
         this.inputVisible = true;

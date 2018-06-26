@@ -10,6 +10,16 @@
         <el-button @click="handleCreate" type="primary" icon="el-icon-edit">新增</el-button>
       </el-col>
     </el-row>
+    <el-row>
+      <el-form label-position="top" label-width="80px">
+        <el-form-item label="审核版本">
+          <CommonTag title="iOS" :tagData="iosControllableVersionListData" buttonText="添加版本"
+                     @change="handleIosListChange"/>
+          <CommonTag title="Android" :tagData="iosControllableVersionListData" buttonText="添加版本"
+                     @change="handleIosListChange"/>
+        </el-form-item>
+      </el-form>
+    </el-row>
 
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
       <el-table-column label="No" type="index" width="50" align="center" fixed></el-table-column>
@@ -18,7 +28,7 @@
       <el-table-column label="是否可用" align="center" prop="name"></el-table-column>
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="avalibilityFlag=true">设置可用性</el-button>
+          <el-button type="primary" size="mini" @click="availabilityFlag=true">设置可用性</el-button>
           <el-button type="primary" size="mini" @click="editFlag=true">编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
         </template>
@@ -32,7 +42,7 @@
       </el-pagination>
     </div>
     <!-- 弹框 -->
-    <el-dialog title="设置可用性" :visible.sync="avalibilityFlag" width="850px">
+    <el-dialog title="设置可用性" :visible.sync="availabilityFlag" width="850px">
       <el-row type="flex" justify="center">
         <el-col :span="16">
           <el-form :rules="rules" ref="formData" :model="formData" label-position="left" label-width="140px">
@@ -63,7 +73,7 @@
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="avalibilityFlag = false">{{$t('table.cancel')}}</el-button>
+        <el-button @click="availabilityFlag = false">{{$t('table.cancel')}}</el-button>
         <el-button type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
@@ -73,15 +83,19 @@
 <script>
   import {getMetaDataBuildListRequest} from '@/api/metaData'
   import {updateMetaDataBuildListRequest} from '@/api/metaData'
+  import CommonTag from '@/components/CommonTag.vue'
 
   export default {
+    components: {
+      CommonTag
+    },
     data() {
       return {
         createFeatureRequest: 'meta-service/1.0.0/feature',
         featureListRequest: 'meta-service/1.0.0/feature',
         featureAvailabilityRequest: 'meta-service/1.0.0/availability',
-        avalibilityFlag:false,
-        editFlag:true,
+        availabilityFlag: false,
+        editFlag: true,
         value2: '',
         value1: '',
         tableKey: 0,
@@ -105,7 +119,7 @@
           id: '',
           name: '',
         },
-        avalibilityFlag: false,
+        availabilityFlag: false,
         dialogStatus: '',
         textMap: {
           update: 'Edit',
@@ -116,11 +130,11 @@
         rules: {
           id: [{required: true, message: '请输入ID', trigger: 'change'}],
           name: [{required: true, message: '请输入名称', trigger: 'change'}],
-          moduleId:[{required: true, message: '请输入名称', trigger: 'change'}],
-          type:[{required: true, message: '请输入名称', trigger: 'change'}],
-          iosEnable:[{required: true, message: '请输入名称', trigger: 'change'}],
-          androidEnable:[{required: true, message: '请输入名称', trigger: 'change'}],
-          version:[{required: true, message: '请输入名称', trigger: 'change'}],
+          moduleId: [{required: true, message: '请输入名称', trigger: 'change'}],
+          type: [{required: true, message: '请输入名称', trigger: 'change'}],
+          iosEnable: [{required: true, message: '请输入名称', trigger: 'change'}],
+          androidEnable: [{required: true, message: '请输入名称', trigger: 'change'}],
+          version: [{required: true, message: '请输入名称', trigger: 'change'}],
         },
         downloadLoading: false,
         pickerOptions0: {
@@ -139,7 +153,9 @@
         portraitParams: {
           bucketName: 'funyvalley',
           folderName: 'icon'
-        }
+        },
+        iosControllableVersionListData: [1.1, 1.2]
+
       }
     },
     filters: {
@@ -163,7 +179,7 @@
             id: '',
             name: ''
           }
-        }).then(response=>{
+        }).then(response => {
           console.log(response)
           this.list = response.data;
           // this.total = response.totalElements;
@@ -191,7 +207,7 @@
       handleCreate() {
         this.resetTemp();
         this.dialogStatus = 'create';
-        this.avalibilityFlag = true;
+        this.availabilityFlag = true;
         this.$nextTick(() => {
           this.$refs['formData'].clearValidate()
         })
@@ -208,7 +224,7 @@
                 name: formData.name,
               }).then((response) => {
                 console.log(response)
-                this.avalibilityFlag = false;
+                this.availabilityFlag = false;
                 this.$message.success('信息创建成功');
                 this.fetchData();
               })
@@ -220,7 +236,7 @@
         console.log(scope)
         this.formData = Object.assign({}, scope.row); // copy obj
         this.dialogStatus = 'update';
-        this.avalibilityFlag = true;
+        this.availabilityFlag = true;
         this.$nextTick(() => {
           this.$refs['formData'].clearValidate()
         })
@@ -237,7 +253,7 @@
             "icon": formData.icon
           }).then((response) => {
             console.log(response)
-            this.avalibilityFlag = false;
+            this.availabilityFlag = false;
             this.$message.success('信息修改成功');
             this.fetchData();
           })
@@ -269,7 +285,7 @@
 
           this.$http.delete(this.$baseUrl + `meta-service/1.0.0/buildings/${scope.row.id}`).then((response) => {
             console.log(response)
-            this.avalibilityFlag = false;
+            this.availabilityFlag = false;
             this.$message.success('删除成功');
             this.fetchData();
           });
@@ -342,8 +358,11 @@
         }
         this.loading = true;
       },
-      editAvalibility(){
-        this.avalibilityFlag=true;
+      editAvailability() {
+        this.availabilityFlag = true;
+      },
+      handleIosListChange(data) {
+        console.log(data)
       }
     }
   }
