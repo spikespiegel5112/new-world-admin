@@ -30,9 +30,14 @@
           <img :src="scope.row.icon+'-style_100x100'" width="80">
         </template>
       </el-table-column>
-      <el-table-column align="center" label="是否可用" prop="available">
+      <el-table-column align="center" label="Android可用性" prop="available">
         <template slot-scope="scope">
-          {{scope.row.available?'是':'否'}}
+          {{scope.row.androidEnable?'是':'否'}}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="iOS可用性" prop="available">
+        <template slot-scope="scope">
+          {{scope.row.androidEnable?'是':'否'}}
         </template>
       </el-table-column>
       <el-table-column align="center" label="点击反映类型" prop="actionType"></el-table-column>
@@ -82,13 +87,6 @@
                 <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
               </el-upload>
             </el-form-item>
-            <el-form-item label="是否可用" prop="available">
-              <el-switch
-                v-model="formData.available"
-                active-color="#13ce66"
-                inactive-color="#ff4949">
-              </el-switch>
-            </el-form-item>
             <el-form-item label="点击反映类型" prop="actionType">
               <el-select v-model="formData.actionType">
                 <el-option v-for="item in $store.state.app.actionType"
@@ -115,12 +113,6 @@
         <el-col :span="16">
           <el-form :rules="rules" ref="availabilityFormData" :model="availabilityFormData" label-position="left"
                    label-width="140px">
-            <el-form-item label="ID" prop="id">
-              <el-input v-model="availabilityFormData.moduleId"></el-input>
-            </el-form-item>
-            <el-form-item label="类型" prop="type">
-              <el-input v-model="availabilityFormData.type"></el-input>
-            </el-form-item>
             <el-form-item label="iOS可用性" prop="iosAvailability">
               <el-switch
                 v-model="availabilityFormData.iosEnable"
@@ -134,9 +126,6 @@
                 active-color="#13ce66"
                 inactive-color="#ff4949">
               </el-switch>
-            </el-form-item>
-            <el-form-item label="版本号" prop="version">
-              <el-input v-model="availabilityFormData.version"></el-input>
             </el-form-item>
           </el-form>
         </el-col>
