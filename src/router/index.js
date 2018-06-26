@@ -154,11 +154,10 @@ export const constantRouterMap = [
     meta: {title: '好折扣', icon: 'table'},
     children: [
       {
-        path: 'betterdiscount/index',
+        path: 'betterdiscount/goodslist',
         name: '好折扣商品列表',
-        component: () => import('@/views/betterdiscount/index'),
-        meta: {title: '好折扣商品列表', icon: 'table'}
-
+        component: () => import('@/views/betterdiscount/goodslist'),
+        meta: { title: '好折扣商品列表', icon: 'table' }
       }
     ]
   },
