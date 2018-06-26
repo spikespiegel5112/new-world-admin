@@ -18,7 +18,8 @@
       <el-table-column label="是否可用" align="center" prop="name"></el-table-column>
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
+          <el-button type="primary" size="mini" @click="avalibilityFlag=true">设置可用性</el-button>
+          <el-button type="primary" size="mini" @click="editFlag=true">编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
@@ -31,24 +32,39 @@
       </el-pagination>
     </div>
     <!-- 弹框 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="850px">
+    <el-dialog title="设置可用性" :visible.sync="avalibilityFlag" width="850px">
       <el-row type="flex" justify="center">
         <el-col :span="16">
           <el-form :rules="rules" ref="formData" :model="formData" label-position="left" label-width="140px">
-            <el-form-item v-if="dialogStatus==='update'" label="ID" prop="id">
-              <el-input v-model="formData.id"></el-input>
+            <el-form-item label="ID" prop="id">
+              <el-input v-model="formData.moduleId"></el-input>
             </el-form-item>
-            <el-form-item label="名称" prop="name">
-              <el-input v-model="formData.name"></el-input>
+            <el-form-item label="类型" prop="type">
+              <el-input v-model="formData.type"></el-input>
             </el-form-item>
-
+            <el-form-item label="iosEnable" prop="iosEnable">
+              <el-switch
+                v-model="formData.iosEnable"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="androidEnable" prop="androidEnable">
+              <el-switch
+                v-model="formData.androidEnable"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="版本号" prop="version">
+              <el-input v-model="formData.version"></el-input>
+            </el-form-item>
           </el-form>
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus==='create'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
-        <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
+        <el-button @click="avalibilityFlag = false">{{$t('table.cancel')}}</el-button>
+        <el-button type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
   </el-row>
@@ -64,6 +80,8 @@
         createFeatureRequest: 'meta-service/1.0.0/feature',
         featureListRequest: 'meta-service/1.0.0/feature',
         featureAvailabilityRequest: 'meta-service/1.0.0/availability',
+        avalibilityFlag:false,
+        editFlag:true,
         value2: '',
         value1: '',
         tableKey: 0,
@@ -87,7 +105,7 @@
           id: '',
           name: '',
         },
-        dialogFormVisible: false,
+        avalibilityFlag: false,
         dialogStatus: '',
         textMap: {
           update: 'Edit',
@@ -98,6 +116,11 @@
         rules: {
           id: [{required: true, message: '请输入ID', trigger: 'change'}],
           name: [{required: true, message: '请输入名称', trigger: 'change'}],
+          moduleId:[{required: true, message: '请输入名称', trigger: 'change'}],
+          type:[{required: true, message: '请输入名称', trigger: 'change'}],
+          iosEnable:[{required: true, message: '请输入名称', trigger: 'change'}],
+          androidEnable:[{required: true, message: '请输入名称', trigger: 'change'}],
+          version:[{required: true, message: '请输入名称', trigger: 'change'}],
         },
         downloadLoading: false,
         pickerOptions0: {
@@ -168,7 +191,7 @@
       handleCreate() {
         this.resetTemp();
         this.dialogStatus = 'create';
-        this.dialogFormVisible = true;
+        this.avalibilityFlag = true;
         this.$nextTick(() => {
           this.$refs['formData'].clearValidate()
         })
@@ -185,7 +208,7 @@
                 name: formData.name,
               }).then((response) => {
                 console.log(response)
-                this.dialogFormVisible = false;
+                this.avalibilityFlag = false;
                 this.$message.success('信息创建成功');
                 this.fetchData();
               })
@@ -197,7 +220,7 @@
         console.log(scope)
         this.formData = Object.assign({}, scope.row); // copy obj
         this.dialogStatus = 'update';
-        this.dialogFormVisible = true;
+        this.avalibilityFlag = true;
         this.$nextTick(() => {
           this.$refs['formData'].clearValidate()
         })
@@ -214,7 +237,7 @@
             "icon": formData.icon
           }).then((response) => {
             console.log(response)
-            this.dialogFormVisible = false;
+            this.avalibilityFlag = false;
             this.$message.success('信息修改成功');
             this.fetchData();
           })
@@ -246,7 +269,7 @@
 
           this.$http.delete(this.$baseUrl + `meta-service/1.0.0/buildings/${scope.row.id}`).then((response) => {
             console.log(response)
-            this.dialogFormVisible = false;
+            this.avalibilityFlag = false;
             this.$message.success('删除成功');
             this.fetchData();
           });
@@ -319,6 +342,9 @@
         }
         this.loading = true;
       },
+      editAvalibility(){
+        this.avalibilityFlag=true;
+      }
     }
   }
 </script>

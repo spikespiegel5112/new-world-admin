@@ -10,6 +10,13 @@
         <el-button @click="handleCreate" type="primary" icon="el-icon-edit">新增</el-button>
       </el-col>
     </el-row>
+    <el-row>
+      <el-form label-position="top" label-width="80px">
+        <el-form-item label="审核版本">
+          <CommonTag title="iOS" :tagData="iosBanData" buttonText="添加版本" @change="handleIosListChange"/>
+        </el-form-item>
+      </el-form>
+    </el-row>
 
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
       <el-table-column label="No" type="index" width="50" align="center" fixed></el-table-column>
@@ -29,8 +36,9 @@
       </el-table-column>
       <el-table-column align="center" label="点击反映类型" prop="actionType"></el-table-column>
       <el-table-column align="center" label="actionParam" prop="actionParam"></el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column align="center" label="操作" width="300px">
         <template slot-scope="scope">
+          <el-button type="primary" size="mini" @click="editAvalibility(scope)">设置可用性</el-button>
           <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope)">删除
           </el-button>
@@ -100,22 +108,66 @@
         <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="设置可用性" :visible.sync="avalibilityFlag" width="850px">
+      <el-row type="flex" justify="center">
+        <el-col :span="16">
+          <el-form :rules="rules" ref="avalibilityFormData" :model="avalibilityFormData" label-position="left"
+                   label-width="140px">
+            <el-form-item label="ID" prop="id">
+              <el-input v-model="avalibilityFormData.moduleId"></el-input>
+            </el-form-item>
+            <el-form-item label="类型" prop="type">
+              <el-input v-model="avalibilityFormData.type"></el-input>
+            </el-form-item>
+            <el-form-item label="iOS可用性" prop="iosAvalibility">
+              <el-switch
+                v-model="avalibilityFormData.iosEnable"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="Android可用性" prop="androidAvalibility">
+              <el-switch
+                v-model="avalibilityFormData.androidEnable"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="版本号" prop="version">
+              <el-input v-model="avalibilityFormData.version"></el-input>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="avalibilityFlag = false">{{$t('table.cancel')}}</el-button>
+        <el-button type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 
 <script>
   import {getMetaDataBuildListRequest} from '@/api/metaData'
   import {updateMetaDataBuildListRequest} from '@/api/metaData'
+  import CommonTag from '@/components/CommonTag.vue'
 
   export default {
+    components:{
+      CommonTag
+    },
     data() {
       return {
+        editAvalibilityRequest: 'meta-service/1.0.0/availability',
         value2: '',
         value1: '',
         tableKey: 0,
         list: null,
         total: null,
         listLoading: true,
+        avalibilityFlag: false,
+        dynamicTags: ['标签一', '标签二', '标签三'],
         listQuery: {
           name: '',
           available: '',
@@ -145,14 +197,25 @@
           create: 'Create'
         },
         dialogPvVisible: false,
-        pvData: [],
+        avalibilityFormData: {
+          moduleId: '',
+          type: '',
+          iosEnable: '',
+          androidEnable: '',
+          version: ''
+        },
         rules: {
           label: [{required: true, message: '请输入显示名称', trigger: 'change'}],
           name: [{required: true, message: '请输入唯一表示名称', trigger: 'change'}],
           icon: [{required: true, message: '请上传图片', trigger: 'change'}],
           available: [{required: true, message: '请选择是否可用', trigger: 'change'}],
+          type: [{required: true, message: '请选择类型', trigger: 'change'}],
+          moduleId: [{required: true, message: '请选择类型', trigger: 'change'}],
+          version: [{required: true, message: '请输入版本号', trigger: 'change'}],
           actionType: [{required: true, message: '请选择反映类型', trigger: 'change'}],
           actionParam: [{required: true, message: '请输入actionParam', trigger: 'change'}],
+          iosAvalibility: [{required: true, message: '请输入actionParam', trigger: 'change'}],
+          androidAvalibility: [{required: true, message: '请输入actionParam', trigger: 'change'}]
         },
         downloadLoading: false,
         pickerOptions0: {
@@ -171,7 +234,8 @@
         portraitParams: {
           bucketName: 'funyvalley',
           folderName: 'icon'
-        }
+        },
+        iosBanData:[1.1,1.2]
       }
     },
     filters: {
@@ -380,6 +444,40 @@
         }
         this.loading = true;
       },
+      editAvalibility(scope) {
+        console.log(scope.row)
+
+        this.avalibilityFormData = Object.assign({}, {
+          "moduleId": scope.row.id,
+          "type": scope.row.type,
+          "iosEnable": scope.row.iosEnable,
+          "androidEnable": scope.row.androidEnable,
+          "version": scope.row.version,
+        })
+        console.log(this.avalibilityFormData)
+        debugger
+        this.avalibilityFlag = true;
+
+      },
+      updateAvalibility() {
+        this.$ref.avalibilityFormData.validate(valid => {
+          if (valid) {
+            this.$http.post(this.$baseUrl + this.editAvalibilityRequest, {
+              params: {
+                "name": formData.name,
+                "label": formData.label,
+                "available": formData.available,
+                "actionType": formData.actionType,
+                "actionParam": formData.actionParam,
+                "icon": formData.icon
+              }
+            })
+          }
+        });
+      },
+      handleIosListChange(data){
+        console.log(data)
+      }
     }
   }
 </script>

@@ -4,3 +4,23 @@
 .common-pagination-wrapper{
   margin: 20px 0;
 }
+.common-tag-wrapper{
+  .el-tag{
+    margin: 0 0 0 10px;
+  }
+  .input{
+    display: inline-block;
+  vertical-align: middle;
+    width: 90px;
+    margin-left: 10px;
+  }
+  .button{
+    display: inline-block;
+  vertical-align: middle;
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
