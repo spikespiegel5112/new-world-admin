@@ -1,13 +1,17 @@
 <template>
   <div class="app-container">
     <div class="common-filter-wrapper">
-      <el-input @keyup.enter.native="handleFilter" placeholder="任务名称" style="width: 200px;" class="filter-item" v-model="listQuery.keyword">
+      <el-input @keyup.enter.native="handleFilter" placeholder="任务名称" style="width: 200px;"
+                v-model="listQuery.keyword">
       </el-input>
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-edit">新增</el-button>
+      <el-button type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
+      <el-button style="margin-left: 10px;" @click="handleCreate" type="primary"
+                 icon="el-icon-edit">新增
+      </el-button>
     </div>
 
-    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row style="width: 100%">
+    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row
+              style="width: 100%">
       <el-table-column align="center" label='No' width="40">
         <template slot-scope="scope">
           {{scope.$index+1}}
@@ -19,7 +23,7 @@
         </template>
       </el-table-column>
       <el-table-column label="Icon" align="center" width="100">
-        <template slot-scope="scope" >
+        <template slot-scope="scope">
           <img :src="scope.row.iconPath+'-style_100x100'" width="80">
         </template>
       </el-table-column>
@@ -43,17 +47,17 @@
           {{scope.row.tryplayTimeLength}}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="开始/结束时间" >
+      <el-table-column align="center" label="开始/结束时间">
         <template slot-scope="scope">
           {{scope.row.startDate}}<br> {{scope.row.endDate}}
         </template>
       </el-table-column>
-      <el-table-column label="APK下载地址" >
+      <el-table-column label="APK下载地址">
         <template slot-scope="scope">
           {{scope.row.ApkPath}}
         </template>
       </el-table-column>
-      <el-table-column label="应用包名" >
+      <el-table-column label="应用包名">
         <template slot-scope="scope">
           {{scope.row.packageName}}
         </template>
@@ -63,34 +67,37 @@
           {{scope.row.isShow}}
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="添加时间" >
+      <el-table-column align="center" prop="created_at" label="添加时间">
         <template slot-scope="scope">
           <i class="el-icon-time"></i>
           <span>{{scope.row.createDate}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" >
+      <el-table-column align="center" label="操作">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
           <el-button v-if="scope.row.isShow=='0'" size="mini" type="success" @click="handleModifyStatus(scope.row,1)">上架
           </el-button>
-          <el-button v-if="scope.row.isShow=='1'" size="mini"  @click="handleModifyStatus(scope.row,0)">下架
+          <el-button v-if="scope.row.isShow=='1'" size="mini" @click="handleModifyStatus(scope.row,0)">下架
           </el-button>
-          <el-button  size="mini" type="danger" @click="handleDelete(scope.row)">删除
+          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->
-    <div class="pagination-container">
-      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
+    <div class="common-pagination-wrapper">
+      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                     :current-page="listQuery.page" :page-sizes="[10,20,30,50]" :page-size="listQuery.limit"
+                     layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
     <!-- 弹框 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="70px" style='width: 400px; margin-left:50px;'>
+      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="70px"
+               style='width: 400px; margin-left:50px;'>
         <!-- <el-form-item :label="$t('table.type')" prop="type">
-          <el-select class="filter-item" v-model="temp.type" placeholder="Please select">
+          <el-select v-model="temp.type" placeholder="Please select">
             <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">
             </el-option>
           </el-select>
@@ -103,7 +110,7 @@
           <el-input v-model="temp.name"></el-input>
         </el-form-item>
         <el-form-item label="iconPath" prop="iconPath">
-          <el-upload class="upload-demo" accept=".png" action="" :auto-upload='false' :on-change='changeUpload' >
+          <el-upload class="upload-demo" accept=".png" action="" :auto-upload='false' :on-change='changeUpload'>
             <el-button size="small" type="primary" plain>上传</el-button>
           </el-upload>
         </el-form-item>
@@ -122,7 +129,8 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="描述">
-          <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="Please input" v-model="temp.note">
+          <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="Please input"
+                    v-model="temp.note">
           </el-input>
         </el-form-item>
       </el-form>
@@ -137,7 +145,7 @@
 </template>
 
 <script>
-  import { getTryPlayList, saveTryPlay, changeStatus } from '@/api/task'
+  import {getTryPlayList, saveTryPlay, changeStatus} from '@/api/task'
 
   export default {
     data() {
@@ -157,7 +165,7 @@
           sort: '+id'
         },
         importanceOptions: [1, 2, 3],
-        sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
+        sortOptions: [{label: 'ID Ascending', key: '+id'}, {label: 'ID Descending', key: '-id'}],
         statusOptions: ['published', 'draft', 'deleted'],
         showReviewer: false,
         temp: {
@@ -178,9 +186,9 @@
         dialogPvVisible: false,
         pvData: [],
         rules: {
-          name: [{ required: true, message: 'name is required', trigger: 'change' }],
-          timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-          title: [{ required: true, message: 'title is required', trigger: 'blur' }]
+          name: [{required: true, message: 'name is required', trigger: 'change'}],
+          timestamp: [{type: 'date', required: true, message: 'timestamp is required', trigger: 'change'}],
+          title: [{required: true, message: 'title is required', trigger: 'blur'}]
         },
         downloadLoading: false,
         pickerOptions0: {

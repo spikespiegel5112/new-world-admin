@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-  	<div class="common-filter-wrapper">
+  	<div class="filter-container">
       <el-input @keyup.enter.native="handleFilter" style="width: 200px;" >
       </el-input>
       <el-button type="primary" v-waves icon="el-icon-search" @click="handleFilter">查询</el-button>
@@ -8,52 +8,57 @@
     </div>
 
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label='No' width="40">
+      <el-table-column align="center" label='ID' width="40">
         <template slot-scope="scope">
-          {{scope.$index+1}}
+          {{scope.row.id}}
         </template>
       </el-table-column>
-      <el-table-column label="名称" align="center">
+      <el-table-column label="商品编号" align="center" width="100">
         <template slot-scope="scope">
-          {{scope.row.name}}
+          {{scope.row.goodsNumber}}
         </template>
       </el-table-column>
-      <el-table-column label="Icon" align="center" width="100">
+      <el-table-column label="商品名称" align="center" width="100">
         <template slot-scope="scope" >
-           <img :src="scope.row.iconPath+'-style_213x144'" width="80">
+            {{scope.row.name}}
         </template>
       </el-table-column>
-      <el-table-column align="center" class-name="status-col" label="积分" width="70">
+      <el-table-column label="商品图片" width="150" align="center">
         <template slot-scope="scope">
-          {{scope.row.bounty}}
+         <img :src="scope.row.image+'-style_200x200'" width="80">
         </template>
       </el-table-column>
-      <el-table-column align="center" label="完成数" width="70">
+      <el-table-column align="center" label="商品价格" width="70">
         <template slot-scope="scope">
-          {{scope.row.completedNum}}
+          {{scope.row.price}}
         </template>
       </el-table-column>
-      <!--<el-table-column label="剩余数" width="70">
+      <el-table-column align="center" label="折扣价" width="70">
         <template slot-scope="scope">
-          {{scope.row.surplusNum}}
-        </template>
-      </el-table-column>-->
-      <el-table-column align="center" label="提交时间" width="80">
-        <template slot-scope="scope">
-          <!--{{scope.row.submitPath}}-->
+          {{scope.row.discountPrice}}
         </template>
       </el-table-column>
-      <el-table-column label="状态" width="50">
+      <el-table-column align="center" label="优惠券链接" width="100">
         <template slot-scope="scope">
-          {{scope.row.isShow}}
+          {{scope.row.coupons}}
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="添加时间" >
+      <el-table-column label="详情" width="200">
         <template slot-scope="scope">
-          <i class="el-icon-time"></i>
-          <span>{{scope.row.createDate}}</span>
+          {{scope.row.details}}
         </template>
       </el-table-column>
+    <el-table-column label="简介" width="150">
+        <template slot-scope="scope">
+          {{scope.row.summary}}
+        </template>
+      </el-table-column>
+       <el-table-column label="购买链接" width="150">
+        <template slot-scope="scope">
+          {{scope.row.buyUrl}}
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="操作" >
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
@@ -66,41 +71,47 @@
         </template>
       </el-table-column>
     </el-table>
-     <!-- 分页 -->
-    <div class="common-pagination-wrapper">
-      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page" :page-sizes="[10,20,30,50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
+    <!-- 分页 -->
+    <div class="pagination-container">
+      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <!-- 弹框 -->
+ <!-- 弹框 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="70px" style='width: 400px; margin-left:50px;'>
-        <!-- <el-form-item :label="$t('table.type')" prop="type">
-          <el-select v-model="temp.type" placeholder="Please select">
-            <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">
-            </el-option>
-          </el-select>
+
+        <el-form-item label="商品编号" prop="goodsNumber">
+          <el-input v-model="temp.goodsNumber"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('table.date')" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date">
-          </el-date-picker>
-        </el-form-item> -->
-        <el-form-item label="名称" prop="name">
+        <el-form-item label="商品名称" prop="name">
           <el-input v-model="temp.name"></el-input>
         </el-form-item>
-        <el-form-item label="iconPath" prop="iconPath">
-          <el-upload class="upload-demo" accept=".png" action="" :auto-upload='false' :on-change='changeUpload' >
-            <el-button size="small" type="primary" plain>上传</el-button>
-          </el-upload>
+        <el-form-item label="商品图片" prop="image">
+          <el-input v-model="temp.image"></el-input>
         </el-form-item>
-        <el-form-item label="描述">
-          <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="Please input" v-model="temp.note">
-          </el-input>
+        <el-form-item label="商品价格" prop="price">
+          <el-input v-model="temp.price"></el-input>
+        </el-form-item>
+        <el-form-item label="折扣价" prop="discountPrice">
+          <el-input v-model="temp.discountPrice"></el-input>
+        </el-form-item>
+        <el-form-item label="优惠券链接" prop="coupons">
+          <el-input v-model="temp.coupons"></el-input>
+        </el-form-item>
+        <el-form-item label="详情" prop="details">
+          <el-input v-model="temp.details"></el-input>
+        </el-form-item>
+        <el-form-item label="简介" prop="summary">
+          <el-input v-model="temp.summary"></el-input>
+        </el-form-item>
+        <el-form-item label="购买链接" prop="buyUrl">
+          <el-input v-model="temp.buyUrl"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
-        <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="addGoods">{{$t('table.confirm')}}</el-button>
+        <el-button v-else type="primary" @click="updatedGoods">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
     <!--  -->
@@ -108,7 +119,21 @@
 </template>
 
 <script>
-import { getResterList, changeStatus } from '@/api/task'
+import { getDiscountGoodsList } from '@/api/betterdiscount'
+
+// const calendarTypeOptions = [
+//   { key: '主编推荐', value: '1' },
+//   { key: '彩妆护肤', value: '2' },
+//   { key: '吃货生活', value: '3' },
+//   { key: '服饰鞋靴', value: '4' },
+//   { key: '男士数码', value: '5' },
+//   { key: '运动礼物', value: '6' }
+// ]
+
+// const goodsType = calendarTypeOptions.reduce((acc, cur) => {
+//   acc[cur.key] = cur.value
+//   return acc
+// }, {})
 
 export default {
   data() {
@@ -184,7 +209,7 @@ export default {
   methods: {
     fetchData() {
       this.listLoading = true
-      getResterList(this.listQuery).then(response => {
+      getDiscountGoodsList(this.listQuery).then(response => {
         this.list = response.content
         this.total = response.totalElements
         this.listLoading = false
@@ -236,7 +261,7 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createData() {
+    addGoods() {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
@@ -247,7 +272,7 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    updateData() {
+    updatedGoods() {
     },
     handleDelete(row) {
       this.$notify({

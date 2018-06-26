@@ -1,6 +1,6 @@
-import { login, logout, getInfo } from '@/api/login'
-import { getToken, setToken, removeToken, getLoginId, setLoginId, removeLoginId } from '@/utils/auth'
-import { Message } from 'element-ui'
+import {login, logout, getInfo} from '@/api/login'
+import {getToken, setToken, removeToken, getLoginId, setLoginId, removeLoginId} from '@/utils/auth'
+import {Message} from 'element-ui'
 
 const user = {
   state: {
@@ -35,7 +35,7 @@ const user = {
 
   actions: {
     // 登录
-    Login({ commit }, userInfo) {
+    Login({commit}, userInfo) {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
         login(username, userInfo.password).then(response => {
@@ -51,9 +51,13 @@ const user = {
     },
 
     // 获取用户信息
-    GetInfo({ commit, state }) {
+    GetInfo({commit, state}) {
+      console.log(getLoginId())
+      console.log(this.$baseUrl)
+      console.log('http://gateway.zan-qian.com/' + 'profile-service/1.0.0/queryUserProfileById/' + getLoginId())
       return new Promise((resolve, reject) => {
-        getInfo(getLoginId()).then(response => {
+        // this.$http.post('http://gateway.zan-qian.com/' + 'profile-service/1.0.0/queryUserProfileById/' + getLoginId(), {}).then(response => {
+          getInfo(getLoginId()).then(response => {
           if (response.result) {
             commit('SET_NICK_NAME', response.jsonstr.nickName)
             commit('SET_IMAGE', response.jsonstr.image)
@@ -80,11 +84,11 @@ const user = {
     },
 
     // 登出
-    LogOut({ commit, state }) {
+    LogOut({commit, state}) {
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
           commit('SET_TOKEN', '')
-          commit('SET_ROLES', [])
+          // commit('SET_ROLES', [])
           removeToken()
           removeLoginId()
           resolve()
@@ -95,7 +99,7 @@ const user = {
     },
 
     // 前端 登出
-    FedLogOut({ commit }) {
+    FedLogOut({commit}) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
         removeToken()
