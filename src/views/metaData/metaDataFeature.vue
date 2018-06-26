@@ -1,87 +1,25 @@
 <template>
-  <div class="app-container">
-    <div class="common-filter-wrapper">
-      <el-input @keyup.enter.native="handleFilter" placeholder="任务名称" style="width: 200px;" class="filter-item"
-                v-model="listQuery.keyword">
-      </el-input>
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary"
-                 icon="el-icon-edit">新增
-      </el-button>
-    </div>
+  <el-row class="app-container">
+    <el-row class="common-filter-wrapper" :gutter="20">
+      <el-col :span="6">
+        <el-input @keyup.enter.native="handleFilter" placeholder="任务名称" v-model="listQuery.name">
+        </el-input>
+      </el-col>
+      <el-col :span="6">
+        <el-button type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
+        <el-button @click="handleCreate" type="primary" icon="el-icon-edit">新增</el-button>
+      </el-col>
+    </el-row>
 
-    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row
-              style="width: 100%">
-      <el-table-column align="center" label='No' width="40">
-        <template slot-scope="scope">
-          {{scope.$index+1}}
-        </template>
-      </el-table-column>
-      <el-table-column label="名称" align="center">
-        <template slot-scope="scope">
-          {{scope.row.name}}
-        </template>
-      </el-table-column>
-      <el-table-column label="Icon" align="center" width="100">
-        <template slot-scope="scope">
-          <img :src="scope.row.iconPath+'-style_100x100'" width="80">
-        </template>
-      </el-table-column>
-      <el-table-column align="center" class-name="status-col" label="积分" width="60">
-        <template slot-scope="scope">
-          {{scope.row.bounty}}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="完成数" width="70">
-        <template slot-scope="scope">
-          {{scope.row.completedNum}}
-        </template>
-      </el-table-column>
-      <el-table-column label="剩余数" width="70">
-        <template slot-scope="scope">
-          {{scope.row.surplusNum}}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="试玩时长" width="80">
-        <template slot-scope="scope">
-          {{scope.row.tryplayTimeLength}}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="开始/结束时间">
-        <template slot-scope="scope">
-          {{scope.row.startDate}}<br> {{scope.row.endDate}}
-        </template>
-      </el-table-column>
-      <el-table-column label="APK下载地址">
-        <template slot-scope="scope">
-          {{scope.row.ApkPath}}
-        </template>
-      </el-table-column>
-      <el-table-column label="应用包名">
-        <template slot-scope="scope">
-          {{scope.row.packageName}}
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" width="50">
-        <template slot-scope="scope">
-          {{scope.row.isShow}}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="添加时间">
-        <template slot-scope="scope">
-          <i class="el-icon-time"></i>
-          <span>{{scope.row.createDate}}</span>
-        </template>
-      </el-table-column>
+    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
+      <el-table-column label="No" type="index" width="50" align="center" fixed></el-table-column>
+      <el-table-column label="ID" align="center" prop="id"></el-table-column>
+      <el-table-column label="名称" align="center" prop="name"></el-table-column>
+      <el-table-column label="是否可用" align="center" prop="name"></el-table-column>
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
-          <el-button v-if="scope.row.isShow=='0'" size="mini" type="success" @click="handleModifyStatus(scope.row,1)">上架
-          </el-button>
-          <el-button v-if="scope.row.isShow=='1'" size="mini" @click="handleModifyStatus(scope.row,0)">下架
-          </el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除
-          </el-button>
+          <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -93,63 +31,39 @@
       </el-pagination>
     </div>
     <!-- 弹框 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="70px"
-               style='width: 400px; margin-left:50px;'>
-        <!-- <el-form-item :label="$t('table.type')" prop="type">
-          <el-select class="filter-item" v-model="temp.type" placeholder="Please select">
-            <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.date')" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date">
-          </el-date-picker>
-        </el-form-item> -->
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="temp.name"></el-input>
-        </el-form-item>
-        <el-form-item label="iconPath" prop="iconPath">
-          <el-upload class="upload-demo" accept=".png" action="" :auto-upload='false' :on-change='changeUpload'>
-            <el-button size="small" type="primary" plain>上传</el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item label="Apk下载地址" prop="name">
-          <el-input v-model="temp.name"></el-input>
-        </el-form-item>
-        <el-form-item label="Apk包名" prop="name">
-          <el-input v-model="temp.name"></el-input>
-        </el-form-item>
-        <el-form-item label="开始时间" prop="startDate">
-          <el-date-picker v-model="temp.startDate" type="date" placeholder="开始日期" :picker-options="pickerOptions0">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="结束时间" prop="endDate">
-          <el-date-picker v-model="temp.endDate" type="date" placeholder="结束日期" :picker-options="pickerOptions1">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="描述">
-          <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="Please input"
-                    v-model="temp.note">
-          </el-input>
-        </el-form-item>
-      </el-form>
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="850px">
+      <el-row type="flex" justify="center">
+        <el-col :span="16">
+          <el-form :rules="rules" ref="formData" :model="formData" label-position="left" label-width="140px">
+            <el-form-item v-if="dialogStatus==='update'" label="ID" prop="id">
+              <el-input v-model="formData.id"></el-input>
+            </el-form-item>
+            <el-form-item label="名称" prop="name">
+              <el-input v-model="formData.name"></el-input>
+            </el-form-item>
+
+          </el-form>
+        </el-col>
+      </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
+        <el-button v-if="dialogStatus==='create'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
         <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
-    <!--  -->
-  </div>
+  </el-row>
 </template>
 
 <script>
-  import {getTryPlayList, saveTryPlay, changeStatus} from '@/api/task'
+  import {getMetaDataBuildListRequest} from '@/api/metaData'
+  import {updateMetaDataBuildListRequest} from '@/api/metaData'
 
   export default {
     data() {
       return {
+        createFeatureRequest: 'meta-service/1.0.0/feature',
+        featureListRequest: 'meta-service/1.0.0/feature',
+        featureAvailabilityRequest: 'meta-service/1.0.0/availability',
         value2: '',
         value1: '',
         tableKey: 0,
@@ -157,25 +71,21 @@
         total: null,
         listLoading: true,
         listQuery: {
+          name: '',
+          available: '',
+          actionType: '',
+          actionParam: '',
+          icon: '',
           page: 1,
           limit: 20,
-          importance: undefined,
-          keyword: undefined,
-          type: undefined,
-          sort: '+id'
         },
         importanceOptions: [1, 2, 3],
         sortOptions: [{label: 'ID Ascending', key: '+id'}, {label: 'ID Descending', key: '-id'}],
         statusOptions: ['published', 'draft', 'deleted'],
         showReviewer: false,
-        temp: {
-          id: undefined,
+        formData: {
+          id: '',
           name: '',
-          note: '',
-          startDate: null,
-          endDate: null,
-          iconPath: '',
-          packageName: ''
         },
         dialogFormVisible: false,
         dialogStatus: '',
@@ -186,9 +96,8 @@
         dialogPvVisible: false,
         pvData: [],
         rules: {
-          name: [{required: true, message: 'name is required', trigger: 'change'}],
-          timestamp: [{type: 'date', required: true, message: 'timestamp is required', trigger: 'change'}],
-          title: [{required: true, message: 'title is required', trigger: 'blur'}]
+          id: [{required: true, message: '请输入ID', trigger: 'change'}],
+          name: [{required: true, message: '请输入名称', trigger: 'change'}],
         },
         downloadLoading: false,
         pickerOptions0: {
@@ -202,6 +111,11 @@
           disabledDate: (time) => {
             return time.getTime() < this.value1
           }
+        },
+        fileList: [],
+        portraitParams: {
+          bucketName: 'funyvalley',
+          folderName: 'icon'
         }
       }
     },
@@ -211,7 +125,7 @@
           published: 'success',
           draft: 'gray',
           deleted: 'danger'
-        }
+        };
         return statusMap[status]
       }
     },
@@ -220,101 +134,191 @@
     },
     methods: {
       fetchData() {
-        this.listLoading = true
-        getTryPlayList(this.listQuery).then(response => {
-          this.list = response.content
-          this.total = response.totalElements
+        this.listLoading = true;
+        this.$http.get(this.$baseUrl + this.featureListRequest, {
+          params: {
+            id: '',
+            name: ''
+          }
+        }).then(response=>{
+          console.log(response)
+          this.list = response.data;
+          // this.total = response.totalElements;
           this.listLoading = false
-        })
+        });
       },
       handleFilter() {
-        this.listQuery.page = 1
+        this.listQuery.page = 1;
         this.fetchData()
       },
       handleSizeChange(val) {
-        this.listQuery.limit = val
+        this.listQuery.limit = val;
         this.fetchData()
       },
       handleCurrentChange(val) {
-        this.listQuery.page = val
+        this.listQuery.page = val;
         this.fetchData()
       },
-      handleModifyStatus(row, status) {
-        changeStatus(row.id, status).then(response => {
-          if (response) {
-            this.$message({
-              message: '操作成功',
-              type: 'success'
-            })
-            row.isShow = status
-          } else {
-            this.$message({
-              message: '操作失败',
-              type: 'error'
-            })
-          }
-        })
-      },
       resetTemp() {
-        this.temp = {
-          id: undefined,
+        this.formData = {
+          id: '',
           name: '',
-          note: '',
-          startDate: null,
-          endDate: null,
-          iconPath: ''
         }
       },
       handleCreate() {
-        this.resetTemp()
-        this.dialogStatus = 'create'
-        this.dialogFormVisible = true
+        this.resetTemp();
+        this.dialogStatus = 'create';
+        this.dialogFormVisible = true;
         this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
+          this.$refs['formData'].clearValidate()
         })
       },
       createData() {
-        this.$refs['dataForm'].validate((valid) => {
+        const formData = this.formData;
+
+        console.log(this.$baseUrl)
+
+        this.$refs['formData'].validate((valid) => {
           if (valid) {
-            this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-            this.temp.author = 'vue-element-admin'
-            saveTryPlay(this.temp).then(() => {
-              this.list.unshift(this.temp)
-              this.dialogFormVisible = false
-              this.$notify({
-                title: '成功',
-                message: '创建成功',
-                type: 'success',
-                duration: 2000
+            this.$refs['formData'].validate((valid) => {
+              this.$http.post(this.$baseUrl + this.createFeatureRequest, {
+                name: formData.name,
+              }).then((response) => {
+                console.log(response)
+                this.dialogFormVisible = false;
+                this.$message.success('信息创建成功');
+                this.fetchData();
               })
-            })
+            });
           }
         })
       },
-      handleUpdate(row) {
-        this.temp = Object.assign({}, row) // copy obj
-        this.temp.timestamp = new Date(this.temp.timestamp)
-        this.dialogStatus = 'update'
-        this.dialogFormVisible = true
+      handleUpdate(scope) {
+        console.log(scope)
+        this.formData = Object.assign({}, scope.row); // copy obj
+        this.dialogStatus = 'update';
+        this.dialogFormVisible = true;
         this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
+          this.$refs['formData'].clearValidate()
         })
       },
       updateData() {
+        const formData = this.formData;
+        this.$refs['formData'].validate((valid) => {
+          this.$http.post(this.$baseUrl + `meta-service/1.0.0/buildings/${formData.id}`, {
+            "name": formData.name,
+            "label": formData.label,
+            "available": formData.available,
+            "actionType": formData.actionType,
+            "actionParam": formData.actionParam,
+            "icon": formData.icon
+          }).then((response) => {
+            console.log(response)
+            this.dialogFormVisible = false;
+            this.$message.success('信息修改成功');
+            this.fetchData();
+          })
+
+          // updateMetaDataBuildListRequest({
+          //   id: formData.id,
+          // }, {
+          //   "name": formData.name,
+          //   "label": formData.label,
+          //   "available": formData.available,
+          //   "actionType": formData.actionType,
+          //   "actionParam": formData.actionParam,
+          //   "icon": formData.actionParam
+          // }).then(response => {
+          //   console.log(response)
+          //   this.list = response;
+          //   this.total = response.totalElements;
+          //   this.listLoading = false
+          // })
+        });
       },
-      handleDelete(row) {
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000
-        })
-        const index = this.list.indexOf(row)
-        this.list.splice(index, 1)
+      handleDelete(scope) {
+
+        this.$confirm('确认删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+
+          this.$http.delete(this.$baseUrl + `meta-service/1.0.0/buildings/${scope.row.id}`).then((response) => {
+            console.log(response)
+            this.dialogFormVisible = false;
+            this.$message.success('删除成功');
+            this.fetchData();
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
       },
       changeUpload(file) {
         console.log(file)
-      }
+      },
+      handlePreview(file) {
+        console.log(file);
+        this.fileList.push(file);
+      },
+      uploadSuccess(response) {
+        this.loading = false;
+        console.log(response)
+        this.formData.icon = response.url;
+        this.loading = false;
+        this.$message({
+          message: '图片上传成功',
+          type: 'success'
+        });
+      },
+      uploadAvatarExceeded(files, fileList) {
+        if (fileList.length > 0) {
+          this.$confirm('当前申报已有上传图片，需先删除已有头像，请确认是否删除？', '提示', {
+            type: 'warning'
+          }).then(resolve => {
+            this.$refs['uploadAvatar'].clearFiles();
+            this.$http.get(this.$baseUrl + 'attachment/deleteAttachment/' + this.fileList[0].id).then(response => {
+              if (response.data.code === '200') {
+                this.fileList.splice(this.fileList.indexOf(response.id), 1);
+                this.componentModelData.uploaded = '';
+                this.$message.success('图片删除成功')
+              } else {
+                this.fileList.splice(this.fileList.indexOf(response.id), 1);
+                this.componentModelData.uploaded = '';
+                this.$message.warning('图片删除失败')
+              }
+            })
+          })
+        }
+      },
+      handleRemove() {
+
+      },
+      handleBeforeUpload(file) {
+        console.log(file)
+        let suffixDictionary = ['jpg', 'jpeg', 'png'];
+        let index1 = file.name.lastIndexOf('.') + 1;
+        let index2 = file.name.length;
+        let fileSuffix = file.name.substring(index1, index2);
+        if (suffixDictionary.filter(item => item === fileSuffix).length === 0) {
+          this.$message({
+            message: '文件必须为' + suffixDictionary.join('、') + '类型文件',
+            type: 'error'
+          });
+          return false;
+        }
+        if (file.size > 1024 * 1024 * 2) {
+          this.$message({
+            message: '文件不得大于2M',
+            type: 'error'
+          });
+          return false;
+        }
+        this.loading = true;
+      },
     }
   }
 </script>
