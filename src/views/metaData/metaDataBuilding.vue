@@ -18,10 +18,12 @@
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
       <el-table-column label="No" type="index" width="50" align="center"
                        fixed></el-table-column>
-      <el-table-column label="名称" align="center" prop="name"></el-table-column>
+      <el-table-column label="显示名称" align="center" prop="label"></el-table-column>
+      <el-table-column label="唯一表示名称" align="center" prop="name"></el-table-column>
+
       <el-table-column label="Icon" align="center" width="100">
         <template slot-scope="scope">
-          <img :src="scope.row.iconPath+'-style_100x100'" width="80">
+          <img :src="scope.row.icon+'-style_100x100'" width="80">
         </template>
       </el-table-column>
       <el-table-column align="center" label="是否可用" prop="available">
@@ -31,18 +33,18 @@
       </el-table-column>
       <el-table-column align="center" label="点击反映类型" prop="actionType"></el-table-column>
       <el-table-column align="center" label="actionParam" prop="actionParam"></el-table-column>
-      <el-table-column align="center" label="操作" style="width:500px">
+      <el-table-column align="center" label="操作">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除
+          <el-button size="mini" type="danger" @click="handleDelete(scope)">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->
-    <div class="pagination-container">
+    <div class="common-pagination-wrapper">
       <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                     :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit"
+                     :current-page="listQuery.page" :page-sizes="[10,20,30,50]" :page-size="listQuery.limit"
                      layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
@@ -51,14 +53,17 @@
       <el-row type="flex" justify="center">
         <el-col :span="16">
           <el-form :rules="rules" ref="formData" :model="formData" label-position="left" label-width="140px">
-            <el-form-item label="名称" prop="name">
+            <el-form-item label="显示名称" prop="label">
+              <el-input v-model="formData.label"></el-input>
+            </el-form-item>
+            <el-form-item label="唯一表示名称" prop="name">
               <el-input v-model="formData.name"></el-input>
             </el-form-item>
-            <el-form-item label="Icon" prop="iconPath">
+            <el-form-item label="Icon" prop="icon">
               <el-upload
                 class="common-avataruploader-wrapper"
                 ref="uploadAvatar"
-                :action="this.$baseUrl+'attachment/storeAttachment'"
+                :action="this.$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 :limit="2"
                 :show-file-list="false"
                 :before-upload="handleBeforeUpload"
@@ -145,9 +150,12 @@
         dialogPvVisible: false,
         pvData: [],
         rules: {
-          name: [{required: true, message: 'name is required', trigger: 'change'}],
-          timestamp: [{type: 'date', required: true, message: 'timestamp is required', trigger: 'change'}],
-          title: [{required: true, message: 'title is required', trigger: 'blur'}]
+          label: [{required: true, message: '请输入显示名称', trigger: 'change'}],
+          name: [{required: true, message: '请输入唯一表示名称', trigger: 'change'}],
+          icon: [{required: true, message: '请上传图片', trigger: 'change'}],
+          available: [{required: true, message: '请选择是否可用', trigger: 'change'}],
+          actionType: [{required: true, message: '请选择反映类型', trigger: 'change'}],
+          actionParam: [{required: true, message: '请输入actionParam', trigger: 'change'}],
         },
         downloadLoading: false,
         pickerOptions0: {
@@ -163,7 +171,10 @@
           }
         },
         fileList: [],
-        portraitParams: {}
+        portraitParams: {
+          bucketName: 'funyvalley',
+          folderName: 'icon'
+        }
       }
     },
     filters: {
@@ -213,7 +224,7 @@
         }
       },
       handleCreate() {
-        this.resetTemp()
+        this.resetTemp();
         this.dialogStatus = 'create';
         this.dialogFormVisible = true;
         this.$nextTick(() => {
@@ -221,20 +232,39 @@
         })
       },
       createData() {
+        const formData = this.formData;
+
         this.$refs['formData'].validate((valid) => {
           if (valid) {
             this.formData.id = parseInt(Math.random() * 100) + 1024 // mock a id
             this.formData.author = 'vue-element-admin'
-            saveTryPlay(this.formData).then(() => {
-              this.list.unshift(this.formData)
-              this.dialogFormVisible = false
-              this.$notify({
-                title: '成功',
-                message: '创建成功',
-                type: 'success',
-                duration: 2000
+            this.$refs['formData'].validate((valid) => {
+              this.$http.post('http://gateway.zan-qian.com/' + `meta-service/1.0.0/buildings`, {
+                id:'',
+                "name": formData.name,
+                "label": formData.label,
+                "available": formData.available,
+                "actionType": formData.actionType,
+                "actionParam": formData.actionParam,
+                "icon": formData.icon
+              }).then((response) => {
+                console.log(response)
+                this.dialogFormVisible = false;
+                this.$message.success('信息创建成功');
+                this.fetchData();
               })
-            })
+            });
+
+            // saveTryPlay(this.formData).then(() => {
+            //   this.list.unshift(this.formData)
+            //   this.dialogFormVisible = false
+            //   this.$notify({
+            //     title: '成功',
+            //     message: '创建成功',
+            //     type: 'success',
+            //     duration: 2000
+            //   })
+            // })
           }
         })
       },
@@ -249,7 +279,6 @@
       },
       updateData() {
         const formData = this.formData;
-
         this.$refs['formData'].validate((valid) => {
           this.$http.post('http://gateway.zan-qian.com/' + `meta-service/1.0.0/buildings/${formData.id}`, {
             "name": formData.name,
@@ -261,6 +290,7 @@
           }).then((response) => {
             console.log(response)
             this.dialogFormVisible = false;
+            this.$message.success('信息修改成功');
             this.fetchData();
           })
 
@@ -281,15 +311,26 @@
           // })
         });
       },
-      handleDelete(row) {
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000
-        })
-        const index = this.list.indexOf(row)
-        this.list.splice(index, 1)
+      handleDelete(scope) {
+
+        this.$confirm('确认删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+
+          this.$http.delete('http://gateway.zan-qian.com/' + `meta-service/1.0.0/buildings/${scope.row.id}`).then((response) => {
+            console.log(response)
+            this.dialogFormVisible = false;
+            this.$message.success('删除成功');
+            this.fetchData();
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
       },
       changeUpload(file) {
         console.log(file)
@@ -301,16 +342,12 @@
       uploadSuccess(response) {
         this.loading = false;
         console.log(response)
-        response = response.data;
-        this.componentModelData.uploaded = response.id;
+        this.formData.icon = response.url;
         this.loading = false;
         this.$message({
           message: '图片上传成功',
           type: 'success'
         });
-        this.fileList = [{
-          id: response.id
-        }];
       },
       uploadAvatarExceeded(files, fileList) {
         if (fileList.length > 0) {
