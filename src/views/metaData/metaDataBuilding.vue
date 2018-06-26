@@ -1,23 +1,19 @@
 <template>
   <el-row class="app-container">
-    <el-row class="common-filter-wrapper">
+    <el-row class="common-filter-wrapper" :gutter="20">
       <el-col :span="6">
-        <el-input @keyup.enter.native="handleFilter" placeholder="任务名称" class="filter-item"
-                  v-model="listQuery.keyword">
+        <el-input @keyup.enter.native="handleFilter" placeholder="任务名称" v-model="listQuery.name">
         </el-input>
-
       </el-col>
       <el-col :span="6">
-        <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
-        <el-button class="filter-item" @click="handleCreate" type="primary"
-                   icon="el-icon-edit">新增
-        </el-button>
+        <el-button type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
+        <el-button @click="handleCreate" type="primary" icon="el-icon-edit">新增</el-button>
       </el-col>
     </el-row>
 
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
-      <el-table-column label="No" type="index" width="50" align="center"
-                       fixed></el-table-column>
+      <el-table-column label="No" type="index" width="50" align="center" fixed></el-table-column>
+      <el-table-column label="ID" align="center" prop="id"></el-table-column>
       <el-table-column label="显示名称" align="center" prop="label"></el-table-column>
       <el-table-column label="唯一表示名称" align="center" prop="name"></el-table-column>
 
@@ -64,7 +60,7 @@
                 class="common-avataruploader-wrapper"
                 ref="uploadAvatar"
                 :action="this.$baseUrl+'image-upload-service/1.0.0/file/upload'"
-                :limit="2"
+                :limit="1"
                 :show-file-list="false"
                 :before-upload="handleBeforeUpload"
                 :on-preview="handlePreview"
@@ -121,12 +117,13 @@
         total: null,
         listLoading: true,
         listQuery: {
+          name: '',
+          available: '',
+          actionType: '',
+          actionParam: '',
+          icon: '',
           page: 1,
           limit: 20,
-          importance: undefined,
-          keyword: undefined,
-          type: undefined,
-          sort: '+id'
         },
         importanceOptions: [1, 2, 3],
         sortOptions: [{label: 'ID Ascending', key: '+id'}, {label: 'ID Descending', key: '-id'}],
@@ -134,7 +131,7 @@
         showReviewer: false,
         formData: {
           id: '',
-          "name": "",
+          name: '',
           "label": "",
           "available": false,
           "actionType": "",
@@ -215,7 +212,7 @@
       resetTemp() {
         this.formData = {
           id: '',
-          "name": "",
+          name: '',
           "label": "",
           "available": false,
           "actionType": "",
@@ -234,13 +231,13 @@
       createData() {
         const formData = this.formData;
 
+        console.log(this.$baseUrl)
+
         this.$refs['formData'].validate((valid) => {
           if (valid) {
-            this.formData.id = parseInt(Math.random() * 100) + 1024 // mock a id
-            this.formData.author = 'vue-element-admin'
             this.$refs['formData'].validate((valid) => {
-              this.$http.post('http://gateway.zan-qian.com/' + `meta-service/1.0.0/buildings`, {
-                id:'',
+              this.$http.post(this.$baseUrl + `meta-service/1.0.0/buildings`, {
+                id: '',
                 "name": formData.name,
                 "label": formData.label,
                 "available": formData.available,
@@ -254,17 +251,6 @@
                 this.fetchData();
               })
             });
-
-            // saveTryPlay(this.formData).then(() => {
-            //   this.list.unshift(this.formData)
-            //   this.dialogFormVisible = false
-            //   this.$notify({
-            //     title: '成功',
-            //     message: '创建成功',
-            //     type: 'success',
-            //     duration: 2000
-            //   })
-            // })
           }
         })
       },
@@ -280,7 +266,7 @@
       updateData() {
         const formData = this.formData;
         this.$refs['formData'].validate((valid) => {
-          this.$http.post('http://gateway.zan-qian.com/' + `meta-service/1.0.0/buildings/${formData.id}`, {
+          this.$http.post(this.$baseUrl + `meta-service/1.0.0/buildings/${formData.id}`, {
             "name": formData.name,
             "label": formData.label,
             "available": formData.available,
@@ -319,7 +305,7 @@
           type: 'warning'
         }).then(() => {
 
-          this.$http.delete('http://gateway.zan-qian.com/' + `meta-service/1.0.0/buildings/${scope.row.id}`).then((response) => {
+          this.$http.delete(this.$baseUrl + `meta-service/1.0.0/buildings/${scope.row.id}`).then((response) => {
             console.log(response)
             this.dialogFormVisible = false;
             this.$message.success('删除成功');
@@ -351,7 +337,7 @@
       },
       uploadAvatarExceeded(files, fileList) {
         if (fileList.length > 0) {
-          this.$confirm('当前申报已有上传头像，需先删除已有头像，请确认是否删除？', '提示', {
+          this.$confirm('当前申报已有上传图片，需先删除已有头像，请确认是否删除？', '提示', {
             type: 'warning'
           }).then(resolve => {
             this.$refs['uploadAvatar'].clearFiles();
