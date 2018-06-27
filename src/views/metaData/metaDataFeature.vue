@@ -1,15 +1,80 @@
 <template>
   <el-row class="app-container">
-    <el-row class="common-querytable-wrapper" :gutter="20">
-      <el-col :span="6">
-        <el-input @keyup.enter.native="handleFilter" placeholder="任务名称" v-model="listQuery.name">
-        </el-input>
-      </el-col>
-      <el-col :span="6">
-        <el-button type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
-        <el-button @click="handleCreate" type="primary" icon="el-icon-edit">新增</el-button>
-      </el-col>
-    </el-row>
+    <div class="common-querytable-wrapper">
+      <div class="queryform-wrapper">
+        <div class="outside">
+          <el-form class="basearea">
+            <ul class="pull-left">
+              <li>
+                <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate">
+                  新增
+                </el-button>
+              </li>
+            </ul>
+          </el-form>
+          <ul class="operation-wrapper pull-right">
+            <li>
+              <div class="common-search-wrapper" @keyup.enter="onSearch">
+                <input v-model="searchTxt" type="text" placeholder="请输入单位名称和姓名"/>
+                <a>
+                  <span @click="search" class="el-icon-search"></span>
+                </a>
+              </div>
+            </li>
+            <li>
+              <el-button size="mini" class="expand" type="text" @click='expand'>高级搜索<i
+                class="el-icon-arrow-down"></i></el-button>
+            </li>
+          </ul>
+        </div>
+        <div class="expandarea" :class="{active:expandQuery}">
+          <el-form ref="form" :model="queryModel" size="mini" label-width="100px">
+            <el-row>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="填报单位：">
+                  <el-input v-model="queryModel.reportingUnit" placeholder="请输入"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="8">
+                <el-form-item label="姓名：">
+                  <el-input v-model="queryModel.name" placeholder="请输入"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="出生年月：">
+                  <el-date-picker type="date" placeholder="选择日期"
+                                  v-model="queryModel.birthday"
+                  ></el-date-picker>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="23" pull-right>
+                <el-form-item class="pull-right">
+                  <el-button type="primary" size="mini" icon="el-icon-search"
+                             @click="search">搜索
+                  </el-button>
+                  <el-button type="primary" size="mini" icon="el-icon-refresh"
+                             @click="reset">重置
+                  </el-button>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+        </div>
+      </div>
+    </div>
     <el-row>
       <el-form label-position="top" label-width="80px">
         <el-form-item label="审核版本">
@@ -26,11 +91,30 @@
       <el-table-column label="No" type="index" width="50" align="center" fixed></el-table-column>
       <el-table-column label="ID" align="center" prop="id"></el-table-column>
       <el-table-column label="名称" align="center" prop="name"></el-table-column>
-      <el-table-column label="是否可用" align="center" prop="name"></el-table-column>
+      <el-table-column align="center" label="Android可用性" prop="available">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.androidEnable"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            disabled>
+          </el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="iOS可用性" prop="available">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.iosEnable"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            disabled>
+          </el-switch>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="availabilityFlag=true">设置可用性</el-button>
-          <el-button type="primary" size="mini" @click="editFlag=true">编辑</el-button>
+          <el-button type="primary" size="mini" @click="editAvailability(scope)">设置可用性</el-button>
+          <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
@@ -43,39 +127,34 @@
       </el-pagination>
     </div>
     <!-- 弹框 -->
-    <el-dialog title="设置可用性" :visible.sync="availabilityFlag" width="850px">
+    <el-dialog title="编辑" :visible.sync="dialogFormVisible" width="850px">
       <el-row type="flex" justify="center">
         <el-col :span="16">
           <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="140px">
-            <el-form-item label="ID" prop="id">
-              <el-input v-model="formData.moduleId"></el-input>
+            <el-form-item label="名称" prop="name">
+              <el-input v-model="formData.name"></el-input>
             </el-form-item>
-            <el-form-item label="类型" prop="type">
-              <el-input v-model="formData.type"></el-input>
-            </el-form-item>
-            <el-form-item label="iosEnable" prop="iosEnable">
+            <el-form-item label="iOS可用性" prop="iosEnable">
               <el-switch
                 v-model="formData.iosEnable"
                 active-color="#13ce66"
                 inactive-color="#ff4949">
               </el-switch>
             </el-form-item>
-            <el-form-item label="androidEnable" prop="androidEnable">
+            <el-form-item label="Android可用性" prop="androidEnable">
               <el-switch
                 v-model="formData.androidEnable"
                 active-color="#13ce66"
                 inactive-color="#ff4949">
               </el-switch>
             </el-form-item>
-            <el-form-item label="版本号" prop="version">
-              <el-input v-model="formData.version"></el-input>
-            </el-form-item>
           </el-form>
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="availabilityFlag = false">{{$t('table.cancel')}}</el-button>
-        <el-button type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
+        <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
+        <el-button v-if="dialogStatus==='create'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
+        <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
   </el-row>
@@ -92,13 +171,13 @@
     },
     data() {
       return {
-        createFeatureRequest: 'meta-service/1.0.0/feature',
+        editFeatureMetadata: 'meta-service/1.0.0/feature/',
         featureListRequest: 'meta-service/1.0.0/feature',
         featureAvailabilityRequest: 'meta-service/1.0.0/availability',
         versionListRequest: 'meta-service/1.0.0/availability/versionList/',
         versionControlRequest: 'meta-service/1.0.0/versionControl/',
 
-        availabilityFlag: false,
+        dialogFormVisible: false,
         editFlag: true,
         value2: '',
         value1: '',
@@ -122,6 +201,8 @@
         formData: {
           id: '',
           name: '',
+          iosEnable:false,
+          androidEnable:false
         },
         dialogStatus: '',
         textMap: {
@@ -158,7 +239,17 @@
           folderName: 'icon'
         },
         iosVersionListData: [],
-        androidVersionListData: []
+        androidVersionListData: [],
+        searchTxt: '',
+        expandQuery: '',
+        queryModel: {
+          "reportingUnit": '',
+          "platformId": '',
+          "status": '',
+          "name": '',
+          "gender": '',
+          "birthday": '',
+        },
       }
     },
     filters: {
@@ -217,12 +308,16 @@
         }
       },
       handleCreate() {
-        this.resetTemp();
+        // this.resetTemp();
         this.dialogStatus = 'create';
-        this.availabilityFlag = true;
-        this.$nextTick(() => {
-          this.$refs['formData'].clearValidate()
-        })
+        this.dialogFormVisible = true;
+        if(this.$refs.formData!==undefined){
+          this.$refs.formData.resetFields();
+          this.$nextTick(() => {
+            this.$refs['formData'].clearValidate()
+          })
+        }
+
       },
       createData() {
         const formData = this.formData;
@@ -231,24 +326,32 @@
 
         this.$refs['formData'].validate((valid) => {
           if (valid) {
-            this.$refs['formData'].validate((valid) => {
-              this.$http.post(this.$baseUrl + this.createFeatureRequest, {
-                name: formData.name,
-              }).then((response) => {
-                console.log(response)
-                this.availabilityFlag = false;
-                this.$message.success('信息创建成功');
-                this.getTableData();
-              })
-            });
+            this.$http.post(this.$baseUrl + this.editFeatureMetadata, {
+              name: formData.name,
+              id:'',
+              iosEnable:formData.iosEnable,
+              androidEnable:formData.androidEnable,
+            }, {
+              headers: {
+                'Authorization': 'Bearer ' + this.$store.state.user.token
+              }
+            }).then((response) => {
+              console.log(response)
+              this.dialogFormVisible = false;
+              this.$message.success('信息创建成功');
+              this.getTableData();
+            }).catch(error=>{
+              this.$message.error(error.response.data)
+            })
           }
         })
       },
       handleUpdate(scope) {
-        console.log(scope)
         this.formData = Object.assign({}, scope.row); // copy obj
+        console.log(this.formData)
+
         this.dialogStatus = 'update';
-        this.availabilityFlag = true;
+        this.dialogFormVisible = true;
         this.$nextTick(() => {
           this.$refs['formData'].clearValidate()
         })
@@ -256,48 +359,36 @@
       updateData() {
         const formData = this.formData;
         this.$refs['formData'].validate((valid) => {
-          this.$http.post(this.$baseUrl + `meta-service/1.0.0/buildings/${formData.id}`, {
-            "name": formData.name,
-            "label": formData.label,
-            "available": formData.available,
-            "actionType": formData.actionType,
-            "actionParam": formData.actionParam,
-            "icon": formData.icon
+          this.$http.post(this.$baseUrl + this.editFeatureMetadata, {
+            name: formData.name,
+            id: formData.id,
+            iosEnable:formData.iosEnable,
+            androidEnable:formData.androidEnable,
+          }, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.user.token
+            }
           }).then((response) => {
             console.log(response)
-            this.availabilityFlag = false;
+            this.dialogFormVisible = false;
             this.$message.success('信息修改成功');
             this.getTableData();
           })
-
-          // updateMetaDataBuildListRequest({
-          //   id: formData.id,
-          // }, {
-          //   "name": formData.name,
-          //   "label": formData.label,
-          //   "available": formData.available,
-          //   "actionType": formData.actionType,
-          //   "actionParam": formData.actionParam,
-          //   "icon": formData.actionParam
-          // }).then(response => {
-          //   console.log(response)
-          //   this.list = response;
-          //   this.total = response.totalElements;
-          //   this.listLoading = false
-          // })
         });
       },
       handleDelete(scope) {
-
         this.$confirm('确认删除?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-
-          this.$http.delete(this.$baseUrl + `meta-service/1.0.0/buildings/${scope.row.id}`).then((response) => {
+          this.$http.delete(this.$baseUrl + `meta-service/1.0.0/feature/${scope.row.id}`, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.user.token
+            }
+          }).then((response) => {
             console.log(response)
-            this.availabilityFlag = false;
+            this.dialogFormVisible = false;
             this.$message.success('删除成功');
             this.getTableData();
           });
@@ -371,7 +462,7 @@
         this.loading = true;
       },
       editAvailability() {
-        this.availabilityFlag = true;
+        this.dialogFormVisible = true;
       },
       handleAddIosList(data, type) {
         console.log(data)
@@ -387,8 +478,8 @@
           console.log(response)
         })
       },
-      handleDeleteIosList(data, index,type) {
-        this.$http.delete(this.$baseUrl + this.versionControlRequest+`${type}/${data}`, {
+      handleDeleteIosList(data, index, type) {
+        this.$http.delete(this.$baseUrl + this.versionControlRequest + `${type}/${data}`, {
           headers: {
             'Authorization': 'Bearer ' + this.$store.state.user.token
           }
@@ -396,6 +487,20 @@
           console.log(response)
         })
       },
+      handleAndroidListChange(data) {
+
+      },
+      add() {
+
+      },
+      expand() {
+        this.expandQuery = !this.expandQuery;
+      },
+      search() {
+
+      },
+      reset() {
+      }
     }
   }
 </script>

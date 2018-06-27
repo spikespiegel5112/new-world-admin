@@ -75,17 +75,6 @@
         </div>
       </div>
     </div>
-    <!--<el-row class="common-querytable-wrapper" :gutter="20">-->
-      <!--<el-col :span="6">-->
-        <!--<el-input @keyup.enter.native="handleFilter" placeholder="任务名称" v-model="listQuery.name">-->
-        <!--</el-input>-->
-      <!--</el-col>-->
-      <!--<el-col :span="6">-->
-        <!--<el-button type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>-->
-        <!--<el-button @click="handleCreate" type="primary" icon="el-icon-edit">新增</el-button>-->
-      <!--</el-col>-->
-    <!--</el-row>-->
-
     <el-row>
       <el-form label-position="top" label-width="80px">
         <el-form-item label="审核版本">
@@ -187,6 +176,20 @@
             <el-form-item label="actionParam" prop="name">
               <el-input v-model="formData.actionParam"></el-input>
             </el-form-item>
+            <el-form-item label="iOS可用性" prop="iosEnable">
+              <el-switch
+                v-model="formData.iosEnable"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="Android可用性" prop="androidEnable">
+              <el-switch
+                v-model="formData.androidEnable"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
           </el-form>
         </el-col>
       </el-row>
@@ -238,6 +241,7 @@
     },
     data() {
       return {
+        editBuildingMetadata: 'meta-service/1.0.0/buildings/',
         editAvailabilityRequest: 'meta-service/1.0.0/availability/',
         versionListRequest: 'meta-service/1.0.0/availability/versionList/',
         versionControlRequest: 'meta-service/1.0.0/versionControl/',
@@ -270,7 +274,9 @@
           "available": false,
           "actionType": "",
           "actionParam": "",
-          "icon": ""
+          "icon": "",
+          iosEnable:false,
+          androidEnable:false
         },
         dialogFormVisible: false,
         dialogStatus: '',
@@ -296,8 +302,8 @@
           version: [{required: true, message: '请输入版本号', trigger: 'change'}],
           actionType: [{required: true, message: '请选择反映类型', trigger: 'change'}],
           actionParam: [{required: true, message: '请输入actionParam', trigger: 'change'}],
-          iosAvailability: [{required: true, message: '请输入actionParam', trigger: 'change'}],
-          androidAvailability: [{required: true, message: '请输入actionParam', trigger: 'change'}]
+          iosEnable: [{required: true, message: '请输入actionParam', trigger: 'change'}],
+          androidEnable: [{required: true, message: '请输入actionParam', trigger: 'change'}]
         },
         downloadLoading: false,
         pickerOptions0: {
@@ -319,8 +325,8 @@
         },
         iosVersionListData: [],
         androidVersionListData: [],
-        searchTxt:'',
-        expandQuery:'',
+        searchTxt: '',
+        expandQuery: '',
         queryModel: {
           "reportingUnit": '',
           "platformId": '',
@@ -383,16 +389,23 @@
           "available": false,
           "actionType": "",
           "actionParam": "",
-          "icon": ""
+          "icon": "",
+          iosEnable:false,
+          androidEnable:false
         }
       },
       handleCreate() {
-        this.resetTemp();
+        // this.resetTemp();
         this.dialogStatus = 'create';
         this.dialogFormVisible = true;
-        this.$nextTick(() => {
-          this.$refs['formData'].clearValidate()
-        })
+        if (this.$refs.formData !== undefined) {
+          this.$refs.formData.resetFields();
+          this.$nextTick(() => {
+            this.$refs['formData'].clearValidate()
+          })
+        }
+
+
       },
       createData() {
         const formData = this.formData;
@@ -402,14 +415,20 @@
         this.$refs['formData'].validate((valid) => {
           if (valid) {
             this.$refs['formData'].validate((valid) => {
-              this.$http.post(this.$baseUrl + `meta-service/1.0.0/buildings`, {
+              this.$http.post(this.$baseUrl + this.editBuildingMetadata, {
                 id: '',
                 "name": formData.name,
                 "label": formData.label,
                 "available": formData.available,
                 "actionType": formData.actionType,
                 "actionParam": formData.actionParam,
-                "icon": formData.icon
+                "icon": formData.icon,
+                iosEnable:formData.iosEnable,
+                androidEnable:formData.androidEnable
+              }, {
+                headers: {
+                  'Authorization': 'Bearer ' + this.$store.state.user.token
+                }
               }).then((response) => {
                 console.log(response)
                 this.dialogFormVisible = false;
@@ -432,46 +451,39 @@
       updateData() {
         const formData = this.formData;
         this.$refs['formData'].validate((valid) => {
-          this.$http.post(this.$baseUrl + `meta-service/1.0.0/buildings/${formData.id}`, {
+          this.$http.post(this.$baseUrl + this.editBuildingMetadata, {
+            id: formData.id,
             "name": formData.name,
             "label": formData.label,
             "available": formData.available,
             "actionType": formData.actionType,
             "actionParam": formData.actionParam,
-            "icon": formData.icon
+            "icon": formData.icon,
+            iosEnable: formData.iosEnable,
+            androidEnable: formData.androidEnable
+          }, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.user.token
+            }
           }).then((response) => {
             console.log(response)
             this.dialogFormVisible = false;
             this.$message.success('信息修改成功');
             this.getTableData();
           })
-
-          // updateMetaDataBuildListRequest({
-          //   id: formData.id,
-          // }, {
-          //   "name": formData.name,
-          //   "label": formData.label,
-          //   "available": formData.available,
-          //   "actionType": formData.actionType,
-          //   "actionParam": formData.actionParam,
-          //   "icon": formData.actionParam
-          // }).then(response => {
-          //   console.log(response)
-          //   this.list = response;
-          //   this.total = response.totalElements;
-          //   this.listLoading = false
-          // })
         });
       },
       handleDelete(scope) {
-
         this.$confirm('确认删除?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-
-          this.$http.delete(this.$baseUrl + `meta-service/1.0.0/buildings/${scope.row.id}`).then((response) => {
+          this.$http.delete(this.$baseUrl + `meta-service/1.0.0/buildings/${scope.row.id}`, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.user.token
+            }
+          }).then((response) => {
             console.log(response)
             this.dialogFormVisible = false;
             this.$message.success('删除成功');
@@ -581,7 +593,7 @@
         console.log(type)
         this.$http.post(this.$baseUrl + this.versionControlRequest, {
           deviceType: type,
-          version: data[data.length-1]
+          version: data[data.length - 1]
         }, {
           headers: {
             'Authorization': 'Bearer ' + this.$store.state.user.token
@@ -590,8 +602,8 @@
           console.log(response)
         })
       },
-      handleDeleteIosList(data, index,type) {
-        this.$http.delete(this.$baseUrl + this.versionControlRequest+`${type}/${data}`, {
+      handleDeleteIosList(data, index, type) {
+        this.$http.delete(this.$baseUrl + this.versionControlRequest + `${type}/${data}`, {
           headers: {
             'Authorization': 'Bearer ' + this.$store.state.user.token
           }
@@ -602,16 +614,17 @@
       handleAndroidListChange(data) {
 
       },
-      add(){
+      add() {
 
       },
       expand() {
         this.expandQuery = !this.expandQuery;
       },
-      search(){
+      search() {
 
       },
-      reset(){}
+      reset() {
+      }
     }
   }
 </script>
