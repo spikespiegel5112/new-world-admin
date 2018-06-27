@@ -89,7 +89,6 @@
 
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
       <el-table-column label="No" type="index" width="50" align="center" fixed></el-table-column>
-      <el-table-column label="ID" align="center" prop="id"></el-table-column>
       <el-table-column label="名称" align="center" prop="name"></el-table-column>
       <el-table-column align="center" label="Android可用性" prop="available">
         <template slot-scope="scope">
@@ -113,7 +112,7 @@
       </el-table-column>
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="editAvailability(scope)">设置可用性</el-button>
+          <!--<el-button type="primary" size="mini" @click="editAvailability(scope)">设置可用性</el-button>-->
           <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
         </template>
@@ -279,7 +278,9 @@
           this.list = response.data;
           // this.total = response.totalElements;
           this.listLoading = false
-        });
+        }).catch(error=>{
+          this.$message.error(error.response.data)
+        })
       },
       getControllableVersionList() {
         this.$http.get(this.$baseUrl + this.versionListRequest).then(response => {
@@ -287,6 +288,8 @@
           response = response.data;
           this.androidVersionListData = response.androidList;
           this.iosVersionListData = response.iosList;
+        }).catch(error=>{
+          this.$message.error(error.response.data)
         })
       },
       handleFilter() {
@@ -373,6 +376,8 @@
             this.dialogFormVisible = false;
             this.$message.success('信息修改成功');
             this.getTableData();
+          }).catch(error=>{
+            this.$message.error(error.response.data)
           })
         });
       },
@@ -391,13 +396,13 @@
             this.dialogFormVisible = false;
             this.$message.success('删除成功');
             this.getTableData();
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
           });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
+        })
       },
       changeUpload(file) {
         console.log(file)
@@ -432,6 +437,8 @@
                 this.componentModelData.uploaded = '';
                 this.$message.warning('图片删除失败')
               }
+            }).catch(error=>{
+              this.$message.error(error.response.data)
             })
           })
         }
@@ -476,6 +483,9 @@
           }
         }).then(response => {
           console.log(response)
+          this.$message.success(response.response.data)
+        }).catch(error=>{
+          this.$message.error(error.response.data)
         })
       },
       handleDeleteIosList(data, index, type) {
