@@ -1,20 +1,99 @@
 <template>
   <el-row class="app-container">
-    <el-row class="common-filter-wrapper" :gutter="20">
-      <el-col :span="6">
-        <el-input @keyup.enter.native="handleFilter" placeholder="任务名称" v-model="listQuery.name">
-        </el-input>
-      </el-col>
-      <el-col :span="6">
-        <el-button type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
-        <el-button @click="handleCreate" type="primary" icon="el-icon-edit">新增</el-button>
-      </el-col>
-    </el-row>
+    <div class="common-querytable-wrapper">
+      <div class="queryform-wrapper">
+        <div class="outside">
+          <el-form class="basearea">
+            <ul class="pull-left">
+              <li>
+                <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate">
+                  新增
+                </el-button>
+              </li>
+            </ul>
+          </el-form>
+          <ul class="operation-wrapper pull-right">
+            <li>
+              <div class="common-search-wrapper" @keyup.enter="onSearch">
+                <input v-model="searchTxt" type="text" placeholder="请输入单位名称和姓名"/>
+                <a>
+                  <span @click="search" class="el-icon-search"></span>
+                </a>
+              </div>
+            </li>
+            <li>
+              <el-button size="mini" class="expand" type="text" @click='expand'>高级搜索<i
+                class="el-icon-arrow-down"></i></el-button>
+            </li>
+          </ul>
+        </div>
+        <div class="expandarea" :class="{active:expandQuery}">
+          <el-form ref="form" :model="queryModel" size="mini" label-width="100px">
+            <el-row>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="填报单位：">
+                  <el-input v-model="queryModel.reportingUnit" placeholder="请输入"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="8">
+                <el-form-item label="姓名：">
+                  <el-input v-model="queryModel.name" placeholder="请输入"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="出生年月：">
+                  <el-date-picker type="date" placeholder="选择日期"
+                                  v-model="queryModel.birthday"
+                  ></el-date-picker>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="23" pull-right>
+                <el-form-item class="pull-right">
+                  <el-button type="primary" size="mini" icon="el-icon-search"
+                             @click="search">搜索
+                  </el-button>
+                  <el-button type="primary" size="mini" icon="el-icon-refresh"
+                             @click="reset">重置
+                  </el-button>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+        </div>
+      </div>
+    </div>
+    <!--<el-row class="common-querytable-wrapper" :gutter="20">-->
+      <!--<el-col :span="6">-->
+        <!--<el-input @keyup.enter.native="handleFilter" placeholder="任务名称" v-model="listQuery.name">-->
+        <!--</el-input>-->
+      <!--</el-col>-->
+      <!--<el-col :span="6">-->
+        <!--<el-button type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>-->
+        <!--<el-button @click="handleCreate" type="primary" icon="el-icon-edit">新增</el-button>-->
+      <!--</el-col>-->
+    <!--</el-row>-->
+
     <el-row>
       <el-form label-position="top" label-width="80px">
         <el-form-item label="审核版本">
-          <CommonTag title="iOS" :tagData="iosVersionListData" buttonText="添加版本" @add="handleAddIosList" @delete="handleDeleteIosList"/>
-          <CommonTag title="Android" :tagData="androidVersionListData" buttonText="添加版本" @change="handleAndroidListChange"/>
+          <CommonTag title="iOS" :tagData="iosVersionListData" buttonText="添加版本" :metaData="['ios']"
+                     @add="handleAddIosList" @delete="handleDeleteIosList"/>
+          <CommonTag title="Android" :tagData="androidVersionListData" buttonText="添加版本"
+                     :metaData="['android']"
+                     @add="handleAddIosList" @delete="handleDeleteIosList"/>
         </el-form-item>
       </el-form>
     </el-row>
@@ -32,12 +111,22 @@
       </el-table-column>
       <el-table-column align="center" label="Android可用性" prop="available">
         <template slot-scope="scope">
-          {{scope.row.androidEnable?'是':'否'}}
+          <el-switch
+            v-model="scope.row.androidEnable"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            disabled>
+          </el-switch>
         </template>
       </el-table-column>
       <el-table-column align="center" label="iOS可用性" prop="available">
         <template slot-scope="scope">
-          {{scope.row.androidEnable?'是':'否'}}
+          <el-switch
+            v-model="scope.row.iosEnable"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            disabled>
+          </el-switch>
         </template>
       </el-table-column>
       <el-table-column align="center" label="点击反映类型" prop="actionType"></el-table-column>
@@ -62,7 +151,7 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="850px">
       <el-row type="flex" justify="center">
         <el-col :span="16">
-          <el-form :rules="rules" ref="formData" :model="formData" label-position="left" label-width="140px">
+          <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="140px">
             <el-form-item label="显示名称" prop="label">
               <el-input v-model="formData.label"></el-input>
             </el-form-item>
@@ -111,7 +200,7 @@
     <el-dialog title="设置可用性" :visible.sync="availabilityFlag" width="850px">
       <el-row type="flex" justify="center">
         <el-col :span="16">
-          <el-form :rules="rules" ref="availabilityFormData" :model="availabilityFormData" label-position="left"
+          <el-form :rules="rules" ref="availabilityFormData" :model="availabilityFormData" label-position="right"
                    label-width="140px">
             <el-form-item label="iOS可用性" prop="iosAvailability">
               <el-switch
@@ -149,8 +238,10 @@
     },
     data() {
       return {
-        editAvailabilityRequest: 'meta-service/1.0.0/availability',
-        availabilityVersionListRequest: 'meta-service/1.0.0/availability/versionList',
+        editAvailabilityRequest: 'meta-service/1.0.0/availability/',
+        versionListRequest: 'meta-service/1.0.0/availability/versionList/',
+        versionControlRequest: 'meta-service/1.0.0/versionControl/',
+
         value2: '',
         value1: '',
         tableKey: 0,
@@ -227,7 +318,17 @@
           folderName: 'icon'
         },
         iosVersionListData: [],
-        androidVersionListData: []
+        androidVersionListData: [],
+        searchTxt:'',
+        expandQuery:'',
+        queryModel: {
+          "reportingUnit": '',
+          "platformId": '',
+          "status": '',
+          "name": '',
+          "gender": '',
+          "birthday": '',
+        },
       }
     },
     filters: {
@@ -242,19 +343,18 @@
     },
     created() {
       this.getControllableVersionList();
-      this.fetchData()
+      this.getTableData()
     },
     methods: {
       getControllableVersionList() {
-        this.$http.get(this.$baseUrl + this.availabilityVersionListRequest).then(response => {
+        this.$http.get(this.$baseUrl + this.versionListRequest).then(response => {
           console.log(response)
           response = response.data;
           this.androidVersionListData = response.androidList;
           this.iosVersionListData = response.iosList;
-
         })
       },
-      fetchData() {
+      getTableData() {
         this.listLoading = true;
         getMetaDataBuildListRequest(this.listQuery).then(response => {
           console.log(response)
@@ -265,15 +365,15 @@
       },
       handleFilter() {
         this.listQuery.page = 1;
-        this.fetchData()
+        this.getTableData()
       },
       handleSizeChange(val) {
         this.listQuery.limit = val;
-        this.fetchData()
+        this.getTableData()
       },
       handleCurrentChange(val) {
         this.listQuery.page = val;
-        this.fetchData()
+        this.getTableData()
       },
       resetTemp() {
         this.formData = {
@@ -314,7 +414,7 @@
                 console.log(response)
                 this.dialogFormVisible = false;
                 this.$message.success('信息创建成功');
-                this.fetchData();
+                this.getTableData();
               })
             });
           }
@@ -343,7 +443,7 @@
             console.log(response)
             this.dialogFormVisible = false;
             this.$message.success('信息修改成功');
-            this.fetchData();
+            this.getTableData();
           })
 
           // updateMetaDataBuildListRequest({
@@ -375,7 +475,7 @@
             console.log(response)
             this.dialogFormVisible = false;
             this.$message.success('删除成功');
-            this.fetchData();
+            this.getTableData();
           });
         }).catch(() => {
           this.$message({
@@ -476,15 +576,42 @@
           }
         });
       },
-      handleAddIosList(data) {
+      handleAddIosList(data, type) {
         console.log(data)
+        console.log(type)
+        this.$http.post(this.$baseUrl + this.versionControlRequest, {
+          deviceType: type,
+          version: data[data.length-1]
+        }, {
+          headers: {
+            'Authorization': 'Bearer ' + this.$store.state.user.token
+          }
+        }).then(response => {
+          console.log(response)
+        })
       },
-      handleDeleteIosList(data){
+      handleDeleteIosList(data, index,type) {
+        this.$http.delete(this.$baseUrl + this.versionControlRequest+`${type}/${data}`, {
+          headers: {
+            'Authorization': 'Bearer ' + this.$store.state.user.token
+          }
+        }).then(response => {
+          console.log(response)
+        })
+      },
+      handleAndroidListChange(data) {
 
       },
-      handleAndroidListChange(data){
+      add(){
 
-      }
+      },
+      expand() {
+        this.expandQuery = !this.expandQuery;
+      },
+      search(){
+
+      },
+      reset(){}
     }
   }
 </script>

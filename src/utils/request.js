@@ -1,6 +1,6 @@
 import axios from 'axios'
 // import { MessageBox } from 'element-ui'
-import store from '../store'
+import store from '../store/store'
 import { getToken } from '@/utils/auth'
 
 // 创建axios实例

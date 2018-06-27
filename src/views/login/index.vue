@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <el-form class="login-form" autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left">
+    <el-form class="login-form" autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="right">
       <h3 class="title">趣谷</h3>
       <el-form-item prop="username">
         <span class="svg-container svg-container_login">

@@ -11,10 +11,28 @@ import 'element-ui/lib/theme-chalk/index.css'
 import '@/styles/index.scss' // global css
 
 import App from './App'
-import router from './router'
-import store from './store'
+import router from './router/router'
+import {
+  menu,
+  layout,
+  content,
+  header,
+  sider,
+  row,
+  col,
+  form,
+  input,
+  select,
+  icon,
+  datePicker,
+  morePanel
+} from 'vue-beauty'
+import 'vue-beauty/package/style/vue-beauty.min.css'
 
+import store from './store/store'
 import i18n from './lang' // Internationalization
+
+import util from './utils/util';
 import '@/icons' // icon
 import '@/permission' // permission control
 
@@ -22,6 +40,22 @@ Vue.use(ElementUI, {
   size: 'medium', // set element-ui default size
   i18n: (key, value) => i18n.t(key, value)
 });
+// Vue.use(menu);
+Vue.use(layout);
+Vue.use(row);
+// Vue.use(col);
+// Vue.use(form);
+// Vue.use(form.item);
+// Vue.use(input);
+// Vue.use(select);
+// Vue.use(content);
+// Vue.use(header);
+Vue.use(sider);
+Vue.use(icon);
+Vue.use(datePicker);
+Vue.use(morePanel);
+
+Vue.use(util);
 
 // Vue.use(ElementUI, { locale })
 

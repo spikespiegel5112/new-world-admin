@@ -1,19 +1,87 @@
 <template>
   <div class="app-container">
-  	<div class="filter-container">
-      <el-input @keyup.enter.native="handleFilter" style="width: 200px;" >
-      </el-input>
-      <el-button type="primary" v-waves icon="el-icon-search" @click="handleFilter">查询</el-button>
-      <el-button style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-edit">新增</el-button>
-    </div>
+    <div class="common-querytable-wrapper">
+      <div class="queryform-wrapper">
+        <div class="outside">
+          <el-form class="basearea">
+            <ul class="pull-left">
+              <li>
+                <el-button size="mini" type="primary" icon="el-icon-plus" @click="add">
+                  新增
+                </el-button>
+              </li>
+            </ul>
+          </el-form>
+          <ul class="operation-wrapper pull-right">
+            <li>
+              <div class="common-search-wrapper" @keyup.enter="onSearch">
+                <input v-model="searchTxt" type="text" placeholder="请输入单位名称和姓名"/>
+                <a>
+                  <span @click="onSearch" class="el-icon-search"></span>
+                </a>
+              </div>
+            </li>
+            <li>
+              <el-button size="mini" class="expand" type="text" @click='expand'>高级搜索<i
+                class="el-icon-arrow-down"></i></el-button>
+            </li>
+          </ul>
+        </div>
+        <div class="expandarea" :class="{active:expandQuery}">
+          <el-form ref="form" :model="queryModel" size="mini" label-width="100px">
+            <el-row>
+              <el-col :span="8">
 
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="填报单位：">
+                  <el-input v-model="queryModel.reportingUnit" placeholder="请输入"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="8">
+                <el-form-item label="姓名：">
+                  <el-input v-model="queryModel.name" placeholder="请输入"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="出生年月：">
+                  <el-date-picker type="date" placeholder="选择日期"
+                                  v-model="queryModel.birthday"
+                  ></el-date-picker>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="23" pull-right>
+                <el-form-item class="pull-right">
+                  <el-button type="primary" size="mini" icon="el-icon-search"
+                             @click="search">搜索
+                  </el-button>
+                  <el-button type="primary" size="mini" icon="el-icon-refresh"
+                             @click="reset">重置
+                  </el-button>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+        </div>
+      </div>
+    </div>
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label='ID' width="40">
         <template slot-scope="scope">
           {{scope.row.id}}
         </template>
       </el-table-column>
-      <el-table-column label="商品编号" align="center" width="100">
+      <el-table-column label="商品编号" align="center" width="120">
         <template slot-scope="scope">
           {{scope.row.goodsNumber}}
         </template>
@@ -38,12 +106,12 @@
           {{scope.row.discountPrice}}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="优惠券链接" width="100">
+      <el-table-column align="center" label="优惠券链接" width="150">
         <template slot-scope="scope">
           {{scope.row.coupons}}
         </template>
       </el-table-column>
-      <el-table-column label="详情" width="200">
+      <el-table-column label="详情">
         <template slot-scope="scope">
           {{scope.row.details}}
         </template>
@@ -59,7 +127,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="操作" >
+      <el-table-column align="center" label="操作" width="170">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
           <el-button v-if="scope.row.isShow=='0'" size="mini" type="success" @click="handleModifyStatus(scope.row,1)">上架
@@ -72,13 +140,13 @@
       </el-table-column>
     </el-table>
     <!-- 分页 -->
-    <div class="pagination-container">
+    <div class="common-pagination-wrapper">
       <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
  <!-- 弹框 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="70px" style='width: 400px; margin-left:50px;'>
+      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="right" label-width="120px" style='width: 400px; margin-left:50px;'>
 
         <el-form-item label="商品编号" prop="goodsNumber">
           <el-input v-model="temp.goodsNumber"></el-input>
@@ -119,7 +187,7 @@
 </template>
 
 <script>
-import { getDiscountGoodsList } from '@/api/betterdiscount'
+import { getDiscountGoodsList } from '@/api/betterDiscount'
 
 // const calendarTypeOptions = [
 //   { key: '主编推荐', value: '1' },
@@ -165,6 +233,7 @@ export default {
         iconPath: '',
         packageName: ''
       },
+      searchTxt:'',
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
@@ -190,7 +259,16 @@ export default {
         disabledDate: (time) => {
           return time.getTime() < this.value1
         }
-      }
+      },
+      expandQuery: false,
+      queryModel: {
+        "reportingUnit": '',
+        "platformId": '',
+        "status": '',
+        "name": '',
+        "gender": '',
+        "birthday": '',
+      },
     }
   },
   filters: {
@@ -204,12 +282,13 @@ export default {
     }
   },
   created() {
-    this.fetchData()
+    this.getTableData()
   },
   methods: {
-    fetchData() {
+    getTableData() {
       this.listLoading = true
       getDiscountGoodsList(this.listQuery).then(response => {
+        console.log(response)
         this.list = response.content
         this.total = response.totalElements
         this.listLoading = false
@@ -217,15 +296,15 @@ export default {
     },
     handleFilter() {
       this.listQuery.page = 1
-      this.fetchData()
+      this.getTableData()
     },
     handleSizeChange(val) {
       this.listQuery.limit = val
-      this.fetchData()
+      this.getTableData()
     },
     handleCurrentChange(val) {
       this.listQuery.page = val
-      this.fetchData()
+      this.getTableData()
     },
     handleModifyStatus(row, status) {
       changeStatus(row.id, status).then(response => {
@@ -286,7 +365,17 @@ export default {
     },
     changeUpload(file) {
       console.log(file)
-    }
+    },
+    add(){
+
+    },
+    expand() {
+      this.expandQuery = !this.expandQuery;
+    },
+    search(){
+
+    },
+    reset(){}
   }
 }
 </script>

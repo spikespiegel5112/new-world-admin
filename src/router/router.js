@@ -21,22 +21,21 @@ import Layout from '../views/layout/Layout'
     icon: 'svg-name'             the icon show in the sidebar,
   }
  **/
-export const constantRouterMap = [
-  {
-    path: '/login', component: () => import('@/views/login/index'), hidden: true},
-  {path: '/404', component: () => import('@/views/404'), hidden: true},
-
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    name: 'Dashboard',
-    hidden: true,
-    children: [{
-      path: 'dashboard',
-      component: () => import('@/views/dashboard/index')
-    }]
-  },
+export const constantRouterMap = [{
+  path: '/login', component: () => import('@/views/login/index'), hidden: true
+}, {
+  path: '/404', component: () => import('@/views/404'), hidden: true
+}, {
+  path: '/',
+  component: Layout,
+  redirect: '/dashboard',
+  name: 'Dashboard',
+  hidden: true,
+  children: [{
+    path: 'dashboard',
+    component: () => import('@/views/dashboard/index')
+  }]
+},
 
   // {
   //   path: '/example',
@@ -78,7 +77,8 @@ export const constantRouterMap = [
     redirect: '/task/tryplay',
     name: '任务墙',
     meta: {
-      title: '任务墙', icon: 'table'},
+      title: '任务墙', icon: 'table'
+    },
     children: [
       {
         path: 'tryplay/index',
@@ -100,8 +100,7 @@ export const constantRouterMap = [
         meta: {title: '注册赚钱', icon: 'list'}
       }
     ]
-  },
-  {
+  }, {
     path: '/metadata',
     name: 'metadata',
     component: Layout,
@@ -120,8 +119,7 @@ export const constantRouterMap = [
       component: () => import('@/views/metaData/metaDataFeature'),
       meta: {title: 'Feature元数据', icon: 'list'},
     }]
-  },
-  {
+  }, {
     path: '/advertising',
     component: Layout,
     redirect: '/advertising/list',
@@ -130,40 +128,43 @@ export const constantRouterMap = [
       title: '广告',
       icon: 'table'
     },
-    children: [
-      {
-        path: 'create',
-        name: 'createAdvertising',
-        component: () => import('@/views/advertising/create'),
-        meta: {title: '添加广告', icon: 'edit'}
-      },
+    children: [{
+      path: 'create',
+      name: 'createAdvertising',
+      component: () => import('@/views/advertising/create'),
+      meta: {title: '添加广告', icon: 'edit'}
+    },
       // { path: 'edit/:id(\\d+)', component: () => import('@/views/advertising/edit'), name: 'editAdvertising', meta: { title: '修改广告', noCache: true }, hidden: true },
       {
         path: 'list',
         name: 'advertisingList',
         component: () => import('@/views/advertising/list'),
         meta: {title: '广告列表', icon: 'list'}
-      }
-    ]
-  },
-
-  {
-    path: '/betterdiscount',
+      }]
+  }, {
+    path: '/betterDiscount',
     component: Layout,
     name: '好折扣',
     meta: {title: '好折扣', icon: 'table'},
-    children: [
-      {
-        path: 'betterdiscount/goodslist',
-        name: '好折扣商品列表',
-        component: () => import('@/views/betterdiscount/goodslist'),
-        meta: { title: '好折扣商品列表', icon: 'table' }
-      }
-    ]
-  },
-
-  {path: '*', redirect: '/404', hidden: true}
-]
+    redirect: {
+      name: 'metaDataBuilding',
+    },
+    children: [{
+      path: 'categorylist',
+      name: 'categoryList',
+      component: () => import('@/views/betterDiscount/categoryList'),
+      meta: {title: '分类列表', icon: 'table'}
+    }, {
+      path: 'productList',
+      name: 'productList',
+      component: () => import('@/views/betterDiscount/productList'),
+      meta: {title: '商品列表', icon: 'table'}
+    }]
+  }, {
+    path: '*',
+    redirect: '/404',
+    hidden: true
+  }];
 
 export default new Router({
   // mode: 'history', //后端支持可开

@@ -39,6 +39,13 @@
   export default {
     name: "CommonTag",
     props: {
+      metaData: {
+        type: Array,
+        default: function () {
+          return [];
+        },
+        required: false
+      },
       title: {
         type: String,
         default: '',
@@ -72,22 +79,24 @@
         }
       }
     },
-    created(){
+    created() {
       this.dynamicTags = this.tagData;
     },
     methods: {
       handleInputConfirm() {
+        let that = this;
         let inputValue = this.inputValue;
         if (inputValue) {
           this.dynamicTags.push(inputValue);
         }
         this.inputVisible = false;
         this.inputValue = '';
-        this.$emit('add', this.dynamicTags)
+        this.$emit('add', this.dynamicTags, ...that.metaData)
       },
       handleClose(tag) {
+        let that = this;
+        this.$emit('delete', tag, this.dynamicTags.indexOf(tag), ...that.metaData)
         this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
-        this.$emit('delete', this.dynamicTags)
       },
       showInput() {
         this.inputVisible = true;

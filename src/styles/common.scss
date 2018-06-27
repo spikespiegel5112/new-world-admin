@@ -1,4 +1,4 @@
-.common-filter-wrapper{
+.common-querytable-wrapper{
   padding: 20px 0;
 }
 .common-pagination-wrapper{
@@ -24,3 +24,68 @@
     padding-bottom: 0;
   }
 }
+.common-querytable-wrapper {
+  padding: 0;
+  width: 100%;
+  background: #fff;
+  font-size: 0;
+  border-bottom: 1px solid #ddd;
+  .queryform-wrapper {
+    display: inline-block;
+    width: 100%;
+    vertical-align: top;
+    .outside {
+      padding: 14px 0 14px 0;
+      overflow: hidden;
+    }
+    .inside {
+
+    }
+    .basearea {
+      display: block;
+      //margin: 10px 0 0 0;
+      width: 100%;
+      li {
+        vertical-align: middle;
+      }
+    }
+    .expandarea {
+      display: block;
+      //padding: 10px 0 0 0;
+      width: 100%;
+      overflow: hidden;
+      height: 0;
+      transition: all 0.3s;
+      &.active {
+        padding: 10px 0 0 0;
+        height: 150px;
+        transition: all 0.3s;
+        //margin-bottom: 15px;
+      }
+      li {
+        display: block;
+        margin: 5px 0;
+      }
+      .ant-row > div > .ant-row {
+        float: left;
+      }
+    }
+  }
+
+  .operation-wrapper {
+    display: inline-block;
+    //width: 240px;
+    vertical-align: top;
+  }
+  ul {
+    //text-align: center;
+    li {
+      display: inline-block;
+      padding: 0 4px;
+    }
+  }
+  .el-collapse-item__header {
+    height: 0 !important;
+  }
+}
+
