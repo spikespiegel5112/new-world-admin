@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
-    <div class="common-filter-wrapper">
+    <div class="common-querytable-wrapper">
       <el-input @keyup.enter.native="handleFilter" placeholder="任务名称" style="width: 200px;"
                 v-model="listQuery.keyword">
       </el-input>
       <el-button type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
-      <el-button style="margin-left: 10px;" @click="handleCreate" type="primary"
+      <el-button @click="handleCreate" type="primary"
                  icon="el-icon-edit">新增
       </el-button>
     </div>
@@ -94,7 +94,7 @@
     </div>
     <!-- 弹框 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="70px"
+      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="right" label-width="120px"
                style='width: 400px; margin-left:50px;'>
         <!-- <el-form-item :label="$t('table.type')" prop="type">
           <el-select v-model="temp.type" placeholder="Please select">
@@ -216,10 +216,10 @@
       }
     },
     created() {
-      this.fetchData()
+      this.getTableData()
     },
     methods: {
-      fetchData() {
+      getTableData() {
         this.listLoading = true
         getTryPlayList(this.listQuery).then(response => {
           this.list = response.content
@@ -229,15 +229,15 @@
       },
       handleFilter() {
         this.listQuery.page = 1
-        this.fetchData()
+        this.getTableData()
       },
       handleSizeChange(val) {
         this.listQuery.limit = val
-        this.fetchData()
+        this.getTableData()
       },
       handleCurrentChange(val) {
         this.listQuery.page = val
-        this.fetchData()
+        this.getTableData()
       },
       handleModifyStatus(row, status) {
         changeStatus(row.id, status).then(response => {

@@ -1,6 +1,6 @@
 <template>
   <el-row class="app-container">
-    <el-row class="common-filter-wrapper" :gutter="20">
+    <el-row class="common-querytable-wrapper" :gutter="20">
       <el-col :span="6">
         <el-input @keyup.enter.native="handleFilter" placeholder="任务名称" v-model="listQuery.name">
         </el-input>
@@ -13,10 +13,11 @@
     <el-row>
       <el-form label-position="top" label-width="80px">
         <el-form-item label="审核版本">
-          <CommonTag title="iOS" :tagData="iosControllableVersionListData" buttonText="添加版本"
-                     @change="handleIosListChange"/>
-          <CommonTag title="Android" :tagData="iosControllableVersionListData" buttonText="添加版本"
-                     @change="handleIosListChange"/>
+          <CommonTag title="iOS" :tagData="iosVersionListData" buttonText="添加版本" :metaData="['ios']"
+                     @add="handleAddIosList" @delete="handleDeleteIosList"/>
+          <CommonTag title="Android" :tagData="androidVersionListData" buttonText="添加版本"
+                     :metaData="['android']"
+                     @add="handleAddIosList" @delete="handleDeleteIosList"/>
         </el-form-item>
       </el-form>
     </el-row>
@@ -45,7 +46,7 @@
     <el-dialog title="设置可用性" :visible.sync="availabilityFlag" width="850px">
       <el-row type="flex" justify="center">
         <el-col :span="16">
-          <el-form :rules="rules" ref="formData" :model="formData" label-position="left" label-width="140px">
+          <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="140px">
             <el-form-item label="ID" prop="id">
               <el-input v-model="formData.moduleId"></el-input>
             </el-form-item>
@@ -94,6 +95,9 @@
         createFeatureRequest: 'meta-service/1.0.0/feature',
         featureListRequest: 'meta-service/1.0.0/feature',
         featureAvailabilityRequest: 'meta-service/1.0.0/availability',
+        versionListRequest: 'meta-service/1.0.0/availability/versionList/',
+        versionControlRequest: 'meta-service/1.0.0/versionControl/',
+
         availabilityFlag: false,
         editFlag: true,
         value2: '',
@@ -119,7 +123,6 @@
           id: '',
           name: '',
         },
-        availabilityFlag: false,
         dialogStatus: '',
         textMap: {
           update: 'Edit',
@@ -154,8 +157,8 @@
           bucketName: 'funyvalley',
           folderName: 'icon'
         },
-        iosControllableVersionListData: [1.1, 1.2]
-
+        iosVersionListData: [],
+        androidVersionListData: []
       }
     },
     filters: {
@@ -168,11 +171,12 @@
         return statusMap[status]
       }
     },
-    created() {
-      this.fetchData()
+    mounted() {
+      this.getTableData();
+      this.getControllableVersionList();
     },
     methods: {
-      fetchData() {
+      getTableData() {
         this.listLoading = true;
         this.$http.get(this.$baseUrl + this.featureListRequest, {
           params: {
@@ -186,17 +190,25 @@
           this.listLoading = false
         });
       },
+      getControllableVersionList() {
+        this.$http.get(this.$baseUrl + this.versionListRequest).then(response => {
+          console.log(response)
+          response = response.data;
+          this.androidVersionListData = response.androidList;
+          this.iosVersionListData = response.iosList;
+        })
+      },
       handleFilter() {
         this.listQuery.page = 1;
-        this.fetchData()
+        this.getTableData()
       },
       handleSizeChange(val) {
         this.listQuery.limit = val;
-        this.fetchData()
+        this.getTableData()
       },
       handleCurrentChange(val) {
         this.listQuery.page = val;
-        this.fetchData()
+        this.getTableData()
       },
       resetTemp() {
         this.formData = {
@@ -226,7 +238,7 @@
                 console.log(response)
                 this.availabilityFlag = false;
                 this.$message.success('信息创建成功');
-                this.fetchData();
+                this.getTableData();
               })
             });
           }
@@ -255,7 +267,7 @@
             console.log(response)
             this.availabilityFlag = false;
             this.$message.success('信息修改成功');
-            this.fetchData();
+            this.getTableData();
           })
 
           // updateMetaDataBuildListRequest({
@@ -287,7 +299,7 @@
             console.log(response)
             this.availabilityFlag = false;
             this.$message.success('删除成功');
-            this.fetchData();
+            this.getTableData();
           });
         }).catch(() => {
           this.$message({
@@ -361,9 +373,29 @@
       editAvailability() {
         this.availabilityFlag = true;
       },
-      handleIosListChange(data) {
+      handleAddIosList(data, type) {
         console.log(data)
-      }
+        console.log(type)
+        this.$http.post(this.$baseUrl + this.versionControlRequest, {
+          deviceType: type,
+          version: data[data.length - 1]
+        }, {
+          headers: {
+            'Authorization': 'Bearer ' + this.$store.state.user.token
+          }
+        }).then(response => {
+          console.log(response)
+        })
+      },
+      handleDeleteIosList(data, index,type) {
+        this.$http.delete(this.$baseUrl + this.versionControlRequest+`${type}/${data}`, {
+          headers: {
+            'Authorization': 'Bearer ' + this.$store.state.user.token
+          }
+        }).then(response => {
+          console.log(response)
+        })
+      },
     }
   }
 </script>

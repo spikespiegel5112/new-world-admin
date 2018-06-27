@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="common-filter-wrapper">
+    <div class="common-querytable-wrapper">
       <el-input @keyup.enter.native="handleFilter" style="width: 200px;" :placeholder="$t('table.title')" v-model="listQuery.keyword">
       </el-input>
       <!-- <el-select clearable style="width: 90px" v-model="listQuery.importance" :placeholder="$t('table.importance')">
@@ -16,7 +16,7 @@
         </el-option>
       </el-select>
       <el-button type="primary" v-waves icon="el-icon-search" @click="handleFilter">{{$t('table.search')}}</el-button>
-      <el-button style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-edit">{{$t('table.add')}}</el-button>
+      <el-button @click="handleCreate" type="primary" icon="el-icon-edit">{{$t('table.add')}}</el-button>
     </div>
 
     <el-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit highlight-current-row
@@ -76,7 +76,7 @@
     </div>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="70px" style='width: 400px; margin-left:50px;'>
+      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="right" label-width="120px" style='width: 400px; margin-left:50px;'>
         <el-form-item :label="$t('table.type')" prop="type">
           <el-select v-model="temp.type" placeholder="Please select">
             <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">

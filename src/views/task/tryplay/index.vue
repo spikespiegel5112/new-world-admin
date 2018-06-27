@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="common-filter-wrapper">
+    <div class="common-querytable-wrapper">
       <el-input @keyup.enter.native="handleFilter" placeholder="任务名称" style="width: 200px;" class="filter-item" v-model="listQuery.keyword">
       </el-input>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
@@ -82,13 +82,13 @@
       </el-table-column>
     </el-table>
     <!-- 分页 -->
-    <div class="pagination-container">
+    <div class="common-pagination-wrapper">
       <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
     <!-- 弹框 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="70px" style='width: 400px; margin-left:50px;'>
+      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="right" label-width="120px" style='width: 400px; margin-left:50px;'>
         <!-- <el-form-item :label="$t('table.type')" prop="type">
           <el-select class="filter-item" v-model="temp.type" placeholder="Please select">
             <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">
@@ -208,10 +208,10 @@
       }
     },
     created() {
-      this.fetchData()
+      this.getTableData()
     },
     methods: {
-      fetchData() {
+      getTableData() {
         this.listLoading = true
         getTryPlayList(this.listQuery).then(response => {
           this.list = response.content
@@ -221,15 +221,15 @@
       },
       handleFilter() {
         this.listQuery.page = 1
-        this.fetchData()
+        this.getTableData()
       },
       handleSizeChange(val) {
         this.listQuery.limit = val
-        this.fetchData()
+        this.getTableData()
       },
       handleCurrentChange(val) {
         this.listQuery.page = val
-        this.fetchData()
+        this.getTableData()
       },
       handleModifyStatus(row, status) {
         changeStatus(row.id, status).then(response => {
