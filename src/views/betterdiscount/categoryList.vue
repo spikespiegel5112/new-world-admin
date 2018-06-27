@@ -89,7 +89,7 @@
       </el-table-column>
       <el-table-column align="center" label="可用性" prop="status">
         <template slot-scope="scope">
-          
+
         </template>
       </el-table-column>
 
