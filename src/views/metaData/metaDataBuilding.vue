@@ -89,7 +89,6 @@
 
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
       <el-table-column label="No" type="index" width="50" align="center" fixed></el-table-column>
-      <el-table-column label="ID" align="center" prop="id"></el-table-column>
       <el-table-column label="显示名称" align="center" prop="label"></el-table-column>
       <el-table-column label="唯一表示名称" align="center" prop="name"></el-table-column>
 
@@ -122,7 +121,7 @@
       <el-table-column align="center" label="actionParam" prop="actionParam"></el-table-column>
       <el-table-column align="center" label="操作" width="300px">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="editAvailability(scope)">设置可用性</el-button>
+          <!--<el-button type="primary" size="mini" @click="editAvailability(scope)">设置可用性</el-button>-->
           <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope)">删除
           </el-button>
@@ -148,6 +147,15 @@
               <el-input v-model="formData.name"></el-input>
             </el-form-item>
             <el-form-item label="Icon" prop="icon">
+              <div class="avatar-wrapper" style="">
+                <a v-if="formData.icon!==''" class="close">
+                  <span class="iconfont icon-crosswide"></span>
+                </a>
+                <img v-if="formData.icon===''" src="../../image/default/defaultavatar_60_60.png"
+                     class="avatar">
+                <img v-else :src="formData.icon+'-style_100x100'"
+                     class="avatar">
+              </div>
               <el-upload
                 class="common-avataruploader-wrapper"
                 ref="uploadAvatar"
@@ -337,17 +345,7 @@
         },
       }
     },
-    filters: {
-      statusFilter(status) {
-        const statusMap = {
-          published: 'success',
-          draft: 'gray',
-          deleted: 'danger'
-        }
-        return statusMap[status]
-      }
-    },
-    created() {
+    mounted() {
       this.getControllableVersionList();
       this.getTableData()
     },
@@ -358,6 +356,8 @@
           response = response.data;
           this.androidVersionListData = response.androidList;
           this.iosVersionListData = response.iosList;
+        }).catch(error=>{
+          this.$message.error(error.response.data)
         })
       },
       getTableData() {
@@ -434,6 +434,8 @@
                 this.dialogFormVisible = false;
                 this.$message.success('信息创建成功');
                 this.getTableData();
+              }).catch(error=>{
+                this.$message.error(error.response.data)
               })
             });
           }
@@ -470,6 +472,8 @@
             this.dialogFormVisible = false;
             this.$message.success('信息修改成功');
             this.getTableData();
+          }).catch(error=>{
+            this.$message.error(error.response.data)
           })
         });
       },
@@ -529,6 +533,8 @@
                 this.componentModelData.uploaded = '';
                 this.$message.warning('图片删除失败')
               }
+            }).catch(error=>{
+              this.$message.error(error.response.data)
             })
           })
         }
@@ -584,6 +590,8 @@
                 "actionParam": formData.actionParam,
                 "icon": formData.icon
               }
+            }).catch(error=>{
+              this.$message.error(error.response.data)
             })
           }
         });
@@ -598,8 +606,8 @@
           headers: {
             'Authorization': 'Bearer ' + this.$store.state.user.token
           }
-        }).then(response => {
-          console.log(response)
+        }).catch(error=>{
+          this.$message.error(error.response.data)
         })
       },
       handleDeleteIosList(data, index, type) {
@@ -607,8 +615,8 @@
           headers: {
             'Authorization': 'Bearer ' + this.$store.state.user.token
           }
-        }).then(response => {
-          console.log(response)
+        }).catch(error=>{
+          this.$message.error(error.response.data)
         })
       },
       handleAndroidListChange(data) {

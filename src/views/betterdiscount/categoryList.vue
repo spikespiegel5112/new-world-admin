@@ -1,15 +1,80 @@
 <template>
   <div class="app-container">
-    <el-row class="common-querytable-wrapper" :gutter="20">
-      <el-col :span="6">
-        <el-input @keyup.enter.native="handleFilter" placeholder="任务名称" v-model="listQuery.name">
-        </el-input>
-      </el-col>
-      <el-col :span="6">
-        <el-button type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
-        <el-button @click="handleCreate" type="primary" icon="el-icon-edit">新增</el-button>
-      </el-col>
-    </el-row>
+    <div class="common-querytable-wrapper">
+      <div class="queryform-wrapper">
+        <div class="outside">
+          <el-form class="basearea">
+            <ul class="pull-left">
+              <li>
+                <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate">
+                  新增
+                </el-button>
+              </li>
+            </ul>
+          </el-form>
+          <ul class="operation-wrapper pull-right">
+            <li>
+              <div class="common-search-wrapper" @keyup.enter="onSearch">
+                <input v-model="searchTxt" type="text" placeholder="请输入单位名称和姓名"/>
+                <a>
+                  <span @click="search" class="el-icon-search"></span>
+                </a>
+              </div>
+            </li>
+            <li>
+              <el-button size="mini" class="expand" type="text" @click='expand'>高级搜索<i
+                class="el-icon-arrow-down"></i></el-button>
+            </li>
+          </ul>
+        </div>
+        <div class="expandarea" :class="{active:expandQuery}">
+          <el-form ref="form" :model="queryModel" size="mini" label-width="100px">
+            <el-row>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="填报单位：">
+                  <el-input v-model="queryModel.reportingUnit" placeholder="请输入"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="8">
+                <el-form-item label="姓名：">
+                  <el-input v-model="queryModel.name" placeholder="请输入"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="出生年月：">
+                  <el-date-picker type="date" placeholder="选择日期" v-model="queryModel.birthday"
+                  ></el-date-picker>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="23" pull-right>
+                <el-form-item class="pull-right">
+                  <el-button type="primary" size="mini" icon="el-icon-search"
+                             @click="search">搜索
+                  </el-button>
+                  <el-button type="primary" size="mini" icon="el-icon-refresh"
+                             @click="reset">重置
+                  </el-button>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+        </div>
+      </div>
+    </div>
+
 
     <el-table :data="tableData" v-loading.body="listLoading" element-loading-text="Loading" border fit
               highlight-current-row>
@@ -22,14 +87,18 @@
           <img :src="scope.row.imageUrl+'-style_100x100'" width="80">
         </template>
       </el-table-column>
-      <el-table-column align="center" label="商品价格" prop="status"></el-table-column>
+      <el-table-column align="center" label="可用性" prop="status">
+        <template slot-scope="scope">
+          
+        </template>
+      </el-table-column>
 
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
-          <el-button v-if="scope.row.isShow=='0'" size="mini" type="success" @click="handleModifyStatus(scope.row,1)">上架
+          <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
+          <el-button v-if="scope.row.isShow==='0'" size="mini" type="success" @click="handleModifyStatus(scope.row,1)">上架
           </el-button>
-          <el-button v-if="scope.row.isShow=='1'" size="mini" @click="handleModifyStatus(scope.row,0)">下架
+          <el-button v-if="scope.row.isShow==='1'" size="mini" @click="handleModifyStatus(scope.row,0)">下架
           </el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除
           </el-button>
@@ -48,23 +117,20 @@
       <el-row type="flex" justify="center">
         <el-col :span="16">
           <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="120px">
-            <el-form-item label="ID" prop="id">
-              <el-input v-model="formData.goodsNumber"></el-input>
-            </el-form-item>
             <el-form-item label="商品类目" prop="title">
-              <el-input v-model="formData.name"></el-input>
+              <el-input v-model="formData.title"></el-input>
             </el-form-item>
             <el-form-item label="商品类目副标题" prop="summary">
-              <el-input v-model="formData.image"></el-input>
+              <el-input v-model="formData.summary"></el-input>
             </el-form-item>
             <el-form-item label="类型" prop="type">
-              <el-input v-model="formData.price"></el-input>
+              <el-input v-model="formData.type"></el-input>
             </el-form-item>
             <el-form-item label="图片" prop="imageUrl">
-              <el-input v-model="formData.discountPrice"></el-input>
+              <img :src="formData.imageUrl+'-style_100x100'" />
             </el-form-item>
             <el-form-item label="状态" prop="status">
-              <el-input v-model="formData.coupons"></el-input>
+              <el-input v-model="formData.status"></el-input>
             </el-form-item>
           </el-form>
         </el-col>
@@ -72,7 +138,7 @@
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="addGoods">{{$t('table.confirm')}}</el-button>
+        <el-button v-if="dialogStatus==='create'" type="primary" @click="addGoods">{{$t('table.confirm')}}</el-button>
         <el-button v-else type="primary" @click="updatedGoods">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
@@ -139,20 +205,22 @@
           disabledDate: (time) => {
             return time.getTime() < this.value1
           }
-        }
+        },
+        queryModel: {
+          "reportingUnit": '',
+          "platformId": '',
+          "status": '',
+          "name": '',
+          "gender": '',
+          "birthday": '',
+        },
+        iosVersionListData: [],
+        androidVersionListData: [],
+        searchTxt: '',
+        expandQuery: '',
       }
     },
-    filters: {
-      statusFilter(status) {
-        const statusMap = {
-          published: 'success',
-          draft: 'gray',
-          deleted: 'danger'
-        };
-        return statusMap[status]
-      }
-    },
-    created() {
+    mounted() {
       this.getTableData()
     },
     methods: {
@@ -166,15 +234,15 @@
         })
       },
       handleFilter() {
-        this.listQuery.page = 1
+        this.listQuery.page = 1;
         this.getTableData()
       },
       handleSizeChange(val) {
-        this.listQuery.limit = val
+        this.listQuery.limit = val;
         this.getTableData()
       },
       handleCurrentChange(val) {
-        this.listQuery.page = val
+        this.listQuery.page = val;
         this.getTableData()
       },
       handleModifyStatus(row, status) {
@@ -213,11 +281,11 @@
       },
       addGoods() {
       },
-      handleUpdate(row) {
-        this.formData = Object.assign({}, row) // copy obj
-        this.formData.timestamp = new Date(this.formData.timestamp)
-        this.dialogStatus = 'update'
-        this.dialogFormVisible = true
+      handleUpdate(scope) {
+        this.dialogFormVisible = true;
+        this.dialogStatus = 'update';
+        this.formData = scope.row;
+        console.log(this.formData)
         this.$nextTick(() => {
           this.$refs['formData'].clearValidate()
         })
@@ -225,17 +293,46 @@
       updatedGoods() {
       },
       handleDelete(row) {
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000
-        })
-        const index = this.tableData.indexOf(row)
-        this.tableData.splice(index, 1)
+        this.$confirm('确认删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http.delete(this.$baseUrl + `meta-service/1.0.0/deleteGoods`, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.user.token
+            }
+          }).then((response) => {
+            this.$message.success('删除成功');
+            const index = this.tableData.indexOf(row)
+            this.tableData.splice(index, 1)
+            this.getTableData();
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+
+
       },
       changeUpload(file) {
         console.log(file)
+      },
+      handleAndroidListChange(data) {
+
+      },
+      add() {
+
+      },
+      expand() {
+        this.expandQuery = !this.expandQuery;
+      },
+      search() {
+
+      },
+      reset() {
       }
     }
   }

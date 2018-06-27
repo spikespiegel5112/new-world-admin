@@ -1,22 +1,21 @@
-.common-querytable-wrapper{
-  padding: 20px 0;
-}
-.common-pagination-wrapper{
+.common-pagination-wrapper {
   margin: 20px 0;
 }
-.common-tag-wrapper{
-  .el-tag{
+
+.common-tag-wrapper {
+  .el-tag {
     margin: 0 0 0 10px;
+    vertical-align: middle;
   }
-  .input{
+  .input {
     display: inline-block;
-  vertical-align: middle;
+    vertical-align: middle;
     width: 90px;
     margin-left: 10px;
   }
-  .button{
+  .button {
     display: inline-block;
-  vertical-align: middle;
+    vertical-align: middle;
     margin-left: 10px;
     height: 32px;
     line-height: 30px;
@@ -24,12 +23,13 @@
     padding-bottom: 0;
   }
 }
+
 .common-querytable-wrapper {
   padding: 0;
   width: 100%;
   background: #fff;
   font-size: 0;
-  border-bottom: 1px solid #ddd;
+  //border-bottom: 1px solid #ddd;
   .queryform-wrapper {
     display: inline-block;
     width: 100%;
@@ -58,7 +58,7 @@
       transition: all 0.3s;
       &.active {
         padding: 10px 0 0 0;
-        height: 150px;
+        height: 170px;
         transition: all 0.3s;
         //margin-bottom: 15px;
       }
