@@ -152,7 +152,7 @@
               <el-upload
                 class="common-avataruploader-wrapper"
                 ref="uploadAvatar"
-                :action="$prodBaseUrl+'image-upload-service/1.0.0/file/upload'"
+                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 :limit="1"
                 :show-file-list="false"
                 :before-upload="handleBeforeUpload"
