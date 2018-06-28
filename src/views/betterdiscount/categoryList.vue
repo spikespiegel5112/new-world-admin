@@ -37,25 +37,18 @@
 
               </el-col>
               <el-col :span="8">
-                <el-form-item label="填报单位：">
-                  <el-input v-model="queryModel.reportingUnit" placeholder="请输入"></el-input>
-                </el-form-item>
+
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="8">
-                <el-form-item label="姓名：">
-                  <el-input v-model="queryModel.name" placeholder="请输入"></el-input>
-                </el-form-item>
+
               </el-col>
               <el-col :span="8">
 
               </el-col>
               <el-col :span="8">
-                <el-form-item label="出生年月：">
-                  <el-date-picker type="date" placeholder="选择日期" v-model="queryModel.birthday"
-                  ></el-date-picker>
-                </el-form-item>
+
               </el-col>
             </el-row>
             <el-row>
@@ -337,6 +330,7 @@
             }).then(response => {
               this.$message.success('产品类型创建成功');
               this.dialogFormVisible = false;
+              this.getTableData();
             })
           }
         });
@@ -375,7 +369,6 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          alert('dsdsds')
           this.$http.get(this.$baseUrl + this.deleteTitleTypeRequest + `/${scope.row.type}`).then(response => {
             this.$message.success('删除成功');
             this.getTableData();

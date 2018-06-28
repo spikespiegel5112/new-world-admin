@@ -225,7 +225,7 @@
         deleteTitleTypeRequest: 'better-discount-service/1.0.0/deleteGoods',
         queryGoodsListByTypeRequest: 'better-discount-service/1.0.0/queryGoodsListByType',
 
-        queryGoodsListAllRequest:'better-discount-service/1.0.0/queryGoodsListAll',
+        queryGoodsListAllRequest: 'better-discount-service/1.0.0/queryGoodsListAll',
 
 
         groundingStatusDictionary: [{
@@ -344,8 +344,9 @@
     methods: {
       getTableData() {
         this.listLoading = true;
-        this.$http.post(this.$baseUrl + this.queryGoodsListAllRequest,{
-          pageNo:this.pagination.page-1
+        this.$http.post(this.$baseUrl + this.queryGoodsListAllRequest, {
+          pageNo: this.pagination.page - 1,
+          type:this.queryModel.type
         }).then(response => {
           console.log(response)
           response = response.data;
@@ -355,12 +356,20 @@
         })
       },
       getProductTypeList() {
-        let result = [];
         this.$http.get(this.$baseUrl + this.categoryListRequest).then(response => {
           console.log(response);
           this.productTypeData = response.data;
         });
-
+      },
+      search() {
+        if (this.queryModel.type === null || this.queryModel.type === '') {
+          this.getTableData();
+        }
+      },
+      reset() {
+        this.queryModel.type = null;
+        this.pagination.page = 1;
+        this.getTableData();
       },
       handleFilter() {
         this.pagination.page = 1;
@@ -429,7 +438,8 @@
             }).then(response => {
               console.log(response)
               this.dialogFormVisible = false;
-              this.$message.success('商品添加成功')
+              this.$message.success('商品添加成功');
+              this.getTableData();
             })
           }
         })
@@ -488,8 +498,6 @@
             message: '已取消删除'
           });
         });
-
-
       },
       changeUpload(file) {
         console.log(file)
@@ -505,23 +513,8 @@
       expand() {
         this.expandQuery = !this.expandQuery;
       },
-      search() {
-        this.$http.post(this.$baseUrl + this.queryGoodsListByTypeRequest, {
-          pageNo: '0',
-          type: this.queryModel.type
-        }).then(response => {
-          console.log(response)
-          response = response.data;
-          this.list = response.content;
-          this.total = response.totalElements;
-          this.listLoading = false;
-          this.$message.success('查询完成');
-        })
-      },
-      reset() {
 
-        this.getTableData();
-      },
+
       handleBeforeUpload(file) {
         console.log(file)
         let suffixDictionary = ['jpg', 'jpeg', 'png'];
