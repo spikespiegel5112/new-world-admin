@@ -93,12 +93,12 @@
       </el-table-column>
     </el-table>
     <!-- 分页 -->
-    <div class="common-pagination-wrapper">
-      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                     :current-page="listQuery.page" :page-sizes="[10,20,30,50]" :page-size="listQuery.limit"
-                     layout="total, sizes, prev, pager, next, jumper" :total="total">
-      </el-pagination>
-    </div>
+    <!--<div class="common-pagination-wrapper">-->
+      <!--<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"-->
+                     <!--:current-page="listQuery.page" :page-sizes="[10,20,30,50]" :page-size="listQuery.limit"-->
+                     <!--layout="total, sizes, prev, pager, next, jumper" :total="total">-->
+      <!--</el-pagination>-->
+    <!--</div>-->
     <!-- 弹框 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-row type="flex" justify="center">
@@ -110,9 +110,6 @@
             <el-form-item label="商品类目副标题" prop="summary">
               <el-input v-model="formData.summary"></el-input>
             </el-form-item>
-            <!--<el-form-item label="类型" prop="type">-->
-            <!--<el-input v-model="formData.type"></el-input>-->
-            <!--</el-form-item>-->
             <el-form-item label="图片" prop="imageUrl">
               <div class="avatar-wrapper" style="">
                 <a v-if="formData.imageUrl!==''" class="close">
@@ -334,7 +331,6 @@
             })
           }
         });
-
       },
       handleUpdate(scope) {
         this.formData.id = scope.row.id;
