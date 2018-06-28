@@ -346,7 +346,7 @@
         this.listLoading = true;
         this.$http.post(this.$baseUrl + this.queryGoodsListAllRequest, {
           pageNo: this.pagination.page - 1,
-          type:this.queryModel.type
+          type: this.queryModel.type
         }).then(response => {
           console.log(response)
           response = response.data;

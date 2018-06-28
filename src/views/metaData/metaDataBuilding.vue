@@ -367,6 +367,7 @@
           params: this.listQuery
         }).then(response => {
           console.log(response)
+          response=response.data;
           this.list = response;
           this.total = response.totalElements;
           this.listLoading = false
