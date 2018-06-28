@@ -102,7 +102,7 @@
     <!-- 分页 -->
     <div class="common-pagination-wrapper">
       <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                     :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit"
+                     :current-page="listQuery.page" :page-sizes="[10,20,30,50]" :page-size="listQuery.limit"
                      layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
@@ -189,6 +189,7 @@
           name: '可用',
           code: '1'
         }],
+
         value2: '',
         value1: '',
         tableKey: 0,
@@ -218,11 +219,11 @@
         rules: {
           name: [{required: true, message: 'name is required', trigger: 'change'}],
           timestamp: [{type: 'date', required: true, message: 'timestamp is required', trigger: 'change'}],
-          title: [{required: true, message: 'title is required', trigger: 'blur'}],
-          summary: [{required: true, message: 'title is required', trigger: 'blur'}],
-          type: [{required: true, message: 'title is required', trigger: 'blur'}],
-          imageUrl: [{required: true, message: 'title is required', trigger: 'blur'}],
-          status: [{required: true, message: 'title is required', trigger: 'blur'}]
+          title: [{required: true, message: 'title is required', trigger: 'change'}],
+          summary: [{required: true, message: 'title is required', trigger: 'change'}],
+          type: [{required: true, message: 'title is required', trigger: 'change'}],
+          imageUrl: [{required: true, message: 'title is required', trigger: 'change'}],
+          status: [{required: true, message: 'title is required', trigger: 'change'}]
         },
         dialogFormVisible: false,
         dialogStatus: '',

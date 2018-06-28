@@ -404,8 +404,6 @@
             this.$refs['formData'].clearValidate()
           })
         }
-
-
       },
       createData() {
         const formData = this.formData;

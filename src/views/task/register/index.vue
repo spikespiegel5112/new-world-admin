@@ -151,7 +151,7 @@ export default {
       rules: {
         name: [{ required: true, message: 'name is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
+        title: [{ required: true, message: 'title is required', trigger: 'change' }]
       },
       downloadLoading: false,
       pickerOptions0: {

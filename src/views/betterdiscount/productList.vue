@@ -106,15 +106,16 @@
           {{scope.row.buyUrl}}
         </template>
       </el-table-column>
+      <el-table-column label="是否上架">
+        <template slot-scope="scope">
+          {{groundingStatusDictionary.filter(item=>item.code===scope.row.status)[0].name}}
+        </template>
+      </el-table-column>
+
 
       <el-table-column align="center" label="操作" width="170">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
-          <el-button v-if="scope.row.isShow==='0'" size="mini" type="success" @click="handleModifyStatus(scope.row,1)">
-            上架
-          </el-button>
-          <el-button v-if="scope.row.isShow==='1'" size="mini" @click="handleModifyStatus(scope.row,0)">下架
-          </el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -122,7 +123,7 @@
     <!-- 分页 -->
     <div class="common-pagination-wrapper">
       <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                     :current-page="pagination.page" :page-sizes="[10,20,30, 50]" :page-size="queryModel.limit"
+                     :current-page="pagination.page" :page-sizes="[10,20,30,50]" :page-size="queryModel.limit"
                      layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
@@ -172,7 +173,7 @@
               <el-input v-model.number="formData.price"></el-input>
             </el-form-item>
             <el-form-item label="折扣价" prop="discountPrice">
-              <el-input v-model="formData.discountPrice"></el-input>
+              <el-input v-model.number="formData.discountPrice"></el-input>
             </el-form-item>
             <el-form-item label="优惠券链接" prop="coupons">
               <el-input v-model="formData.coupons"></el-input>
@@ -185,6 +186,18 @@
             </el-form-item>
             <el-form-item label="购买链接" prop="buyUrl">
               <el-input v-model="formData.buyUrl"></el-input>
+            </el-form-item>
+            <el-form-item label="商品类型" prop="type">
+              <el-select v-model="formData.type">
+                <el-option v-for="item in productTypeData" :label="item.title" :value="item.type"
+                           :key="item.type"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="是否上架" prop="status">
+              <el-select v-model="formData.status">
+                <el-option v-for="item in groundingStatusDictionary" :label="item.name" :value="item.code"
+                           :key="item.code"></el-option>
+              </el-select>
             </el-form-item>
           </el-form>
         </el-col>
@@ -207,10 +220,24 @@
       return {
         categoryListRequest: 'better-discount-service/1.0.0/queryTitleTypeList',
         queryGoodsListRequest: 'better-discount-service/1.0.0/queryGoodsList',
-        addGoodsRequest: 'better-discount-service/1.0.0/queryTitleTypeList/addGoods',
+        addGoodsRequest: 'better-discount-service/1.0.0/addGoods',
         updateGoodsContentRequest: 'better-discount-service/1.0.0/updateGoodsContent',
+        deleteTitleTypeRequest: 'better-discount-service/1.0.0/deleteGoods',
         queryGoodsListByTypeRequest: 'better-discount-service/1.0.0/queryGoodsListByType',
-
+        groundingStatusDictionary: [{
+          name: '下架',
+          code: '0'
+        }, {
+          name: '上架',
+          code: '1'
+        }],
+        productTypeDictionary: [{
+          name: '不可用',
+          code: '0'
+        }, {
+          name: '可用',
+          code: '1'
+        }],
         value2: '',
         value1: '',
         tableKey: 0,
@@ -219,14 +246,16 @@
         listLoading: true,
         queryModel: {
           type: null,
-
         },
         pagination: {
           page: 1,
-          size: 20,
+          size: 10,
         },
         fileList: [],
-        productTypeData: [],
+        productTypeData: [{
+          name: '无数据',
+          value: ''
+        }],
         importanceOptions: [1, 2, 3],
         sortOptions: [{label: 'ID Ascending', key: '+id'}, {label: 'ID Descending', key: '-id'}],
         statusOptions: ['published', 'draft', 'deleted'],
@@ -258,19 +287,20 @@
         pvData: [],
         rules: {
           name: [{required: true, message: 'name is required', trigger: 'change'}],
-          goodsNumber: [{type: 'date', required: true, message: 'timestamp is required', trigger: 'change'}],
-          price: [{required: true, message: 'title is required', trigger: 'blur'},
+          goodsNumber: [{required: true, message: 'timestamp is required', trigger: 'change'}],
+          price: [{required: true, message: 'title is required', trigger: 'change'},
             {type: 'number', message: '必须为数字值'}],
-          discountPrice: [{required: true, message: 'title is required', trigger: 'blur'}],
-          coupons: [{required: true, message: 'title is required', trigger: 'blur'}],
-          type: [{required: true, message: 'title is required', trigger: 'blur'}],
-          image: [{required: true, message: 'title is required', trigger: 'blur'}],
-          details: [{required: true, message: 'title is required', trigger: 'blur'}],
-          summary: [{required: true, message: 'title is required', trigger: 'blur'}],
-          buyUrl: [{required: true, message: 'title is required', trigger: 'blur'}],
-          imageWidth: [{required: true, message: 'title is required', trigger: 'blur'}],
-          imageHigh: [{required: true, message: 'title is required', trigger: 'blur'}],
-          status: [{required: true, message: 'title is required', trigger: 'blur'}],
+          discountPrice: [{required: true, message: 'title is required', trigger: 'change'},
+            {type: 'number', message: '必须为数字值'}],
+          coupons: [{required: true, message: 'title is required', trigger: 'change'}],
+          type: [{required: true, message: 'title is required', trigger: 'change'}],
+          image: [{required: true, message: 'title is required', trigger: 'change'}],
+          details: [{required: true, message: 'title is required', trigger: 'change'}],
+          summary: [{required: true, message: 'title is required', trigger: 'change'}],
+          buyUrl: [{required: true, message: 'title is required', trigger: 'change'}],
+          imageWidth: [{required: true, message: 'title is required', trigger: 'change'}],
+          imageHigh: [{required: true, message: 'title is required', trigger: 'change'}],
+          status: [{required: true, message: 'title is required', trigger: 'change'}],
         },
         downloadLoading: false,
         // pickerOptions0: {
@@ -310,7 +340,7 @@
     methods: {
       getTableData() {
         this.listLoading = true;
-        this.$http.get(this.$baseUrl + this.queryGoodsListRequest + `/${this.pagination.page}`).then(response => {
+        this.$http.get(this.$baseUrl + this.queryGoodsListRequest + `/${this.pagination.page - 1}`).then(response => {
           console.log(response)
           response = response.data;
           this.list = response.content;
@@ -374,14 +404,13 @@
         })
       },
       addGoods() {
-        debugger
         this.$refs.formData.validate(valid => {
           if (valid) {
             this.$http.post(this.$baseUrl + this.addGoodsRequest, {
               "goodsNumber": this.formData.goodsNumber,
               "name": this.formData.name,
-              "price": this.formData.price,
-              "discountPrice": this.formData.discountPrice,
+              "price": Number(this.formData.price).toFixed(2),
+              "discountPrice": Number(this.formData.discountPrice).toFixed(2),
               "coupons": this.formData.coupons,
               "type": this.formData.type,
               "image": this.formData.image,
@@ -393,10 +422,11 @@
               "status": this.formData.status,
             }).then(response => {
               console.log(response)
+              this.dialogFormVisible = false;
+              this.$message.success('商品添加成功')
             })
           }
         })
-
       },
       handleUpdate(row) {
         this.formData = Object.assign({}, row);
@@ -412,8 +442,8 @@
           id: this.formData.id,
           goodsNumber: this.formData.goodsNumber,
           name: this.formData.name,
-          price: this.formData.price,
-          discountPrice: this.formData.discountPrice,
+          price: Number(this.formData.price).toFixed(2),
+          discountPrice: Number(this.formData.discountPrice).toFixed(2),
           coupons: this.formData.coupons,
           type: this.formData.type,
           image: this.formData.image,
@@ -424,6 +454,7 @@
           imageHigh: this.formData.imageHigh,
           status: this.formData.status,
         }).then(response => {
+          this.dialogFormVisible = false;
           this.$message.success('产品信息更新成功');
           this.getTableData();
           console.log(response)
@@ -435,7 +466,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http.delete(this.$baseUrl + `meta-service/1.0.0/buildings/${scope.row.id}`, {
+          this.$http.post(this.$baseUrl + this.deleteTitleTypeRequest, {
             headers: {
               'Authorization': 'Bearer ' + this.$store.state.user.token
             }
@@ -443,8 +474,6 @@
             console.log(response)
             this.dialogFormVisible = false;
             this.$message.success('删除成功');
-            const index = this.list.indexOf(row)
-            this.list.splice(index, 1)
             this.getTableData();
           });
         }).catch(() => {
@@ -461,7 +490,7 @@
       },
       add() {
         this.dialogFormVisible = true;
-        this.dialogStatus='create';
+        this.dialogStatus = 'create';
         this.$nextTick(() => {
           this.$refs.formData.resetFields();
         })
@@ -472,14 +501,15 @@
       },
       search() {
         this.$http.post(this.$baseUrl + this.queryGoodsListByTypeRequest, {
-          pageNo: '1',
+          pageNo: '0',
           type: this.queryModel.type
         }).then(response => {
-          this.$message.success('查询完成');
+          console.log(response)
           response = response.data;
           this.list = response.content;
           this.total = response.totalElements;
-          this.listLoading = false
+          this.listLoading = false;
+          this.$message.success('查询完成');
         })
       },
       reset() {
@@ -518,7 +548,7 @@
       uploadSuccess(response) {
         this.loading = false;
         console.log(response)
-        this.formData.imageUrl = response.url;
+        this.formData.image = response.url;
         this.loading = false;
         this.$message({
           message: '图片上传成功',
