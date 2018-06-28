@@ -249,6 +249,7 @@
     },
     data() {
       return {
+        buildingsRequest: 'meta-service/1.0.0/buildings',
         editBuildingMetadata: 'meta-service/1.0.0/buildings/',
         editAvailabilityRequest: 'meta-service/1.0.0/availability/',
         versionListRequest: 'meta-service/1.0.0/availability/versionList/',
@@ -257,7 +258,7 @@
         value2: '',
         value1: '',
         tableKey: 0,
-        list: null,
+        list: [],
         total: null,
         listLoading: true,
         availabilityFlag: false,
@@ -283,8 +284,8 @@
           "actionType": "",
           "actionParam": "",
           "icon": "",
-          iosEnable:false,
-          androidEnable:false
+          iosEnable: false,
+          androidEnable: false
         },
         dialogFormVisible: false,
         dialogStatus: '',
@@ -356,13 +357,15 @@
           response = response.data;
           this.androidVersionListData = response.androidList;
           this.iosVersionListData = response.iosList;
-        }).catch(error=>{
+        }).catch(error => {
           this.$message.error(error.response.data)
         })
       },
       getTableData() {
         this.listLoading = true;
-        getMetaDataBuildListRequest(this.listQuery).then(response => {
+        this.$http.get(this.$baseUrl + this.buildingsRequest, {
+          params: this.listQuery
+        }).then(response => {
           console.log(response)
           this.list = response;
           this.total = response.totalElements;
@@ -390,8 +393,8 @@
           "actionType": "",
           "actionParam": "",
           "icon": "",
-          iosEnable:false,
-          androidEnable:false
+          iosEnable: false,
+          androidEnable: false
         }
       },
       handleCreate() {
@@ -421,8 +424,8 @@
                 "actionType": formData.actionType,
                 "actionParam": formData.actionParam,
                 "icon": formData.icon,
-                iosEnable:formData.iosEnable,
-                androidEnable:formData.androidEnable
+                iosEnable: formData.iosEnable,
+                androidEnable: formData.androidEnable
               }, {
                 headers: {
                   'Authorization': 'Bearer ' + this.$store.state.user.token
@@ -432,7 +435,7 @@
                 this.dialogFormVisible = false;
                 this.$message.success('信息创建成功');
                 this.getTableData();
-              }).catch(error=>{
+              }).catch(error => {
                 this.$message.error(error.response.data)
               })
             });
@@ -470,7 +473,7 @@
             this.dialogFormVisible = false;
             this.$message.success('信息修改成功');
             this.getTableData();
-          }).catch(error=>{
+          }).catch(error => {
             this.$message.error(error.response.data)
           })
         });
@@ -531,7 +534,7 @@
                 this.componentModelData.uploaded = '';
                 this.$message.warning('图片删除失败')
               }
-            }).catch(error=>{
+            }).catch(error => {
               this.$message.error(error.response.data)
             })
           })
@@ -588,7 +591,7 @@
                 "actionParam": formData.actionParam,
                 "icon": formData.icon
               }
-            }).catch(error=>{
+            }).catch(error => {
               this.$message.error(error.response.data)
             })
           }
@@ -604,7 +607,7 @@
           headers: {
             'Authorization': 'Bearer ' + this.$store.state.user.token
           }
-        }).catch(error=>{
+        }).catch(error => {
           this.$message.error(error.response.data)
         })
       },
@@ -613,7 +616,7 @@
           headers: {
             'Authorization': 'Bearer ' + this.$store.state.user.token
           }
-        }).catch(error=>{
+        }).catch(error => {
           this.$message.error(error.response.data)
         })
       },

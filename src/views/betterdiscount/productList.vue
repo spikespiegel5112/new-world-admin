@@ -115,8 +115,8 @@
 
       <el-table-column align="center" label="操作" width="170">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -224,6 +224,10 @@
         updateGoodsContentRequest: 'better-discount-service/1.0.0/updateGoodsContent',
         deleteTitleTypeRequest: 'better-discount-service/1.0.0/deleteGoods',
         queryGoodsListByTypeRequest: 'better-discount-service/1.0.0/queryGoodsListByType',
+
+        queryGoodsListAllRequest:'better-discount-service/1.0.0/queryGoodsListAll',
+
+
         groundingStatusDictionary: [{
           name: '下架',
           code: '0'
@@ -286,21 +290,21 @@
         dialogPvVisible: false,
         pvData: [],
         rules: {
-          name: [{required: true, message: 'name is required', trigger: 'change'}],
-          goodsNumber: [{required: true, message: 'timestamp is required', trigger: 'change'}],
-          price: [{required: true, message: 'title is required', trigger: 'change'},
+          name: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          goodsNumber: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          price: [{required: true, message: '此项为必填项', trigger: 'change'},
             {type: 'number', message: '必须为数字值'}],
-          discountPrice: [{required: true, message: 'title is required', trigger: 'change'},
+          discountPrice: [{required: true, message: '此项为必填项', trigger: 'change'},
             {type: 'number', message: '必须为数字值'}],
-          coupons: [{required: true, message: 'title is required', trigger: 'change'}],
-          type: [{required: true, message: 'title is required', trigger: 'change'}],
-          image: [{required: true, message: 'title is required', trigger: 'change'}],
-          details: [{required: true, message: 'title is required', trigger: 'change'}],
-          summary: [{required: true, message: 'title is required', trigger: 'change'}],
-          buyUrl: [{required: true, message: 'title is required', trigger: 'change'}],
-          imageWidth: [{required: true, message: 'title is required', trigger: 'change'}],
-          imageHigh: [{required: true, message: 'title is required', trigger: 'change'}],
-          status: [{required: true, message: 'title is required', trigger: 'change'}],
+          coupons: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          type: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          image: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          details: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          summary: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          buyUrl: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          imageWidth: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          imageHigh: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          status: [{required: true, message: '此项为必填项', trigger: 'change'}],
         },
         downloadLoading: false,
         // pickerOptions0: {
@@ -340,7 +344,9 @@
     methods: {
       getTableData() {
         this.listLoading = true;
-        this.$http.get(this.$baseUrl + this.queryGoodsListRequest + `/${this.pagination.page - 1}`).then(response => {
+        this.$http.post(this.$baseUrl + this.queryGoodsListAllRequest,{
+          pageNo:this.pagination.page-1
+        }).then(response => {
           console.log(response)
           response = response.data;
           this.list = response.content;
@@ -396,9 +402,9 @@
         }
       },
       handleCreate() {
-        this.resetTemp()
-        this.dialogStatus = 'create'
-        this.dialogFormVisible = true
+        this.resetTemp();
+        this.dialogStatus = 'create';
+        this.dialogFormVisible = true;
         this.$nextTick(() => {
           this.$refs['formData'].clearValidate()
         })
@@ -428,8 +434,8 @@
           }
         })
       },
-      handleUpdate(row) {
-        this.formData = Object.assign({}, row);
+      handleUpdate(scope) {
+        this.formData = Object.assign({}, scope.row);
         this.formData.timestamp = new Date(this.formData.timestamp);
         this.dialogStatus = 'update';
         this.dialogFormVisible = true;
@@ -460,13 +466,13 @@
           console.log(response)
         })
       },
-      handleDelete(row) {
+      handleDelete(scope) {
         this.$confirm('确认删除?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http.post(this.$baseUrl + this.deleteTitleTypeRequest, {
+          this.$http.get(this.$baseUrl + this.deleteTitleTypeRequest + `/${scope.row.goodsNumber}`, {
             headers: {
               'Authorization': 'Bearer ' + this.$store.state.user.token
             }
