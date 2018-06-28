@@ -83,7 +83,7 @@
     </el-table>
     <!-- 分页 -->
     <div class="common-pagination-wrapper">
-      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page" :page-sizes="[10,20,30,50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
     <!-- 弹框 -->
@@ -180,7 +180,7 @@
         rules: {
           name: [{ required: true, message: 'name is required', trigger: 'change' }],
           timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-          title: [{ required: true, message: 'title is required', trigger: 'blur' }]
+          title: [{ required: true, message: 'title is required', trigger: 'change' }]
         },
         downloadLoading: false,
         pickerOptions0: {
