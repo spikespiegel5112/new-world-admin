@@ -362,7 +362,7 @@
         });
       },
       search() {
-        if (this.queryModel.type === null || this.queryModel.type === '') {
+        if (this.queryModel.type !== null || this.queryModel.type !== '') {
           this.getTableData();
         }
       },
