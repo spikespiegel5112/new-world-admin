@@ -10,7 +10,7 @@ const service = axios.create({
   timeout: 5000, // 请求超时时间
   transformRequest: [function(data) {
     // Do whatever you want to transform the data
-    let ret = ''
+    let ret = '';
     for (const it in data) {
       ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
     }
@@ -24,7 +24,10 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(config => {
   if (store.getters.token) {
-    config.headers['Authorization'] = 'Bearer ' + getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+    console.log(store.getters.token)
+
+    config.headers['Authorization'] = 'Bearer ' + store.getters.token // 让每个请求携带自定义token 请根据实际情况自行修改
+    // config.headers['Authorization'] = 'Bearer ' + getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
   }
   return config
 }, error => {

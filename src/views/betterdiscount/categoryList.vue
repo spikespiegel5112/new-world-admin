@@ -81,7 +81,6 @@
       <el-table-column align="center" label='ID' width="40" prop="id"></el-table-column>
       <el-table-column label="商品类目" align="center" prop="title"></el-table-column>
       <el-table-column label="商品类目副标题" align="center" prop="summary"></el-table-column>
-      <el-table-column label="类型" align="center" prop="type"></el-table-column>
       <el-table-column label="图片" width="150" align="center">
         <template slot-scope="scope">
           <img :src="scope.row.imageUrl+'-style_100x100'" width="80">
@@ -89,19 +88,14 @@
       </el-table-column>
       <el-table-column align="center" label="可用性" prop="status">
         <template slot-scope="scope">
-
+          {{scope.row.status==='0'?'不可用':'可用'}}
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
-          <el-button v-if="scope.row.isShow==='0'" size="mini" type="success" @click="handleModifyStatus(scope.row,1)">上架
-          </el-button>
-          <el-button v-if="scope.row.isShow==='1'" size="mini" @click="handleModifyStatus(scope.row,0)">下架
-          </el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除
-          </el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -116,21 +110,52 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-row type="flex" justify="center">
         <el-col :span="16">
-          <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="120px">
+          <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="130px">
             <el-form-item label="商品类目" prop="title">
               <el-input v-model="formData.title"></el-input>
             </el-form-item>
             <el-form-item label="商品类目副标题" prop="summary">
               <el-input v-model="formData.summary"></el-input>
             </el-form-item>
-            <el-form-item label="类型" prop="type">
-              <el-input v-model="formData.type"></el-input>
-            </el-form-item>
+            <!--<el-form-item label="类型" prop="type">-->
+            <!--<el-input v-model="formData.type"></el-input>-->
+            <!--</el-form-item>-->
             <el-form-item label="图片" prop="imageUrl">
-              <img :src="formData.imageUrl+'-style_100x100'" />
+              <div class="avatar-wrapper" style="">
+                <a v-if="formData.imageUrl!==''" class="close">
+                  <span class="iconfont icon-crosswide"></span>
+                </a>
+                <img v-if="formData.imageUrl===''||formData.imageUrl===undefined||formData.imageUrl===null"
+                     src="../../image/default/defaultavatar_60_60.png"
+                     class="avatar">
+                <img v-else :src="formData.imageUrl+'-style_100x100'"
+                     class="avatar">
+              </div>
+              <el-upload
+                class="common-avataruploader-wrapper"
+                ref="uploadAvatar"
+                :action="$prodBaseUrl+'image-upload-service/1.0.0/file/upload'"
+                :limit="1"
+                :show-file-list="false"
+                :before-upload="handleBeforeUpload"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :on-success="uploadSuccess"
+                :on-exceed="uploadAvatarExceeded"
+                :file-list="fileList"
+                :data="portraitParams">
+
+                <el-button size="small" type="primary">点击上传</el-button>
+                <div slot="tip" class="el-upload__tip">
+                  只能上传jpg/png文件，且不超过2MB
+                </div>
+              </el-upload>
             </el-form-item>
             <el-form-item label="状态" prop="status">
-              <el-input v-model="formData.status"></el-input>
+              <el-select v-model="formData.status" placeholder="请选择">
+                <el-option v-for="item in statusDictionary" :key="item.code" :label="item.name"
+                           :value="item.code"></el-option>
+              </el-select>
             </el-form-item>
           </el-form>
         </el-col>
@@ -138,8 +163,8 @@
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus==='create'" type="primary" @click="addGoods">{{$t('table.confirm')}}</el-button>
-        <el-button v-else type="primary" @click="updatedGoods">{{$t('table.confirm')}}</el-button>
+        <el-button v-if="dialogStatus==='create'" type="primary" @click="add">{{$t('table.confirm')}}</el-button>
+        <el-button v-else type="primary" @click="update">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
     <!--  -->
@@ -152,6 +177,18 @@
     data() {
       return {
         categoryListRequest: 'better-discount-service/1.0.0/queryTitleTypeList',
+        addTitleTypeRequest: 'better-discount-service/1.0.0/addTitleType',
+        updateTitleTypeRequest: 'better-discount-service/1.0.0/updateTitleType',
+        deleteTitleTypeRequest: 'better-discount-service/1.0.0/deleteTitleType',
+
+
+        statusDictionary: [{
+          name: '不可用',
+          code: '0'
+        }, {
+          name: '可用',
+          code: '1'
+        }],
         value2: '',
         value1: '',
         tableKey: 0,
@@ -161,9 +198,9 @@
         listQuery: {
           page: 1,
           limit: 20,
-          importance: undefined,
-          keyword: undefined,
-          type: undefined,
+          importance: null,
+          keyword: null,
+          type: null,
           sort: '+id'
         },
         importanceOptions: [1, 2, 3],
@@ -171,18 +208,21 @@
         statusOptions: ['published', 'draft', 'deleted'],
         showReviewer: false,
         formData: {
-          id: undefined,
-          name: '',
-          note: '',
-          startDate: null,
-          endDate: null,
-          iconPath: '',
-          packageName: ''
+          id: null,
+          title: '',
+          summary: '',
+          type: null,
+          imageUrl: null,
+          status: '',
         },
         rules: {
           name: [{required: true, message: 'name is required', trigger: 'change'}],
           timestamp: [{type: 'date', required: true, message: 'timestamp is required', trigger: 'change'}],
-          title: [{required: true, message: 'title is required', trigger: 'blur'}]
+          title: [{required: true, message: 'title is required', trigger: 'blur'}],
+          summary: [{required: true, message: 'title is required', trigger: 'blur'}],
+          type: [{required: true, message: 'title is required', trigger: 'blur'}],
+          imageUrl: [{required: true, message: 'title is required', trigger: 'blur'}],
+          status: [{required: true, message: 'title is required', trigger: 'blur'}]
         },
         dialogFormVisible: false,
         dialogStatus: '',
@@ -218,6 +258,11 @@
         androidVersionListData: [],
         searchTxt: '',
         expandQuery: '',
+        fileList: [],
+        portraitParams: {
+          bucketName: 'funyvalley',
+          folderName: 'icon'
+        },
       }
     },
     mounted() {
@@ -263,25 +308,41 @@
       },
       resetTemp() {
         this.formData = {
-          id: undefined,
-          name: '',
-          note: '',
-          startDate: null,
-          endDate: null,
-          iconPath: ''
+          id: null,
+          title: '',
+          summary: '',
+          type: null,
+          imageUrl: null,
+          status: '',
         }
       },
       handleCreate() {
         this.resetTemp()
-        this.dialogStatus = 'create'
-        this.dialogFormVisible = true
+        this.dialogStatus = 'create';
+        this.dialogFormVisible = true;
         this.$nextTick(() => {
           this.$refs['formData'].clearValidate()
         })
       },
-      addGoods() {
+      add() {
+        this.$refs.formData.validate(valid => {
+          if (valid) {
+            console.log(this.formData)
+            this.$http.post(this.$baseUrl + this.addTitleTypeRequest, {
+              title: this.formData.title,
+              summary: this.formData.summary,
+              imageUrl: this.formData.imageUrl,
+              status: this.formData.status,
+            }).then(response => {
+              this.$message.success('产品类型创建成功');
+              this.dialogFormVisible = false;
+            })
+          }
+        });
+
       },
       handleUpdate(scope) {
+        this.formData.id = scope.row.id;
         this.dialogFormVisible = true;
         this.dialogStatus = 'update';
         this.formData = scope.row;
@@ -290,29 +351,42 @@
           this.$refs['formData'].clearValidate()
         })
       },
-      updatedGoods() {
+      update() {
+        this.$refs.formData.validate(valid => {
+          if (valid) {
+            this.$http.post(this.$baseUrl + this.updateTitleTypeRequest, {
+              id: this.formData.id,
+              type: this.formData.type,
+              title: this.formData.title,
+              summary: this.formData.summary,
+              imageUrl: this.formData.imageUrl,
+              status: this.formData.status,
+            }).then(response => {
+              this.$message.success('修改成功')
+              this.dialogFormVisible = false;
+            })
+          }
+        });
       },
-      handleDelete(row) {
+      handleDelete(scope) {
         this.$confirm('确认删除?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http.delete(this.$baseUrl + `meta-service/1.0.0/deleteGoods`, {
-            headers: {
-              'Authorization': 'Bearer ' + this.$store.state.user.token
-            }
-          }).then((response) => {
+          alert('dsdsds')
+          this.$http.get(this.$baseUrl + this.deleteTitleTypeRequest + `/${scope.row.type}`).then(response => {
             this.$message.success('删除成功');
-            const index = this.tableData.indexOf(row)
-            this.tableData.splice(index, 1)
             this.getTableData();
-          });
+          }).catch(error => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
+            console.log(error)
+          })
         }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
+
         });
 
 
@@ -323,9 +397,7 @@
       handleAndroidListChange(data) {
 
       },
-      add() {
 
-      },
       expand() {
         this.expandQuery = !this.expandQuery;
       },
@@ -333,7 +405,68 @@
 
       },
       reset() {
-      }
+      },
+      handleBeforeUpload(file) {
+        console.log(file)
+        let suffixDictionary = ['jpg', 'jpeg', 'png'];
+        let index1 = file.name.lastIndexOf('.') + 1;
+        let index2 = file.name.length;
+        let fileSuffix = file.name.substring(index1, index2);
+        if (suffixDictionary.filter(item => item === fileSuffix).length === 0) {
+          this.$message({
+            message: '文件必须为' + suffixDictionary.join('、') + '类型文件',
+            type: 'error'
+          });
+          return false;
+        }
+        if (file.size > 1024 * 1024 * 2) {
+          this.$message({
+            message: '文件不得大于2M',
+            type: 'error'
+          });
+          return false;
+        }
+        this.loading = true;
+      },
+      handlePreview(file) {
+        console.log(file);
+        this.fileList.push(file);
+      },
+      handleRemove() {
+
+      },
+      uploadSuccess(response) {
+        this.loading = false;
+        console.log(response)
+        this.formData.imageUrl = response.url;
+        this.loading = false;
+        this.$message({
+          message: '图片上传成功',
+          type: 'success'
+        });
+      },
+      uploadAvatarExceeded(files, fileList) {
+        if (fileList.length > 0) {
+          this.$confirm('当前申报已有上传图片，需先删除已有头像，请确认是否删除？', '提示', {
+            type: 'warning'
+          }).then(resolve => {
+            this.$refs['uploadAvatar'].clearFiles();
+            this.$http.get(this.$baseUrl + 'attachment/deleteAttachment/' + this.fileList[0].id).then(response => {
+              if (response.data.code === '200') {
+                this.fileList.splice(this.fileList.indexOf(response.id), 1);
+                this.componentModelData.uploaded = '';
+                this.$message.success('图片删除成功')
+              } else {
+                this.fileList.splice(this.fileList.indexOf(response.id), 1);
+                this.componentModelData.uploaded = '';
+                this.$message.warning('图片删除失败')
+              }
+            }).catch(error => {
+              this.$message.error(error.response.data)
+            })
+          })
+        }
+      },
     }
   }
 </script>
