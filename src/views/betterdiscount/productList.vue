@@ -505,9 +505,7 @@
       add() {
         this.dialogFormVisible = true;
         this.dialogStatus = 'create';
-        this.$nextTick(() => {
-          this.$refs.formData.resetFields();
-        })
+
 
       },
       expand() {
@@ -578,7 +576,25 @@
       },
       cancel() {
         this.dialogFormVisible = false;
-        this.$refs['formData'].resetFields();
+        this.formData = {
+          "goodsNumber": '',
+          "name": '',
+          "price": '',
+          "discountPrice": '',
+          "coupons": '',
+          "type": '',
+          "image": '',
+          "details": '',
+          "summary": '',
+          "buyUrl": '',
+          "imageWidth": '',
+          "imageHigh": '',
+          "status": '',
+        };
+        this.$nextTick(() => {
+          this.$refs.formData.clearValidate();
+        })
+        // this.$refs['formData'].resetFields();
 
       }
     }
