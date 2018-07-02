@@ -61,7 +61,8 @@
         </div>
       </div>
     </div>
-    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row
+    <el-table :data="tableData" v-loading.body="listLoading" element-loading-text="Loading" border fit
+              highlight-current-row
               style="width: 100%">
       <el-table-column align="center" label='ID' width="40">
         <template slot-scope="scope">
@@ -141,35 +142,34 @@
               <el-input v-model="formData.name"></el-input>
             </el-form-item>
             <el-form-item label="商品图片" prop="image">
-              <div class="avatar-wrapper" style="">
-                <a v-if="formData.image!==''" class="close">
-                  <span class="iconfont icon-crosswide"></span>
-                </a>
-                <img v-if="formData.image===''||formData.image===null||formData.image===null"
-                     src="../../image/default/defaultavatar_60_60.png"
-                     class="avatar">
-                <img v-else :src="formData.image+'-style_100x100'"
-                     class="avatar">
-              </div>
-              <el-upload
-                class="common-avataruploader-wrapper"
-                ref="uploadAvatar"
-                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
-                :limit="1"
-                :show-file-list="false"
-                :before-upload="handleBeforeUpload"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :on-success="uploadSuccess"
-                :on-exceed="uploadAvatarExceeded"
-                :file-list="fileList"
-                :data="portraitParams">
+              <!--<el-upload-->
+              <!--class="common-avataruploader-wrapper"-->
+              <!--ref="uploadAvatar"-->
+              <!--:action="$baseUrl+'image-upload-service/1.0.0/file/upload'"-->
+              <!--tableData-type="picture-card"-->
+              <!--:before-upload="handleBeforeUpload"-->
+              <!--:on-preview="handlePreview"-->
+              <!--:on-remove="handleRemove"-->
+              <!--:on-success="uploadSuccess"-->
+              <!--:on-exceed="uploadAvatarExceeded"-->
+              <!--:file-tableData="fileList"-->
+              <!--:data="portraitParams">-->
 
-                <el-button size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip">
-                  只能上传jpg/png文件，且不超过2MB
-                </div>
-              </el-upload>
+              <!--<i class="el-icon-plus"></i>-->
+              <!--<div slot="tip" class="el-upload__tip">-->
+              <!--只能上传jpg/png文件，且不超过2MB-->
+              <!--</div>-->
+              <!--</el-upload>-->
+
+              <CommonUploadImage
+                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
+                @before-upload="handleBeforeUpload"
+                @on-preview="handlePreview"
+                @on-remove="handleRemove"
+                @on-success="uploadSuccess"
+                @on-exceed="uploadAvatarExceeded"
+                :fileList="fileList"
+              />
             </el-form-item>
             <el-form-item label="商品价格" prop="price">
               <el-input v-model.number="formData.price"></el-input>
@@ -247,7 +247,7 @@
         value2: '',
         value1: '',
         tableKey: 0,
-        list: null,
+        tableData: null,
         total: null,
         listLoading: true,
         queryModel: {
@@ -353,7 +353,7 @@
         this.$http.post(this.$baseUrl + this.queryGoodsListAllRequest, this.queryModel).then(response => {
           console.log(response)
           response = response.data;
-          this.list = response.content;
+          this.tableData = response.content;
           this.total = response.totalElements;
           this.listLoading = false
         })
@@ -395,7 +395,7 @@
             this.$message({
               message: '操作成功',
               type: 'success'
-            })
+            });
             row.isShow = status
           } else {
             this.$message({
@@ -450,10 +450,16 @@
         })
       },
       handleUpdate(scope) {
+        console.log(scope)
         this.formData = Object.assign({}, scope.row);
         this.formData.timestamp = new Date(this.formData.timestamp);
         this.dialogStatus = 'update';
         this.dialogFormVisible = true;
+
+        this.fileList=[]
+        for (let i=0;i<2;i++){
+          this.fileList.push(scope.row.image);
+        }
         this.$nextTick(() => {
           this.$refs['formData'].clearValidate()
         })
@@ -542,15 +548,15 @@
       },
       handlePreview(file) {
         console.log(file);
-        this.fileList.push(file);
       },
       handleRemove() {
-
+        console.log(this.fileList)
       },
       uploadSuccess(response) {
         this.loading = false;
         console.log(response)
         this.formData.image = response.url;
+        this.fileList.push(response.url)
         this.loading = false;
         this.$message({
           message: '图片上传成功',
@@ -558,26 +564,7 @@
         });
       },
       uploadAvatarExceeded(files, fileList) {
-        if (fileList.length > 0) {
-          this.$confirm('当前申报已有上传图片，需先删除已有头像，请确认是否删除？', '提示', {
-            type: 'warning'
-          }).then(resolve => {
-            this.$refs['uploadAvatar'].clearFiles();
-            this.$http.get(this.$baseUrl + 'attachment/deleteAttachment/' + this.fileList[0].id).then(response => {
-              if (response.data.code === '200') {
-                this.fileList.splice(this.fileList.indexOf(response.id), 1);
-                this.componentModelData.uploaded = '';
-                this.$message.success('图片删除成功')
-              } else {
-                this.fileList.splice(this.fileList.indexOf(response.id), 1);
-                this.componentModelData.uploaded = '';
-                this.$message.warning('图片删除失败')
-              }
-            }).catch(error => {
-              this.$message.error(error.response.data)
-            })
-          })
-        }
+
       },
       cancel() {
         this.dialogFormVisible = false;

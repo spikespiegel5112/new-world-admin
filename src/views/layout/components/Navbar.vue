@@ -78,7 +78,7 @@ export default {
     ])
   },
   mounted(){
-      console.log(mapGetters)
+      // console.log(mapGetters)
   },
   methods: {
     toggleSideBar() {

@@ -69,6 +69,11 @@ Vue.prototype.$baseUrl = process.env.NODE_ENV === 'production' ? 'http://gateway
 // Vue.prototype.$baseUrl = process.env.NODE_ENV === 'production' ? '/' : 'http://192.168.1.112:9002/';
 
 
+import CommonUploadImage from './components/CommonUploadImage.vue'
+
+Vue.component('CommonUploadImage', CommonUploadImage);
+
+
 new Vue({
   el: '#app',
   router,
