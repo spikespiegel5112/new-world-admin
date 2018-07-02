@@ -15,7 +15,7 @@
           <ul class="operation-wrapper pull-right">
             <li>
               <div class="common-search-wrapper" @keyup.enter="onSearch">
-                <input v-model="searchTxt" type="text" placeholder="请输入单位名称和姓名"/>
+                <input v-model="searchTxt" type="text" placeholder="请输入名称"/>
                 <a>
                   <span @click="search" class="el-icon-search"></span>
                 </a>

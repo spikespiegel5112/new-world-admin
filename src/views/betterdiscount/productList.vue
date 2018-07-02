@@ -15,7 +15,7 @@
           <ul class="operation-wrapper pull-right">
             <li>
               <div class="common-search-wrapper" @keyup.enter="search">
-                <input v-model="searchTxt" type="text" placeholder="请输入单位名称和姓名"/>
+                <input v-model="queryModel.name" type="text" placeholder="请输入商品名称"/>
                 <a>
                   <span @click="search" class="el-icon-search"></span>
                 </a>
@@ -31,18 +31,20 @@
           <el-form ref="form" :model="queryModel" size="mini" label-width="100px">
             <el-row>
               <el-col :span="8">
-
-              </el-col>
-              <el-col :span="8">
-
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="产品类型：">
+                <el-form-item label="商品类型：">
                   <el-select v-if="productTypeData.length>0" v-model="queryModel.type">
                     <el-option v-for="item in productTypeData" :key="item.type" :label="item.title"
                                :value="item.type"></el-option>
                   </el-select>
                 </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="商品编号：">
+                  <el-input v-model="queryModel.goodsNumber"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+
               </el-col>
             </el-row>
             <el-row>
@@ -249,7 +251,8 @@
         total: null,
         listLoading: true,
         queryModel: {
-          type: null,
+          name: '',
+          goodsNumber: null
         },
         pagination: {
           page: 1,
@@ -296,7 +299,7 @@
             {type: 'number', message: '必须为数字值'}],
           discountPrice: [{required: true, message: '此项为必填项', trigger: 'change'},
             {type: 'number', message: '必须为数字值'}],
-          coupons: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          coupons: [{required: false, message: '此项为必填项', trigger: 'change'}],
           type: [{required: true, message: '此项为必填项', trigger: 'change'}],
           image: [{required: true, message: '此项为必填项', trigger: 'change'}],
           details: [{required: true, message: '此项为必填项', trigger: 'change'}],
@@ -344,10 +347,10 @@
     methods: {
       getTableData() {
         this.listLoading = true;
-        this.$http.post(this.$baseUrl + this.queryGoodsListAllRequest, {
-          pageNo: this.pagination.page - 1,
-          type: this.queryModel.type
-        }).then(response => {
+        this.queryModel = Object.assign(this.queryModel, {
+          pageNo: this.pagination.page - 1
+        });
+        this.$http.post(this.$baseUrl + this.queryGoodsListAllRequest, this.queryModel).then(response => {
           console.log(response)
           response = response.data;
           this.list = response.content;
@@ -367,7 +370,9 @@
         }
       },
       reset() {
+        this.queryModel.name = '';
         this.queryModel.type = null;
+        this.queryModel.goodsNumber = '';
         this.pagination.page = 1;
         this.getTableData();
       },

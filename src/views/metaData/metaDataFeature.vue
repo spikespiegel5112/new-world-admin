@@ -14,8 +14,8 @@
           </el-form>
           <ul class="operation-wrapper pull-right">
             <li>
-              <div class="common-search-wrapper" @keyup.enter="onSearch">
-                <input v-model="searchTxt" type="text" placeholder="请输入单位名称和姓名"/>
+              <div class="common-search-wrapper" @keyup.enter="search">
+                <input v-model="queryModel.name" type="text" placeholder="请输入元数据名称"/>
                 <a>
                   <span @click="search" class="el-icon-search"></span>
                 </a>
@@ -31,20 +31,7 @@
           <el-form ref="form" :model="queryModel" size="mini" label-width="100px">
             <el-row>
               <el-col :span="8">
-
-              </el-col>
-              <el-col :span="8">
-
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="填报单位：">
-                  <el-input v-model="queryModel.reportingUnit" placeholder="请输入"></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="8">
-                <el-form-item label="姓名：">
+                <el-form-item label="feature名称：">
                   <el-input v-model="queryModel.name" placeholder="请输入"></el-input>
                 </el-form-item>
               </el-col>
@@ -52,11 +39,18 @@
 
               </el-col>
               <el-col :span="8">
-                <el-form-item label="出生年月：">
-                  <el-date-picker type="date" placeholder="选择日期"
-                                  v-model="queryModel.birthday"
-                  ></el-date-picker>
-                </el-form-item>
+
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+
               </el-col>
             </el-row>
             <el-row>
@@ -121,8 +115,8 @@
     <!-- 分页 -->
     <div class="common-pagination-wrapper">
       <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                     :current-page="listQuery.page" :page-sizes="[10,20,30,50]" :page-size="listQuery.limit"
-                     layout="total, sizes, prev, pager, next, jumper" :total="total">
+                     :current-page="pagination.page" :page-sizes="[10,20,30,50]" :page-size="pagination.limit"
+                     layout="total, sizes, prev, pager, next, jumper" :total="pagination.total">
       </el-pagination>
     </div>
     <!-- 弹框 -->
@@ -171,7 +165,7 @@
     data() {
       return {
         editFeatureMetadata: 'meta-service/1.0.0/feature/',
-        featureListRequest: 'meta-service/1.0.0/feature',
+        featureListRequest: 'meta-service/1.0.0/feature/bk/list',
         featureAvailabilityRequest: 'meta-service/1.0.0/availability',
         versionListRequest: 'meta-service/1.0.0/availability/versionList/',
         versionControlRequest: 'meta-service/1.0.0/versionControl/',
@@ -200,8 +194,8 @@
         formData: {
           id: '',
           name: '',
-          iosEnable:false,
-          androidEnable:false
+          iosEnable: false,
+          androidEnable: false
         },
         dialogStatus: '',
         textMap: {
@@ -242,13 +236,13 @@
         searchTxt: '',
         expandQuery: '',
         queryModel: {
-          "reportingUnit": '',
-          "platformId": '',
-          "status": '',
-          "name": '',
-          "gender": '',
-          "birthday": '',
+          name: ''
         },
+        pagination: {
+          page: 1,
+          limit: 20,
+          total: 0
+        }
       }
     },
     filters: {
@@ -268,18 +262,16 @@
     methods: {
       getTableData() {
         this.listLoading = true;
+        this.queryModel = Object.assign(this.queryModel, this.pagination);
         this.$http.get(this.$baseUrl + this.featureListRequest, {
-          params: {
-            id: '',
-            name: ''
-          }
+          params: this.queryModel
         }).then(response => {
           console.log(response)
-          this.list = response.data;
-          // this.total = response.totalElements;
-          this.listLoading = false
-        }).catch(error=>{
-          this.$message.error(error.response.data)
+          this.list = response.data.list;
+          this.pagination.total = response.data.total;
+          this.listLoading = false;
+        }).catch(error => {
+          this.$message.error(error.data)
         })
       },
       getControllableVersionList() {
@@ -288,7 +280,7 @@
           response = response.data;
           this.androidVersionListData = response.androidList;
           this.iosVersionListData = response.iosList;
-        }).catch(error=>{
+        }).catch(error => {
           this.$message.error(error.response.data)
         })
       },
@@ -314,7 +306,7 @@
         // this.resetTemp();
         this.dialogStatus = 'create';
         this.dialogFormVisible = true;
-        if(this.$refs.formData!==undefined){
+        if (this.$refs.formData !== undefined) {
           this.$refs.formData.resetFields();
           this.$nextTick(() => {
             this.$refs['formData'].clearValidate()
@@ -331,9 +323,9 @@
           if (valid) {
             this.$http.post(this.$baseUrl + this.editFeatureMetadata, {
               name: formData.name,
-              id:'',
-              iosEnable:formData.iosEnable,
-              androidEnable:formData.androidEnable,
+              id: '',
+              iosEnable: formData.iosEnable,
+              androidEnable: formData.androidEnable,
             }, {
               headers: {
                 'Authorization': 'Bearer ' + this.$store.state.user.token
@@ -343,7 +335,7 @@
               this.dialogFormVisible = false;
               this.$message.success('信息创建成功');
               this.getTableData();
-            }).catch(error=>{
+            }).catch(error => {
               this.$message.error(error.response.data)
             })
           }
@@ -365,8 +357,8 @@
           this.$http.post(this.$baseUrl + this.editFeatureMetadata, {
             name: formData.name,
             id: formData.id,
-            iosEnable:formData.iosEnable,
-            androidEnable:formData.androidEnable,
+            iosEnable: formData.iosEnable,
+            androidEnable: formData.androidEnable,
           }, {
             headers: {
               'Authorization': 'Bearer ' + this.$store.state.user.token
@@ -376,7 +368,7 @@
             this.dialogFormVisible = false;
             this.$message.success('信息修改成功');
             this.getTableData();
-          }).catch(error=>{
+          }).catch(error => {
             this.$message.error(error.response.data)
           })
         });
@@ -437,7 +429,7 @@
                 this.componentModelData.uploaded = '';
                 this.$message.warning('图片删除失败')
               }
-            }).catch(error=>{
+            }).catch(error => {
               this.$message.error(error.response.data)
             })
           })
@@ -474,6 +466,9 @@
       handleAddIosList(data, type) {
         console.log(data)
         console.log(type)
+        if (data[data.length] === undefined) {
+          return
+        }
         this.$http.post(this.$baseUrl + this.versionControlRequest, {
           deviceType: type,
           version: data[data.length - 1]
@@ -484,7 +479,7 @@
         }).then(response => {
           console.log(response)
           this.$message.success(response.response.data)
-        }).catch(error=>{
+        }).catch(error => {
           this.$message.error(error.response.data)
         })
       },
@@ -507,7 +502,7 @@
         this.expandQuery = !this.expandQuery;
       },
       search() {
-
+        this.getTableData()
       },
       reset() {
       }
