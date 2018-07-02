@@ -120,9 +120,9 @@
       </el-pagination>
     </div>
     <!-- 弹框 -->
-    <el-dialog title="编辑" :visible.sync="dialogFormVisible" width="850px">
+    <el-dialog title="编辑" :visible.sync="dialogFormVisible" width="1200px">
       <el-row type="flex" justify="center">
-        <el-col :span="16">
+        <el-col :span="20">
           <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="140px">
             <el-form-item label="名称" prop="name">
               <el-input v-model="formData.name"></el-input>

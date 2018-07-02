@@ -127,3 +127,12 @@
   }
 }
 
+.common-textareamedium-wrapper{
+  .el-textarea{
+    .el-textarea__inner{
+      min-height: 150px!important;
+    }
+  }
+
+}
+

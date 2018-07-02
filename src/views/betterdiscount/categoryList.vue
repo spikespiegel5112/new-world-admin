@@ -100,9 +100,9 @@
       <!--</el-pagination>-->
     <!--</div>-->
     <!-- 弹框 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="1200px">
       <el-row type="flex" justify="center">
-        <el-col :span="16">
+        <el-col :span="20">
           <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="130px">
             <el-form-item label="商品类目" prop="title">
               <el-input v-model="formData.title"></el-input>

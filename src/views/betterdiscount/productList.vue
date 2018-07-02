@@ -130,9 +130,9 @@
       </el-pagination>
     </div>
     <!-- 弹框 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :before-close="cancel">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :before-close="cancel" width="1200px">
       <el-row type="flex" justify="center">
-        <el-col :span="16">
+        <el-col :span="20">
           <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="120px">
             <el-form-item label="商品编号" prop="goodsNumber">
               <el-input v-model="formData.goodsNumber"></el-input>
@@ -180,10 +180,10 @@
             <el-form-item label="优惠券链接" prop="coupons">
               <el-input v-model="formData.coupons"></el-input>
             </el-form-item>
-            <el-form-item label="详情" prop="details">
+            <el-form-item label="详情" prop="details" class="common-textareamedium-wrapper">
               <el-input type="textarea" v-model="formData.details"></el-input>
             </el-form-item>
-            <el-form-item label="简介" prop="summary">
+            <el-form-item label="简介" prop="summary" class="common-textareamedium-wrapper">
               <el-input type="textarea" v-model="formData.summary"></el-input>
             </el-form-item>
             <el-form-item label="购买链接" prop="buyUrl">
