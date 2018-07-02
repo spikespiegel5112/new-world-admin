@@ -18,11 +18,12 @@
       :show-file-list='showFileList'
       :before-upload="handleBeforeUpload"
       :on-preview="handlePreview"
+      :on-change="onChange"
       :on-remove="handleRemove"
       :on-success="uploadSuccess"
       :on-exceed="uploadAvatarExceeded"
       :file-list="fileListInner"
-      :data="portraitParams">
+      :data="data">
 
       <i class="el-icon-plus"></i>
       <div slot="tip" class="el-upload__tip">
@@ -37,6 +38,13 @@
   export default {
     name: "CommonUploadImage",
     props: {
+      data:{
+        type:Object,
+        required: false,
+        default: function () {
+          return {}
+        }
+      },
       action: {
         type: String,
         required: true,
@@ -107,11 +115,11 @@
       }
     },
     mounted() {
+
     },
     methods: {
       handleBeforeUpload(file) {
         debugger
-        this.$emit('before-upload', '');
 
         console.log(file)
         let suffixDictionary = ['jpg', 'jpeg', 'png'];
@@ -133,6 +141,8 @@
           return false;
         }
         this.loading = true;
+        this.$emit('before-upload', '');
+
       },
       handlePreview(file) {
         console.log(file);
@@ -151,6 +161,11 @@
 
 
       },
+      onChange(file, fileList){
+        console.log(fileList)
+        debugger
+      }
+
     }
 
   }

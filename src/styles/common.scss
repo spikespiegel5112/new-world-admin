@@ -136,3 +136,45 @@
 
 }
 
+.common-imguploadpreview-wrapper{
+  position: relative;
+  .image-item{
+    display: inline-block;
+    width: 110px;
+    height: 110px;
+    position: relative;
+    vertical-align: middle;
+    img{
+      display: inline-block;
+      width: 100%;
+    }
+    .operator{
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      position: absolute;
+      top: 0;
+      text-align: center;
+      &:before{
+        content:'';
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+      }
+      li{
+        display: inline-block;
+        color: #fff;
+        vertical-align: middle;
+        a{
+          margin: 0 5px;
+          color: #ddd;
+          &:hover{
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+
+}
+
