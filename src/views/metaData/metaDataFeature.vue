@@ -56,11 +56,9 @@
             <el-row>
               <el-col :span="23" pull-right>
                 <el-form-item class="pull-right">
-                  <el-button type="primary" size="mini" icon="el-icon-search"
-                             @click="search">搜索
+                  <el-button type="primary" size="mini" icon="el-icon-search" @click="search">搜索
                   </el-button>
-                  <el-button type="primary" size="mini" icon="el-icon-refresh"
-                             @click="reset">重置
+                  <el-button type="primary" size="mini" icon="el-icon-refresh" @click="reset">重置
                   </el-button>
                 </el-form-item>
               </el-col>
@@ -120,9 +118,9 @@
       </el-pagination>
     </div>
     <!-- 弹框 -->
-    <el-dialog title="编辑" :visible.sync="dialogFormVisible" width="850px">
+    <el-dialog title="编辑" :visible.sync="dialogFormVisible" width="1200px">
       <el-row type="flex" justify="center">
-        <el-col :span="16">
+        <el-col :span="20">
           <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="140px">
             <el-form-item label="名称" prop="name">
               <el-input v-model="formData.name"></el-input>
@@ -466,7 +464,7 @@
       handleAddIosList(data, type) {
         console.log(data)
         console.log(type)
-        if (data[data.length] === undefined) {
+        if (data.length === 0) {
           return
         }
         this.$http.post(this.$baseUrl + this.versionControlRequest, {
@@ -483,9 +481,10 @@
           this.$message.error(error.response.data)
         })
       },
-      handleDeleteIosList(data, index, type) {
+      handleDeleteIosList() {
         this.$http.delete(this.$baseUrl + this.versionControlRequest + `${type}/${data}`, {
           headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.$store.state.user.token
           }
         }).then(response => {
