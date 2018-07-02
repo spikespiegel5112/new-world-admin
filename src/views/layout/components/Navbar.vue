@@ -77,6 +77,9 @@ export default {
       'image'
     ])
   },
+  mounted(){
+      console.log(mapGetters)
+  },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('ToggleSideBar')
