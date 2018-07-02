@@ -466,7 +466,7 @@
       handleAddIosList(data, type) {
         console.log(data)
         console.log(type)
-        if (data[data.length] === undefined) {
+        if (data.length === 0) {
           return
         }
         this.$http.post(this.$baseUrl + this.versionControlRequest, {
@@ -483,9 +483,10 @@
           this.$message.error(error.response.data)
         })
       },
-      handleDeleteIosList(data, index, type) {
+      handleDeleteIosList() {
         this.$http.delete(this.$baseUrl + this.versionControlRequest + `${type}/${data}`, {
           headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.$store.state.user.token
           }
         }).then(response => {

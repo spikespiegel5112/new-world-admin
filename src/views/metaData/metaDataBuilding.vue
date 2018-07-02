@@ -605,9 +605,9 @@
       handleAddIosList(data, type) {
         console.log(data[data.length])
         console.log(type)
-        // if (data[data.length] === undefined) {
-        //   return
-        // }
+        if (data.length === 0) {
+          return
+        }
         this.$http.post(this.$baseUrl + this.versionControlRequest, {
           deviceType: type,
           version: data[data.length - 1]
