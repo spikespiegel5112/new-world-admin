@@ -158,7 +158,7 @@
                       <a>设为默认</a>
                     </li>
                     <li>
-                      <a class="el-icon-delete"></a>
+                      <a class="el-icon-delete" @click="deleteImage(index)"></a>
                     </li>
                   </ul>
                 </div>
@@ -634,11 +634,14 @@
 
       },
       setDefault(index) {
-        let temp=this.formData.detailImage[index];
-        if(this.formData.image!==null&&this.formData.image!==undefined&&this.formData.image.length>0){
+        let temp = this.formData.detailImage[index];
+        if (this.formData.image !== null && this.formData.image !== undefined && this.formData.image.length > 0) {
           this.formData.detailImage.splice(index, 1, this.formData.image);
         }
         this.formData.image = temp;
+      },
+      deleteImage(index) {
+        this.formData.detailImage.splice(index,1)
       }
     }
   }
