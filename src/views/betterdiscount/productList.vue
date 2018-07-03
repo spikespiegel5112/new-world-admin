@@ -117,7 +117,8 @@
       </el-table-column>
       <el-table-column label="上架时间范围">
         <template slot-scope="scope">
-          {{$moment(scope.row.effectiveStartTime).format('YYYY-MM-DD HH:mm:ss')}} ~<br/>{{$moment(scope.row.effectiveEndTime).format('YYYY-MM-DD HH:mm:ss')}}
+          {{$moment(scope.row.effectiveStartTime).format('YYYY-MM-DD HH:mm:ss')}} ~<br/>
+          {{$moment(scope.row.effectiveEndTime).format('YYYY-MM-DD HH:mm:ss')}}
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作" width="170">
@@ -587,7 +588,7 @@
         console.log(this.formData)
         this.$refs.formData.validate(valid => {
           if (valid) {
-            this.formData.image=this.formData.detailImage[this.defaultImageIndex];
+            this.formData.image = this.formData.detailImage[this.defaultImageIndex];
             this.$http.post(this.$baseUrl + this.updateGoodsContentRequest, {
               id: this.formData.id,
               goodsNumber: this.formData.goodsNumber,
@@ -746,7 +747,7 @@
       // },
       deleteImage(index) {
         this.formData.detailImage.splice(index, 1);
-        this.defaultImageIndex=this.defaultImageIndex-1>=0?this.defaultImageIndex-1:0;
+        this.defaultImageIndex = this.defaultImageIndex - 1 >= 0 ? this.defaultImageIndex - 1 : 0;
       }
     }
   }
