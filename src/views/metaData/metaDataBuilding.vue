@@ -416,7 +416,7 @@
       createData() {
         const formData = this.formData;
 
-        console.log(this.$baseUrl)
+
 
         this.$refs['formData'].validate((valid) => {
           if (valid) {

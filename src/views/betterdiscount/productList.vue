@@ -110,12 +110,12 @@
           {{scope.row.buyUrl}}
         </template>
       </el-table-column>
-      <el-table-column label="是否上架">
+      <el-table-column label="是否上架" width="60">
         <template slot-scope="scope">
           {{groundingStatusDictionary.filter(item=>item.code===scope.row.status)[0].name}}
         </template>
       </el-table-column>
-      <el-table-column label="上架时间范围">
+      <el-table-column label="上架时间范围" width="120">
         <template slot-scope="scope">
           {{$moment(scope.row.effectiveStartTime).format('YYYY-MM-DD HH:mm:ss')}} ~<br/>
           {{$moment(scope.row.effectiveEndTime).format('YYYY-MM-DD HH:mm:ss')}}
@@ -232,7 +232,7 @@
                            :key="item.code"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item v-if="durationFlag" label="上架时间范围" prop="effectiveStartTime">
+            <el-form-item v-if="durationFlag" label="上架时间范围" prop="effectiveDuration">
               <el-date-picker
                 v-model="effectiveDuration"
                 type="datetimerange"
@@ -397,7 +397,7 @@
           status: [{required: true, message: '此项为必填项', trigger: 'change'}],
           effectiveStartTime: [{required: true, message: '此项为必填项', trigger: 'change'}],
           effectiveEndTime: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          effectiveDuration: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          effectiveDuration: [{required: false, message: '此项为必填项', trigger: 'change'}],
 
         },
         downloadLoading: false,
@@ -564,13 +564,22 @@
 
         this.fileList = [];
         this.formData.detailImage = [];
-        scope.row.detailImage.split(',').forEach((item, index) => {
-          this.formData.detailImage.push(item);
+        if((scope.row.detailImage===null||scope.row.detailImage===[])&&scope.row.image!==null||scope.row.image!==''){
+          this.formData.detailImage.push(scope.row.image)
           this.fileList.push({
-            name: index,
-            url: item
+            name: 0,
+            url: scope.row.image
           })
-        });
+        }else{
+          scope.row.detailImage.split(',').forEach((item, index) => {
+            this.formData.detailImage.push(item);
+            this.fileList.push({
+              name: index,
+              url: item
+            })
+          });
+        }
+
         this.formData.detailImage.forEach((item, index) => {
           if (item === this.formData.image) {
             this.defaultImageIndex = index;
