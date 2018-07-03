@@ -140,21 +140,30 @@
   position: relative;
   .image-item{
     display: inline-block;
+    margin: 0 15px 0 0;
     width: 110px;
     height: 110px;
     position: relative;
     vertical-align: middle;
+    overflow: hidden;
     img{
       display: inline-block;
       width: 100%;
+    }
+    &:hover{
+      .operator{
+        bottom: 0;
+
+      }
     }
     .operator{
       width: 100%;
       height: 100%;
       background-color: rgba(0,0,0,0.5);
       position: absolute;
-      top: 0;
+      bottom: 110px;
       text-align: center;
+      transition: all 0.3s;
       &:before{
         content:'';
         display: inline-block;
@@ -174,7 +183,25 @@
         }
       }
     }
+
   }
+  .add{
+    display: inline-block;
+
+    margin:10px 0;
+    &:before{
+      content:'';
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+    }
+    i{
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+}
+.common-avataruploader-wrapper{
 
 }
 

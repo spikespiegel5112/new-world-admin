@@ -143,57 +143,54 @@
             </el-form-item>
             <el-form-item label="商品图片" prop="detailImage">
               <div class="common-imguploadpreview-wrapper">
+                <!--{{formData.detailImage}}-->
+
                 <a v-if="fileList.length!==0" class="close">
                   <span class="iconfont icon-crosswide" @click="deleteAvatar"></span>
                 </a>
-
                 <div v-if="fileList.length===0" class="image-item">
                   <img class="avatar" src="../../image/default/defaultavatar_60_60.png">
                 </div>
-                <div v-else v-for="(item, index) in fileList" class="image-item">
-                  <img :src="item.url"
-                       class="avatar">
+                <div v-else v-for="(item, index) in formData.detailImage" class="image-item">
+                  <img :src="item+'-style_100x100'" class="avatar">
                   <ul class="operator">
                     <li @click="setDefault(index)">
                       <a>设为默认</a>
                     </li>
                     <li>
-                      <a class="el-icon-delete"></a>
+                      <a class="el-icon-delete" @click="deleteImage(index)"></a>
                     </li>
                   </ul>
                 </div>
+                <el-upload
+                  class="common-avataruploader-wrapper"
+                  ref="uploadAvatar"
+                  :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
+                  list-type="text"
+                  :show-file-list="false"
+                  :before-upload="handleBeforeUpload"
+                  :on-preview="handlePreview"
+                  :before-remove="handleRemove"
+                  :on-success="uploadSuccess"
+                  :on-exceed="uploadAvatarExceeded"
+                  :file-list="fileList"
+                  :data="portraitParams">
 
+                  <el-button class="add" type="primary">上传</el-button>
+
+
+                  <div slot="tip" class="el-upload__tip">
+                    只能上传jpg/png文件，且不超过2MB
+                  </div>
+                </el-upload>
               </div>
-              <el-upload
-                class="common-avataruploader-wrapper"
-                ref="uploadAvatar"
-                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
-                list-type="text"
-                :show-file-list="true"
-                :before-upload="handleBeforeUpload"
-                :on-preview="handlePreview"
-                :before-remove="handleRemove"
-                :on-success="uploadSuccess"
-                :on-exceed="uploadAvatarExceeded"
-                :file-list="fileList"
-                :data="portraitParams">
 
-                <i class="el-icon-plus"></i>
-                <div slot="tip" class="el-upload__tip">
-                  只能上传jpg/png文件，且不超过2MB
-                </div>
-              </el-upload>
-
-              <!--<CommonUploadImage-->
-              <!--:action="$baseUrl+'image-upload-service/1.0.0/file/upload'"-->
-              <!--@before-upload="handleBeforeUpload"-->
-              <!--@on-preview="handlePreview"-->
-              <!--@on-remove="handleRemove"-->
-              <!--@on-success="uploadSuccess"-->
-              <!--@on-exceed="uploadAvatarExceeded"-->
-              <!--:fileList="fileList"-->
-              <!--:data="portraitParams"-->
-              <!--/>-->
+            </el-form-item>
+            <el-form-item label="默认图片" width="150" align="center">
+              <template slot-scope="scope">
+                <!--{{formData.image}}-->
+                <img :src="formData.image+'-style_200x200'" width="80">
+              </template>
             </el-form-item>
             <el-form-item label="商品价格" prop="price">
               <el-input v-model.number="formData.price"></el-input>
@@ -276,7 +273,7 @@
         listLoading: true,
         queryModel: {
           name: '',
-          goodsNumber: null
+          goodsNumber: 552401614496
         },
         pagination: {
           page: 1,
@@ -459,7 +456,7 @@
               "coupons": this.formData.coupons,
               "type": this.formData.type,
               "image": this.formData.image,
-              detailImage: this.formData.detailImage.map(item=>item.imageUrl).join(','),
+              detailImage: this.formData.detailImage.map(item => item.imageUrl).join(','),
               "details": this.formData.details,
               "summary": this.formData.summary,
               "buyUrl": this.formData.buyUrl,
@@ -483,12 +480,12 @@
         this.dialogFormVisible = true;
 
         this.fileList = [];
-        this.formData.detailImage=[];
-        scope.row.detailImage.split(',').forEach((item, index)=>{
+        this.formData.detailImage = [];
+        scope.row.detailImage.split(',').forEach((item, index) => {
           this.formData.detailImage.push(item);
           this.fileList.push({
             name: index,
-            url: item + '-style_100x100'
+            url: item
           })
         });
         console.log(this.fileList)
@@ -505,7 +502,7 @@
           name: this.formData.name,
           price: Number(this.formData.price).toFixed(2),
           discountPrice: Number(this.formData.discountPrice).toFixed(2),
-          detailImage:this.formData.detailImage.join(','),
+          detailImage: this.formData.detailImage.join(','),
           coupons: this.formData.coupons,
           type: this.formData.type,
           image: this.formData.image,
@@ -572,15 +569,15 @@
       handleRemove(file, fileList) {
         console.log(file)
         console.log(fileList)
-        let index=null;
-        fileList.forEach((item, index2)=>{
-          if(file.uid===item){
-            index=index2;
+        let index = null;
+        fileList.forEach((item, index2) => {
+          if (file.uid === item) {
+            index = index2;
           }
         });
-        this.formData.detailImage.splice(index,1)
+        this.formData.detailImage.splice(index, 1)
 
-        this.fileList=this.fileList.filter(item=>item.uid!==file.uid);
+        this.fileList = this.fileList.filter(item => item.uid !== file.uid);
 
         console.log(this.formData.detailImage)
       },
@@ -588,15 +585,12 @@
         this.loading = false;
         console.log(file)
         console.log(response)
-        console.log(6,fileList)
+        console.log(6, fileList)
 
 
-
-        this.fileList.push(file);
+        this.fileList.push(response);
         console.log(this.formData)
-        this.formData.detailImage.push({
-          imageUrl:response.url
-        });
+        this.formData.detailImage.push(response.url);
         console.log(fileList)
         this.formData.detailImage.forEach((item, index) => {
           if (item.url === this.formData.image) {
@@ -636,12 +630,18 @@
         // this.$refs['formData'].resetFields();
 
       },
-      deleteAvatar(){
+      deleteAvatar() {
 
       },
-      setDefault(index){
-        this.formData.image= this.formData.detailImage[index];
-        this.formData.detailImage.splice(index,1);
+      setDefault(index) {
+        let temp = this.formData.detailImage[index];
+        if (this.formData.image !== null && this.formData.image !== undefined && this.formData.image.length > 0) {
+          this.formData.detailImage.splice(index, 1, this.formData.image);
+        }
+        this.formData.image = temp;
+      },
+      deleteImage(index) {
+        this.formData.detailImage.splice(index,1)
       }
     }
   }
