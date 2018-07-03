@@ -273,7 +273,7 @@
         listLoading: true,
         queryModel: {
           name: '',
-          goodsNumber: 552401614496
+          goodsNumber: null
         },
         pagination: {
           page: 1,
