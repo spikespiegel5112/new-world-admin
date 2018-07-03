@@ -64,7 +64,7 @@
     <el-table :data="tableData" v-loading.body="listLoading" element-loading-text="Loading" border fit
               highlight-current-row
               style="width: 100%">
-      <el-table-column align="center" label='ID' width="40">
+      <el-table-column align="center" label='ID' width="50">
         <template slot-scope="scope">
           {{scope.row.id}}
         </template>
@@ -144,12 +144,12 @@
             <el-form-item label="商品图片" prop="detailImage">
               <div class="common-imguploadpreview-wrapper">
                 <!--{{formData.detailImage}}-->
-
-                <a v-if="fileList.length!==0" class="close">
-                  <span class="iconfont icon-crosswide" @click="deleteAvatar"></span>
-                </a>
-                <div v-if="fileList.length===0" class="image-item">
-                  <img class="avatar" src="../../image/default/defaultavatar_60_60.png">
+                <el-checkbox-group v-show="false" v-model="formData.detailImage">
+                  <el-checkbox v-for='item in formData.detailImage' :label="item"></el-checkbox>
+                </el-checkbox-group>
+                <div v-if="fileList.length===0">
+                  暂无图片
+                  <!--<img class="avatar" src="../../image/default/defaultavatar_60_60.png">-->
                 </div>
                 <div v-else v-for="(item, index) in formData.detailImage" class="image-item">
                   <img :src="item+'-style_100x100'" class="avatar">
@@ -186,9 +186,11 @@
               </div>
 
             </el-form-item>
-            <el-form-item label="默认图片" width="150" align="center">
+            <el-form-item label="默认图片" prop="image">
               <template slot-scope="scope">
                 <!--{{formData.image}}-->
+                <el-input v-show="false" v-model="formData.image"></el-input>
+
                 <img :src="formData.image+'-style_200x200'" width="80">
               </template>
             </el-form-item>
@@ -222,6 +224,17 @@
                            :key="item.code"></el-option>
               </el-select>
             </el-form-item>
+            <el-form-item label="上架时间范围" prop="effectiveStartTime">
+              <el-date-picker
+                v-model="effectiveDuration"
+                type="datetimerange"
+                :picker-options="pickerOptions2"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                align="right">
+              </el-date-picker>
+            </el-form-item>
           </el-form>
         </el-col>
       </el-row>
@@ -240,6 +253,16 @@
 
   export default {
     data() {
+      let float = (rule, value, callback) => {
+        console.log(value)
+        if (value === '') {
+          callback(new Error('请再次输入密码'));
+        } else if (value !== this.changePasswordFormData.newPassword) {
+          callback(new Error('两次输入密码不一致!'));
+        } else {
+          callback();
+        }
+      };
       return {
         categoryListRequest: 'better-discount-service/1.0.0/queryTitleTypeList',
         queryGoodsListRequest: 'better-discount-service/1.0.0/queryGoodsList',
@@ -292,8 +315,8 @@
           id: null,
           goodsNumber: '',
           name: '',
-          price: '',
-          discountPrice: '',
+          price: null,
+          discountPrice: null,
           coupons: '',
           type: '',
           image: '',
@@ -304,6 +327,36 @@
           imageWidth: '',
           imageHigh: '',
           status: '',
+          effectiveStartTime: '',
+          effectiveEndTime: ''
+        },
+        effectiveDuration: [],
+        pickerOptions2: {
+          shortcuts: [{
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }]
         },
         searchTxt: '',
         dialogFormVisible: false,
@@ -321,6 +374,9 @@
             {type: 'number', message: '必须为数字值'}],
           discountPrice: [{required: true, message: '此项为必填项', trigger: 'change'},
             {type: 'number', message: '必须为数字值'}],
+          // {pattern: /^[1-9]\d*\.\d*|0\.\d*[1-9]\d*$/, message: '必须为数字值', trigger: 'change'}],
+          detailImage: [{required: true, message: '此项为必填项', trigger: 'change'},
+            {type: 'array', message: 'dsds'}],
           coupons: [{required: false, message: '此项为必填项', trigger: 'change'}],
           type: [{required: true, message: '此项为必填项', trigger: 'change'}],
           image: [{required: true, message: '此项为必填项', trigger: 'change'}],
@@ -330,6 +386,10 @@
           imageWidth: [{required: true, message: '此项为必填项', trigger: 'change'}],
           imageHigh: [{required: true, message: '此项为必填项', trigger: 'change'}],
           status: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          effectiveStartTime: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          effectiveEndTime: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          effectiveDuration: [{required: true, message: '此项为必填项', trigger: 'change'}],
+
         },
         downloadLoading: false,
         // pickerOptions0: {
@@ -350,6 +410,13 @@
           bucketName: 'funyvalley',
           folderName: 'icon'
         },
+      }
+    },
+    watch: {
+      effectiveDuration(value) {
+        console.log(value)
+        this.formData.effectiveStartTime = value[0];
+        this.formData.effectiveEndTime = value[1];
       }
     },
     filters: {
@@ -463,6 +530,8 @@
               "imageWidth": this.formData.imageWidth,
               "imageHigh": this.formData.imageHigh,
               "status": this.formData.status,
+              effectiveStartTime: this.formData.effectiveStartTime,
+              effectiveEndTime: this.formData.effectiveEndTime
             }).then(response => {
               console.log(response)
               this.dialogFormVisible = false;
@@ -474,8 +543,15 @@
       },
       handleUpdate(scope) {
         console.log(scope)
+        scope.row.price = Number(scope.row.price);
+        scope.row.discountPrice = Number(scope.row.discountPrice);
+        scope.row.discountPrice = Number(scope.row.discountPrice);
+
         this.formData = Object.assign({}, scope.row);
         this.formData.timestamp = new Date(this.formData.timestamp);
+        this.effectiveDuration[0] = this.formData.effectiveStartTime;
+        this.effectiveDuration[1] = this.formData.effectiveEndTime;
+
         this.dialogStatus = 'update';
         this.dialogFormVisible = true;
 
@@ -496,28 +572,36 @@
       },
       updatedGoods() {
         console.log(this.formData)
-        this.$http.post(this.$baseUrl + this.updateGoodsContentRequest, {
-          id: this.formData.id,
-          goodsNumber: this.formData.goodsNumber,
-          name: this.formData.name,
-          price: Number(this.formData.price).toFixed(2),
-          discountPrice: Number(this.formData.discountPrice).toFixed(2),
-          detailImage: this.formData.detailImage.join(','),
-          coupons: this.formData.coupons,
-          type: this.formData.type,
-          image: this.formData.image,
-          details: this.formData.details,
-          summary: this.formData.summary,
-          buyUrl: this.formData.buyUrl,
-          imageWidth: this.formData.imageWidth,
-          imageHigh: this.formData.imageHigh,
-          status: this.formData.status,
-        }).then(response => {
-          this.dialogFormVisible = false;
-          this.$message.success('产品信息更新成功');
-          this.getTableData();
-          console.log(response)
+        this.$refs.formData.validate(valid => {
+          if (valid) {
+            this.$http.post(this.$baseUrl + this.updateGoodsContentRequest, {
+              id: this.formData.id,
+              goodsNumber: this.formData.goodsNumber,
+              name: this.formData.name,
+              price: Number(this.formData.price).toFixed(2),
+              discountPrice: Number(this.formData.discountPrice).toFixed(2),
+              detailImage: this.formData.detailImage.join(','),
+              coupons: this.formData.coupons,
+              type: this.formData.type,
+              image: this.formData.image,
+              details: this.formData.details,
+              summary: this.formData.summary,
+              buyUrl: this.formData.buyUrl,
+              imageWidth: this.formData.imageWidth,
+              imageHigh: this.formData.imageHigh,
+              status: this.formData.status,
+              effectiveStartTime: this.formData.effectiveStartTime,
+              effectiveEndTime: this.formData.effectiveEndTime
+            }).then(response => {
+              this.dialogFormVisible = false;
+              this.$message.success('产品信息更新成功');
+              this.getTableData();
+              this.resetForm();
+              console.log(response)
+            })
+          }
         })
+
       },
       handleDelete(scope) {
         this.$confirm('确认删除?', '提示', {
@@ -609,6 +693,9 @@
       },
       cancel() {
         this.dialogFormVisible = false;
+        this.resetForm();
+      },
+      resetForm() {
         this.formData = {
           "goodsNumber": '',
           "name": '',
@@ -627,8 +714,6 @@
         this.$nextTick(() => {
           this.$refs.formData.clearValidate();
         })
-        // this.$refs['formData'].resetFields();
-
       },
       deleteAvatar() {
 
@@ -641,7 +726,7 @@
         this.formData.image = temp;
       },
       deleteImage(index) {
-        this.formData.detailImage.splice(index,1)
+        this.formData.detailImage.splice(index, 1)
       }
     }
   }
