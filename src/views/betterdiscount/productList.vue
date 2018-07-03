@@ -232,7 +232,7 @@
                            :key="item.code"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item v-if="durationFlag" label="上架时间范围" prop="effectiveStartTime">
+            <el-form-item v-if="durationFlag" label="上架时间范围" prop="effectiveDuration">
               <el-date-picker
                 v-model="effectiveDuration"
                 type="datetimerange"
@@ -397,7 +397,7 @@
           status: [{required: true, message: '此项为必填项', trigger: 'change'}],
           effectiveStartTime: [{required: true, message: '此项为必填项', trigger: 'change'}],
           effectiveEndTime: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          effectiveDuration: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          effectiveDuration: [{required: false, message: '此项为必填项', trigger: 'change'}],
 
         },
         downloadLoading: false,
@@ -564,13 +564,22 @@
 
         this.fileList = [];
         this.formData.detailImage = [];
-        scope.row.detailImage.split(',').forEach((item, index) => {
-          this.formData.detailImage.push(item);
+        if((scope.row.detailImage===null||scope.row.detailImage===[])&&scope.row.image!==null||scope.row.image!==''){
+          this.formData.detailImage.push(scope.row.image)
           this.fileList.push({
-            name: index,
-            url: item
+            name: 0,
+            url: scope.row.image
           })
-        });
+        }else{
+          scope.row.detailImage.split(',').forEach((item, index) => {
+            this.formData.detailImage.push(item);
+            this.fileList.push({
+              name: index,
+              url: item
+            })
+          });
+        }
+
         this.formData.detailImage.forEach((item, index) => {
           if (item === this.formData.image) {
             this.defaultImageIndex = index;
