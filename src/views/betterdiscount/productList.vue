@@ -81,7 +81,8 @@
       </el-table-column>
       <el-table-column label="商品图片" width="150" align="center">
         <template slot-scope="scope">
-          <img :src="scope.row.image+'-style_200x200'" width="80">
+          <div v-if="scope.row.image===''">默认图片未选择</div>
+          <img v-else :src="scope.row.image+'-style_200x200'" width="80">
         </template>
       </el-table-column>
       <el-table-column align="center" label="商品价格" width="100">
@@ -114,8 +115,11 @@
           {{groundingStatusDictionary.filter(item=>item.code===scope.row.status)[0].name}}
         </template>
       </el-table-column>
-
-
+      <el-table-column label="上架时间范围">
+        <template slot-scope="scope">
+          {{$moment(scope.row.effectiveStartTime).format('YYYY-MM-DD HH:mm:ss')}} ~<br/>{{$moment(scope.row.effectiveEndTime).format('YYYY-MM-DD HH:mm:ss')}}
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="操作" width="170">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
@@ -145,13 +149,15 @@
               <div class="common-imguploadpreview-wrapper">
                 <!--{{formData.detailImage}}-->
                 <el-checkbox-group v-show="false" v-model="formData.detailImage">
-                  <el-checkbox v-for='item in formData.detailImage' :label="item"></el-checkbox>
+                  <el-checkbox v-for='item in formData.detailImage' :key="item" :label="item"></el-checkbox>
                 </el-checkbox-group>
                 <div v-if="fileList.length===0">
                   暂无图片
                   <!--<img class="avatar" src="../../image/default/defaultavatar_60_60.png">-->
                 </div>
                 <div v-else v-for="(item, index) in formData.detailImage" class="image-item">
+                  <!--{{defaultImageIndex}}-->
+                  <span v-if="defaultImageIndex===index" class="check el-icon-circle-check"></span>
                   <img :src="item+'-style_100x100'" class="avatar">
                   <ul class="operator">
                     <li @click="setDefault(index)">
@@ -186,14 +192,15 @@
               </div>
 
             </el-form-item>
-            <el-form-item label="默认图片" prop="image">
-              <template slot-scope="scope">
-                <!--{{formData.image}}-->
-                <el-input v-show="false" v-model="formData.image"></el-input>
+            <!--<el-form-item label="默认图片" prop="image">-->
+            <!--<template slot-scope="scope">-->
+            <!--&lt;!&ndash;{{formData.image}}&ndash;&gt;-->
 
-                <img :src="formData.image+'-style_200x200'" width="80">
-              </template>
-            </el-form-item>
+            <!--<el-input v-show="false" v-model="formData.image"></el-input>-->
+            <!--<div v-if="formData.image===''">请选择默认图片</div>-->
+            <!--<img v-else :src="formData.image+'-style_200x200'" width="80">-->
+            <!--</template>-->
+            <!--</el-form-item>-->
             <el-form-item label="商品价格" prop="price">
               <el-input v-model.number="formData.price"></el-input>
             </el-form-item>
@@ -224,7 +231,7 @@
                            :key="item.code"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="上架时间范围" prop="effectiveStartTime">
+            <el-form-item v-if="durationFlag" label="上架时间范围" prop="effectiveStartTime">
               <el-date-picker
                 v-model="effectiveDuration"
                 type="datetimerange"
@@ -331,6 +338,7 @@
           effectiveEndTime: ''
         },
         effectiveDuration: [],
+        defaultImageIndex: 0,
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',
@@ -392,18 +400,7 @@
 
         },
         downloadLoading: false,
-        // pickerOptions0: {
-        //   disabledDate: (time) => {
-        //     if (this.value2 !== '') {
-        //       return time.getTime() > this.value2
-        //     }
-        //   }
-        // },
-        // pickerOptions1: {
-        //   disabledDate: (time) => {
-        //     return time.getTime() < this.value1
-        //   }
-        // },
+        durationFlag: false,
         expandQuery: false,
 
         portraitParams: {
@@ -415,8 +412,16 @@
     watch: {
       effectiveDuration(value) {
         console.log(value)
+        if (value === null) {
+          value = [];
+        }
         this.formData.effectiveStartTime = value[0];
         this.formData.effectiveEndTime = value[1];
+      },
+      'formData.status': function (value) {
+        console.log(value)
+        value === '0' ? this.durationFlag = false : this.durationFlag = true;
+        this.formData.effectiveDuration = [];
       }
     },
     filters: {
@@ -516,17 +521,18 @@
         this.$refs.formData.validate(valid => {
           if (valid) {
             this.$http.post(this.$baseUrl + this.addGoodsRequest, {
+              id: '',
               "goodsNumber": this.formData.goodsNumber,
               "name": this.formData.name,
               "price": Number(this.formData.price).toFixed(2),
               "discountPrice": Number(this.formData.discountPrice).toFixed(2),
               "coupons": this.formData.coupons,
               "type": this.formData.type,
-              "image": this.formData.image,
-              detailImage: this.formData.detailImage.map(item => item.imageUrl).join(','),
+              detailImage: this.formData.detailImage.join(','),
               "details": this.formData.details,
               "summary": this.formData.summary,
               "buyUrl": this.formData.buyUrl,
+              "image": this.formData.image,
               "imageWidth": this.formData.imageWidth,
               "imageHigh": this.formData.imageHigh,
               "status": this.formData.status,
@@ -564,6 +570,13 @@
             url: item
           })
         });
+        this.formData.detailImage.forEach((item, index) => {
+          if (item === this.formData.image) {
+            this.defaultImageIndex = index;
+          }
+        });
+
+
         console.log(this.fileList)
 
         this.$nextTick(() => {
@@ -574,6 +587,7 @@
         console.log(this.formData)
         this.$refs.formData.validate(valid => {
           if (valid) {
+            this.formData.image=this.formData.detailImage[this.defaultImageIndex];
             this.$http.post(this.$baseUrl + this.updateGoodsContentRequest, {
               id: this.formData.id,
               goodsNumber: this.formData.goodsNumber,
@@ -583,10 +597,10 @@
               detailImage: this.formData.detailImage.join(','),
               coupons: this.formData.coupons,
               type: this.formData.type,
-              image: this.formData.image,
               details: this.formData.details,
               summary: this.formData.summary,
               buyUrl: this.formData.buyUrl,
+              image: this.formData.image,
               imageWidth: this.formData.imageWidth,
               imageHigh: this.formData.imageHigh,
               status: this.formData.status,
@@ -632,20 +646,13 @@
       add() {
         this.dialogFormVisible = true;
         this.dialogStatus = 'create';
-
-
       },
       expand() {
         this.expandQuery = !this.expandQuery;
       },
-
-
       handleBeforeUpload(file) {
         console.log(file)
         this.loading = true;
-
-        // debugger
-
       },
       handlePreview(file) {
         console.log(file);
@@ -653,16 +660,20 @@
       handleRemove(file, fileList) {
         console.log(file)
         console.log(fileList)
+
         let index = null;
         fileList.forEach((item, index2) => {
           if (file.uid === item) {
             index = index2;
           }
         });
-        this.formData.detailImage.splice(index, 1)
-
+        this.formData.detailImage.splice(index, 1);
+        this.formData.detailImage.forEach((item, index) => {
+          if (item === this.formData.image) {
+            this.formData.image = item;
+          }
+        });
         this.fileList = this.fileList.filter(item => item.uid !== file.uid);
-
         console.log(this.formData.detailImage)
       },
       uploadSuccess(response, file, fileList) {
@@ -676,11 +687,11 @@
         console.log(this.formData)
         this.formData.detailImage.push(response.url);
         console.log(fileList)
-        this.formData.detailImage.forEach((item, index) => {
-          if (item.url === this.formData.image) {
-            this.formData.detailImage.splice(index, 1)
-          }
-        });
+        // this.formData.detailImage.forEach((item, index) => {
+        //   if (item.url === this.formData.image) {
+        //     this.formData.detailImage.splice(index, 1)
+        //   }
+        // });
 
         this.loading = false;
         this.$message({
@@ -710,6 +721,9 @@
           "imageWidth": '',
           "imageHigh": '',
           "status": '',
+          detailImage: [],
+          effectiveEndTime: '',
+          effectiveStartTime: ''
         };
         this.$nextTick(() => {
           this.$refs.formData.clearValidate();
@@ -719,14 +733,20 @@
 
       },
       setDefault(index) {
-        let temp = this.formData.detailImage[index];
-        if (this.formData.image !== null && this.formData.image !== undefined && this.formData.image.length > 0) {
-          this.formData.detailImage.splice(index, 1, this.formData.image);
-        }
-        this.formData.image = temp;
+        this.defaultImageIndex = index;
+        this.formData.image = this.formData.detailImage[index];
+
       },
+      // setDefault(index) {
+      //   let temp = this.formData.detailImage[index];
+      //   if (this.formData.image !== null && this.formData.image !== undefined && this.formData.image.length > 0) {
+      //     this.formData.detailImage.splice(index, 1, this.formData.image);
+      //   }
+      //   this.formData.image = temp;
+      // },
       deleteImage(index) {
-        this.formData.detailImage.splice(index, 1)
+        this.formData.detailImage.splice(index, 1);
+        this.defaultImageIndex=this.defaultImageIndex-1>=0?this.defaultImageIndex-1:0;
       }
     }
   }
