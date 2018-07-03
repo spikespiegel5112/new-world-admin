@@ -19,7 +19,7 @@
         <span class="show-pwd" @click="showPwd"><svg-icon icon-class="eye"/></span>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" :loading="loading" @click.native.prevent="handleLogin">
+        <el-button type="primary" :loading="loading" @click.native.prevent="handleLogin" style="width:100%">
           Sign in
         </el-button>
       </el-form-item>
@@ -37,7 +37,6 @@
   export default {
     name: 'login',
     data() {
-
       // const validateUsername = (rule, value, callback) => {
       //   if (!isvalidUsername(value)) {
       //     callback(new Error('请输入正确的用户名'))
@@ -51,14 +50,14 @@
         } else {
           callback()
         }
-      }
+      };
       return {
+        userInfoRequest: 'uaa/user',
         loginRequest: 'uaa/oauth/token',
         loginForm: {
           username: '',
           password: '',
           'grant_type': 'password'
-
         },
         loginRules: {
           username: [{required: true, trigger: 'change'}],
@@ -77,8 +76,6 @@
         }
       },
       handleLogin() {
-        const TokenKey = 'Admin-Token'
-        const loginIdKey = 'Admin-Login-Id'
         this.$refs.loginForm.validate(valid => {
           if (valid) {
             this.loading = true;
@@ -96,14 +93,35 @@
               }],
             }).then(response => {
               console.log(response)
-              Cookies.set(TokenKey, response.access_token)
-              Cookies.set(loginIdKey, this.loginForm.username)
+              response = response.data;
+              Cookies.set('Admin-Token', response.access_token);
+              Cookies.set('Admin-Login-Id', this.loginForm.username);
 
-              this.$store.commit('SET_TOKEN', response.access_token)
-              this.$store.commit('SET_LOGIN_ID', this.loginForm.username)
+              this.$store.commit('SET_TOKEN', response.access_token);
+              this.$store.commit('SET_LOGIN_ID', this.loginForm.username);
 
-              this.loading = false;
-              this.$router.push({path: '/'})
+
+              this.$http.get(this.$baseUrl + this.userInfoRequest, {
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                params: {
+                  access_token: response.access_token
+                }
+              }).then(response => {
+                console.log(response)
+                response=response.data;
+                this.loading = false;
+                if(response.authorities.filter(item=>item.authority==='admin').length>0){
+                  this.$router.push({path: '/'})
+                }else{
+                  this.$message.error('此账号无管理员权限')
+                }
+              }).catch(error => {
+                console.log(response.access_token)
+                this.$message.error('dsds')
+              })
+
             }).catch(error => {
               console.log(error)
               this.loading = false

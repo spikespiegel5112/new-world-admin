@@ -110,12 +110,12 @@
           {{scope.row.buyUrl}}
         </template>
       </el-table-column>
-      <el-table-column label="是否上架">
+      <el-table-column label="是否上架" width="60">
         <template slot-scope="scope">
           {{groundingStatusDictionary.filter(item=>item.code===scope.row.status)[0].name}}
         </template>
       </el-table-column>
-      <el-table-column label="上架时间范围">
+      <el-table-column label="上架时间范围" width="120">
         <template slot-scope="scope">
           {{$moment(scope.row.effectiveStartTime).format('YYYY-MM-DD HH:mm:ss')}} ~<br/>
           {{$moment(scope.row.effectiveEndTime).format('YYYY-MM-DD HH:mm:ss')}}

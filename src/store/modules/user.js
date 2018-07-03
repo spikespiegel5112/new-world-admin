@@ -53,7 +53,7 @@ const user = {
     // 获取用户信息
     GetInfo({commit, state}) {
       console.log(getLoginId())
-      console.log(this.$baseUrl)
+
       console.log('http://gateway.zan-qian.com/' + 'profile-service/1.0.0/queryUserProfileById/' + getLoginId())
       return new Promise((resolve, reject) => {
         // this.$http.post('http://gateway.zan-qian.com/' + 'profile-service/1.0.0/queryUserProfileById/' + getLoginId(), {}).then(response => {
