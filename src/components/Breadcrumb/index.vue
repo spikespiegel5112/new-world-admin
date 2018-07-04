@@ -11,7 +11,7 @@
 
 <script>
 export default {
-  created() {
+  mounted() {
     this.getBreadcrumb()
   },
   data() {

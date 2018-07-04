@@ -6,7 +6,7 @@
           <el-form class="basearea">
             <ul class="pull-left">
               <li>
-                <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate">
+                <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate" v-waves>
                   新增
                 </el-button>
               </li>
@@ -56,9 +56,9 @@
             <el-row>
               <el-col :span="23" pull-right>
                 <el-form-item class="pull-right">
-                  <el-button type="primary" size="mini" icon="el-icon-search" @click="search">搜索
+                  <el-button type="primary" size="mini" icon="el-icon-search" @click="search" v-waves>搜索
                   </el-button>
-                  <el-button type="primary" size="mini" icon="el-icon-refresh" @click="reset">重置
+                  <el-button type="primary" size="mini" icon="el-icon-refresh" @click="reset" v-waves>重置
                   </el-button>
                 </el-form-item>
               </el-col>
@@ -143,9 +143,9 @@
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
+        <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
         <el-button v-if="dialogStatus==='create'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
-        <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
+        <el-button v-else type="primary" @click="updateData" v-waves>{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
   </el-row>
@@ -176,7 +176,7 @@
         list: null,
         total: null,
         listLoading: true,
-        listQuery: {
+        queryModel: {
           name: '',
           available: '',
           actionType: '',
@@ -283,15 +283,15 @@
         })
       },
       handleFilter() {
-        this.listQuery.page = 1;
+        this.queryModel.page = 1;
         this.getTableData()
       },
       handleSizeChange(val) {
-        this.listQuery.limit = val;
+        this.queryModel.limit = val;
         this.getTableData()
       },
       handleCurrentChange(val) {
-        this.listQuery.page = val;
+        this.queryModel.page = val;
         this.getTableData()
       },
       resetTemp() {

@@ -37,6 +37,8 @@ import i18n from './lang' // Internationalization
 import util from './utils/util';
 import '@/icons' // icon
 import '@/permission' // permission control
+import waves from '@/directive/waves' // 水波纹指令
+Vue.use(waves);
 
 Vue.use(ElementUI, {
   size: 'medium', // set element-ui default size
@@ -68,10 +70,12 @@ Vue.prototype.$moment = moment;
 Vue.prototype.$moment.locale('zh-cn');
 
 Vue.prototype.$prodBaseUrl = 'http://gateway.zan-qian.com/';
+Vue.prototype.$baseUrl = process.env.NODE_ENV === 'production' ? 'http://gateway.zan-qian.com/' : 'http://testgate.zan-qian.com/';
 
-Vue.prototype.$baseUrl = process.env.NODE_ENV === 'production' ? 'http://gateway.zan-qian.com/' : 'http://gateway.zan-qian.com/';
+Vue.prototype.$baseUrl = process.env.NODE_ENV === 'production' ? 'http://gateway.zan-qian.com/' : 'http://testgate.zan-qian.com/';
+
+// Vue.prototype.$baseUrl = process.env.NODE_ENV === 'production' ? 'http://gateway.zan-qian.com/' : 'http://gateway.zan-qian.com/';
 // Vue.prototype.$baseUrl = process.env.NODE_ENV === 'production' ? '/' : 'http://192.168.1.112:9002/';
-
 
 import CommonUploadImage from './components/CommonUploadImage.vue'
 

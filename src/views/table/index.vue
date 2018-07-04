@@ -56,13 +56,13 @@ export default {
       return statusMap[status]
     }
   },
-  created() {
+  mounted() {
     this.getTableData()
   },
   methods: {
     getTableData() {
 //    this.listLoading = true
-//    getList(this.listQuery).then(response => {
+//    getList(this.queryModel).then(response => {
 //      this.list = response.data.items
         this.listLoading = false
 //    })

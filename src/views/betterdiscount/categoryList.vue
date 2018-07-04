@@ -6,7 +6,7 @@
           <el-form class="basearea">
             <ul class="pull-left">
               <li>
-                <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate">
+                <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate" v-waves>
                   新增
                 </el-button>
               </li>
@@ -95,7 +95,7 @@
     <!-- 分页 -->
     <!--<div class="common-pagination-wrapper">-->
       <!--<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"-->
-                     <!--:current-page="listQuery.page" :page-sizes="[10,20,30,50]" :page-size="listQuery.limit"-->
+                     <!--:current-page="queryModel.page" :page-sizes="[10,20,30,50]" :page-size="queryModel.limit"-->
                      <!--layout="total, sizes, prev, pager, next, jumper" :total="total">-->
       <!--</el-pagination>-->
     <!--</div>-->
@@ -152,7 +152,7 @@
       </el-row>
 
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
+        <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
         <el-button v-if="dialogStatus==='create'" type="primary" @click="add">{{$t('table.confirm')}}</el-button>
         <el-button v-else type="primary" @click="update">{{$t('table.confirm')}}</el-button>
       </div>
@@ -186,11 +186,11 @@
         tableData: [],
         total: null,
         listLoading: true,
-        listQuery: {
+        queryModel: {
           page: 1,
           limit: 20,
           importance: null,
-          keyword: null,
+          keyword: '',
           type: null,
           sort: '+id'
         },
@@ -270,19 +270,19 @@
         })
       },
       handleFilter() {
-        this.listQuery.page = 1;
+        this.queryModel.page = 1;
         this.getTableData()
       },
       handleSizeChange(val) {
-        this.listQuery.limit = val;
+        this.queryModel.limit = val;
         this.getTableData()
       },
       handleCurrentChange(val) {
-        this.listQuery.page = val;
+        this.queryModel.page = val;
         this.getTableData()
       },
-      handleModifyStatus(row, status) {
-        changeStatus(row.id, status).then(response => {
+      updateShelfStatus(row, status) {
+        updateShelfStatusRequest(row.id, status).then(response => {
           if (response) {
             this.$message({
               message: '操作成功',
