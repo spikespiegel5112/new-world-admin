@@ -6,7 +6,7 @@
           <el-form class="basearea">
             <ul class="pull-left">
               <li>
-                <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate">
+                <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate" v-waves>
                   新增
                 </el-button>
               </li>
@@ -15,7 +15,7 @@
           <ul class="operation-wrapper pull-right">
             <li>
               <div class="common-search-wrapper" @keyup.enter="search">
-                <input v-model="listQuery.name" type="text" placeholder="请输入元数据名称"/>
+                <input v-model="queryModel.name" type="text" placeholder="请输入元数据名称"/>
                 <a>
                   <span @click="search" class="el-icon-search"></span>
                 </a>
@@ -163,7 +163,7 @@
               <el-upload
                 class="common-avataruploader-wrapper"
                 ref="uploadAvatar"
-                :action="this.$baseUrl+'image-upload-service/1.0.0/file/upload'"
+                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 :limit="1"
                 :show-file-list="false"
                 :before-upload="handleBeforeUpload"
@@ -206,9 +206,9 @@
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
+        <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
         <el-button v-if="dialogStatus==='create'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
-        <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
+        <el-button v-else type="primary" @click="updateData" v-waves>{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
 
@@ -267,8 +267,13 @@
         listLoading: true,
         availabilityFlag: false,
         dynamicTags: ['标签一', '标签二', '标签三'],
-        listQuery: {
-          name: '',
+        queryModel: {
+          available: true,
+          "platformId": '',
+          "status": '',
+          "name": '',
+          "gender": '',
+          "birthday": '',
         },
         pagination: {
           page: 1,
@@ -338,14 +343,7 @@
         androidVersionListData: [],
         searchTxt: '',
         expandQuery: '',
-        queryModel: {
-          available: true,
-          "platformId": '',
-          "status": '',
-          "name": '',
-          "gender": '',
-          "birthday": '',
-        },
+
       }
     },
     mounted() {
@@ -365,9 +363,9 @@
       },
       getTableData() {
         this.listLoading = true;
-        this.listQuery = Object.assign(this.listQuery, this.pagination);
+        this.queryModel = Object.assign(this.queryModel, this.pagination);
         this.$http.get(this.$baseUrl + this.buildingsRequest, {
-          params: this.listQuery
+          params: this.queryModel
         }).then(response => {
           console.log(response)
           response = response.data;

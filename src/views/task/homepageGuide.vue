@@ -1,16 +1,73 @@
 <template>
   <div class="app-container">
     <div class="common-querytable-wrapper">
-      <el-input @keyup.enter.native="handleFilter" placeholder="任务名称" style="width: 200px;"
-                v-model="queryModel.keyword">
-      </el-input>
-      <el-button type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
-      <el-button @click="handleCreate" type="primary"
-                 icon="el-icon-edit">新增
-      </el-button>
+      <div class="queryform-wrapper">
+        <div class="outside">
+          <el-form class="basearea">
+            <ul class="pull-left">
+              <li>
+                <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate" v-waves>
+                  新增
+                </el-button>
+              </li>
+            </ul>
+          </el-form>
+          <ul class="operation-wrapper pull-right">
+            <li>
+              <div class="common-search-wrapper" @keyup.enter="search">
+                <input v-model="queryModel.name" type="text" placeholder="请输入名称"/>
+                <a>
+                  <span @click="search" class="el-icon-search"></span>
+                </a>
+              </div>
+            </li>
+            <li>
+              <el-button size="mini" class="expand" type="text" @click='expand'>高级搜索<i class="el-icon-arrow-down"></i>
+              </el-button>
+            </li>
+          </ul>
+        </div>
+        <div class="expandarea" :class="{active:expandQuery}">
+          <el-form ref="form" :model="queryModel" size="mini" label-width="100px">
+            <el-row>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="23" pull-right>
+                <el-form-item class="pull-right">
+                  <el-button type="primary" size="mini" icon="el-icon-search" @click="search" v-waves>搜索
+                  </el-button>
+                  <el-button type="primary" size="mini" icon="el-icon-refresh" @click="reset" v-waves>重置
+                  </el-button>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+        </div>
+      </div>
     </div>
 
-    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row
+    <el-table :data="tableList" v-loading.body="listLoading" element-loading-text="Loading" border fit
+              highlight-current-row
               style="width: 100%">
       <el-table-column align="center" label='No' width="50">
         <template slot-scope="scope">
@@ -24,10 +81,10 @@
       </el-table-column>
       <el-table-column label="Icon" align="center" width="100">
         <template slot-scope="scope">
-          <img :src="scope.row.iconPath+'-style_100x100'" width="80">
+          <img :src="scope.row.iconPath+'-style_213x144'" width="80">
         </template>
       </el-table-column>
-      <el-table-column align="center" class-name="status-col" label="积分" width="60">
+      <el-table-column align="center" class-name="status-col" label="积分" width="70">
         <template slot-scope="scope">
           {{scope.row.bounty}}
         </template>
@@ -37,34 +94,16 @@
           {{scope.row.completedNum}}
         </template>
       </el-table-column>
-      <el-table-column label="剩余数" width="70">
+      <el-table-column align="center" label="提交时间" width="80">
         <template slot-scope="scope">
-          {{scope.row.surplusNum}}
+          <!--{{scope.row.submitPath}}-->
         </template>
       </el-table-column>
-      <el-table-column align="center" label="试玩时长" width="80">
+      <el-table-column align="center" prop="isShow" label="上架">
         <template slot-scope="scope">
-          {{scope.row.tryplayTimeLength}}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="开始/结束时间">
-        <template slot-scope="scope">
-          {{scope.row.startDate}}<br> {{scope.row.endDate}}
-        </template>
-      </el-table-column>
-      <el-table-column label="APK下载地址">
-        <template slot-scope="scope">
-          {{scope.row.ApkPath}}
-        </template>
-      </el-table-column>
-      <el-table-column label="应用包名">
-        <template slot-scope="scope">
-          {{scope.row.packageName}}
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" width="50">
-        <template slot-scope="scope">
-          {{scope.row.isShow}}
+          <el-switch v-model="scope.row.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
+                     inactive-color="#ff4949" @change="updateShelfStatus(scope)">
+          </el-switch>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="添加时间">
@@ -76,12 +115,7 @@
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)" v-waves>编辑</el-button>
-          <el-button v-if="scope.row.isShow=='0'" size="mini" type="success" @click="updateShelfStatus(scope.row,1)">上架
-          </el-button>
-          <el-button v-if="scope.row.isShow=='1'" size="mini" @click="updateShelfStatus(scope.row,0)">下架
-          </el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除
-          </el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -114,20 +148,6 @@
             <el-button size="small" type="primary" plain>上传</el-button>
           </el-upload>
         </el-form-item>
-        <el-form-item label="Apk下载地址" prop="name">
-          <el-input v-model="formData.name"></el-input>
-        </el-form-item>
-        <el-form-item label="Apk包名" prop="name">
-          <el-input v-model="formData.name"></el-input>
-        </el-form-item>
-        <el-form-item label="开始时间" prop="startDate">
-          <el-date-picker v-model="formData.startDate" type="date" placeholder="开始日期" :picker-options="pickerOptions0">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="结束时间" prop="endDate">
-          <el-date-picker v-model="formData.endDate" type="date" placeholder="结束日期" :picker-options="pickerOptions1">
-          </el-date-picker>
-        </el-form-item>
         <el-form-item label="描述">
           <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="Please input"
                     v-model="formData.note">
@@ -136,7 +156,8 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}
+        </el-button>
         <el-button v-else type="primary" @click="updateData" v-waves>{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
@@ -145,24 +166,24 @@
 </template>
 
 <script>
-  import {getTryPlayList, saveTryPlay, updateShelfStatusRequest} from '@/api/task'
+  import {getResterList, updateShelfStatusRequest} from '@/api/task'
 
   export default {
     data() {
       return {
+        registerListRequest: 'homeguide/bk/getHomeGuideTask',
         value2: '',
         value1: '',
         tableKey: 0,
-        list: null,
+        tableList: null,
         total: null,
         listLoading: true,
         queryModel: {
-          page: 1,
-          limit: 20,
-          importance: null,
           keyword: '',
-          type: null,
-          sort: '+id'
+        },
+        pagination: {
+          page: 1,
+          limit: 10
         },
         importanceOptions: [1, 2, 3],
         sortOptions: [{label: 'ID Ascending', key: '+id'}, {label: 'ID Descending', key: '-id'}],
@@ -202,6 +223,11 @@
           disabledDate: (time) => {
             return time.getTime() < this.value1
           }
+        },
+        expandQuery: false,
+        portraitParams: {
+          bucketName: "funyvalley",
+          folderName: "task"
         }
       }
     },
@@ -220,10 +246,14 @@
     },
     methods: {
       getTableData() {
-        this.listLoading = true
-        getTryPlayList(this.queryModel).then(response => {
-          this.list = response.content
-          this.total = response.totalElements
+        this.listLoading = true;
+        console.log(Object.assign(this.queryModel, this.pagination))
+        this.$http.get(this.$baseUrl + this.registerListRequest, {
+          params: Object.assign(this.queryModel, this.pagination)
+        }).then(response => {
+          response = response.data;
+          this.tableList = response.content;
+          this.total = response.totalElements;
           this.listLoading = false
         })
       },
@@ -239,21 +269,22 @@
         this.queryModel.page = val
         this.getTableData()
       },
-      updateShelfStatus(row, status) {
-        updateShelfStatusRequest(row.id, status).then(response => {
+      updateShelfStatus(scope) {
+        console.log(scope);
+        //0下架 1上架
+        updateShelfStatusRequest(scope.row.id, scope.row.isShow).then(response => {
           if (response) {
             this.$message({
-              message: '操作成功',
-              type: 'success'
-            })
-            row.isShow = status
+              message: "操作成功",
+              type: "success"
+            });
           } else {
             this.$message({
-              message: '操作失败',
-              type: 'error'
-            })
+              message: "操作失败",
+              type: "error"
+            });
           }
-        })
+        });
       },
       resetTemp() {
         this.formData = {
@@ -274,22 +305,6 @@
         })
       },
       createData() {
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            this.formData.id = parseInt(Math.random() * 100) + 1024 // mock a id
-            this.formData.author = 'vue-element-admin'
-            saveTryPlay(this.formData).then(() => {
-              this.list.unshift(this.formData)
-              this.dialogFormVisible = false
-              this.$notify({
-                title: '成功',
-                message: '创建成功',
-                type: 'success',
-                duration: 2000
-              })
-            })
-          }
-        })
       },
       handleUpdate(row) {
         this.formData = Object.assign({}, row) // copy obj
@@ -309,11 +324,19 @@
           type: 'success',
           duration: 2000
         })
-        const index = this.list.indexOf(row)
-        this.list.splice(index, 1)
+        const index = this.tableList.indexOf(row)
+        this.tableList.splice(register, 1)
       },
       changeUpload(file) {
         console.log(file)
+      },
+      expand() {
+        this.expandQuery = !this.expandQuery;
+      },
+      search() {
+        this.getTableData();
+      },
+      reset() {
       }
     }
   }

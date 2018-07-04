@@ -79,7 +79,7 @@
         }
       }
     },
-    created() {
+    mounted() {
       this.dynamicTags = this.tagData;
     },
     methods: {

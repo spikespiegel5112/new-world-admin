@@ -19,7 +19,7 @@ export function saveTryPlay(data) {
   })
 }
 // 上、下架任务
-export function changeStatus(id, isShow) {
+export function updateShelfStatusRequest(id, isShow) {
   return request({
     url: 'task-service/1.0.0/task/bk/changeStatus/ ' + id + '/' + isShow + '',
     method: 'post'

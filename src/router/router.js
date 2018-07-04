@@ -79,27 +79,32 @@ export const constantRouterMap = [{
     meta: {
       title: '任务墙', icon: 'table'
     },
-    children: [
-      {
-        path: 'tryplay/index',
-        name: '下载试玩',
-        component: () => import('@/views/task/tryplay/index'),
-        meta: {title: '下载试玩', icon: 'list'}
-      },
-
-      {
-        path: 'bankcard/index',
-        name: '银行办卡',
-        component: () => import('@/views/task/bankcard/index'),
-        meta: {title: '银行办卡', icon: 'list'}
-      },
-      {
-        path: 'register/index',
-        name: '注册赚钱',
-        component: () => import('@/views/task/register/index'),
-        meta: {title: '注册赚钱', icon: 'list'}
-      }
-    ]
+    children: [{
+      path: 'demogame',
+      name: 'demoGame',
+      component: () => import('@/views/task/demoGame'),
+      meta: {title: '下载试玩', icon: 'list'}
+    }, {
+      path: 'bankcard',
+      name: 'bankCard',
+      component: () => import('@/views/task/bankCard'),
+      meta: {title: '银行办卡', icon: 'list'}
+    }, {
+      path: 'registermakemoney',
+      name: 'registerMakeMoney',
+      component: () => import('@/views/task/registerMakeMoney'),
+      meta: {title: '注册赚钱', icon: 'list'}
+    }, {
+      path: 'homepageguide',
+      name: 'homepageGuide',
+      component: () => import('@/views/task/homepageGuide'),
+      meta: {title: '首页引导', icon: 'list'}
+    }, {
+      path: 'registrationinvitation',
+      name: 'registrationInvitation',
+      component: () => import('@/views/task/registrationInvitation'),
+      meta: {title: '注册邀请', icon: 'list'}
+    }]
   }, {
     path: '/metadata',
     name: 'metadata',

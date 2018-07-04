@@ -1,0 +1,1 @@
+webpackJsonp([14],{GzKz:function(e,t,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var n={render:function(){var e=this.$createElement;return(this._self._c||e)("article-detail",{attrs:{"is-edit":!1}})},staticRenderFns:[]},l=r("vSla")({name:"createForm"},n,!1,null,null,null);t.default=l.exports}});
