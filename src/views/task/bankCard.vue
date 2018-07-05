@@ -130,7 +130,7 @@
     </div>
     <!-- 弹框 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="dataForm" :model="formData" label-position="right" label-width="120px"
+      <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="120px"
                style='width: 400px; margin-left:50px;'>
         <el-form-item label="名称" prop="name">
           <el-input v-model="formData.name"></el-input>
@@ -326,7 +326,7 @@
         this.dialogStatus = "create";
         this.dialogFormVisible = true;
         this.$nextTick(() => {
-          this.$refs["dataForm"].clearValidate();
+          this.$refs["formData"].clearValidate();
         });
       },
       createData() {
@@ -337,7 +337,7 @@
         this.dialogStatus = "update";
         this.dialogFormVisible = true;
         this.$nextTick(() => {
-          this.$refs["dataForm"].clearValidate();
+          this.$refs["formData"].clearValidate();
         });
       },
       updateData() {
