@@ -92,11 +92,11 @@
           {{scope.row.completedNum}}
         </template>
       </el-table-column>
-      <el-table-column label="剩余数" width="70">
-        <template slot-scope="scope">
-          {{scope.row.surplusNum}}
-        </template>
-      </el-table-column>
+      <!--<el-table-column label="剩余数" width="70">-->
+      <!--<template slot-scope="scope">-->
+      <!--{{scope.row.surplusNum}}-->
+      <!--</template>-->
+      <!--</el-table-column>-->
       <el-table-column align="center" label="试玩时长" width="80">
         <template slot-scope="scope">
           {{scope.row.tryplayTimeLength}}
@@ -110,7 +110,7 @@
       </el-table-column>
       <el-table-column label="APK下载地址">
         <template slot-scope="scope">
-          {{scope.row.ApkPath}}
+          {{scope.row.apkPath}}
         </template>
       </el-table-column>
       <el-table-column label="应用包名">
@@ -146,68 +146,74 @@
       </el-pagination>
     </div>
     <!-- 弹框 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="dataForm" :model="formData" label-position="right" label-width="120px"
-               style='width: 400px; margin-left:50px;'>
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width='width: 400px;'>
+      <el-row type="flex" justify="center">
+        <el-col :span="20">
+          <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="120px">
 
-        <el-form-item label="任务名称" prop="name">
-          <el-input v-model="formData.name"></el-input>
-        </el-form-item>
-        <el-form-item label="任务图片" prop="iconPath">
-          <div class="avatar-wrapper">
-            <a v-if="formData.iconPath!==''" class="close">
-              <span class="iconfont icon-crosswide"></span>
-            </a>
-            <div v-if="formData.iconPath===''">
-              暂无图片
-              <!--<img class="avatar" src="../../image/default/defaultavatar_60_60.png">-->
-            </div>
-            <img v-else :src="formData.iconPath+'-style_100x100'" class="avatar">
-          </div>
-          <el-upload class="common-avataruploader-wrapper" ref="uploadAvatar"
-                     :action="$prodBaseUrl+'image-upload-service/1.0.0/file/upload'" :limit="1" :show-file-list="false"
-                     :before-upload="handleBeforeUpload" :on-preview="handlePreview" :on-remove="handleRemove"
-                     :on-success="uploadSuccess" :on-exceed="uploadAvatarExceeded" :file-list="fileList"
-                     :data="portraitParams">
-            <el-button size="small" type="primary">点击上传</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
-          </el-upload>
-        </el-form-item>
-        <el-form-item label="备注" prop="note">
-          <el-input v-model="formData.note"></el-input>
-        </el-form-item>
-        <el-form-item label="积分/趣币" prop="bounty">
-          <el-input v-model.number="formData.bounty"></el-input>
-        </el-form-item>
-        <el-form-item label="剩余数" prop="surplusNum">
-          <el-input v-model.number="formData.surplusNum"></el-input>
-        </el-form-item>
-        <el-form-item label="apk 下载地址" prop="ApkPath">
-          <el-input v-model="formData.ApkPath"></el-input>
-        </el-form-item>
-        <el-form-item label="包名" prop="packageName">
-          <el-input v-model="formData.packageName"></el-input>
-        </el-form-item>
-        <el-form-item label="是否上架" prop="isShow">
-          <el-switch v-model="formData.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                     inactive-color="#ff4949">
-          </el-switch>
-        </el-form-item>
+            <el-form-item label="任务名称" prop="name">
+              <el-input v-model="formData.name"></el-input>
+            </el-form-item>
+            <el-form-item label="任务图片" prop="iconPath">
+              <div class="avatar-wrapper">
+                <a v-if="formData.iconPath!==''" class="close">
+                  <span class="iconfont icon-crosswide"></span>
+                </a>
+                <div v-if="formData.iconPath===''">
+                  暂无图片
+                  <!--<img class="avatar" src="../../image/default/defaultavatar_60_60.png">-->
+                </div>
+                <img v-else :src="formData.iconPath+'-style_100x100'" class="avatar">
+              </div>
+              <el-upload class="common-avataruploader-wrapper" ref="uploadAvatar"
+                         :action="$prodBaseUrl+'image-upload-service/1.0.0/file/upload'" :limit="1"
+                         :show-file-list="false"
+                         :before-upload="handleBeforeUpload" :on-preview="handlePreview" :on-remove="handleRemove"
+                         :on-success="uploadSuccess" :on-exceed="uploadAvatarExceeded" :file-list="fileList"
+                         :data="portraitParams">
+                <el-button size="small" type="primary">点击上传</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
+              </el-upload>
+            </el-form-item>
+            <el-form-item label="备注" prop="note">
+              <el-input v-model="formData.note"></el-input>
+            </el-form-item>
+            <el-form-item label="积分/趣币" prop="bounty">
+              <el-input v-model.number="formData.bounty"></el-input>
+            </el-form-item>
+            <el-form-item label="剩余数" prop="surplusNum">
+              <el-input v-model.number="formData.surplusNum"></el-input>
+            </el-form-item>
+            <el-form-item label="apk 下载地址" prop="apkPath">
+              <el-input v-model="formData.apkPath"></el-input>
+            </el-form-item>
+            <el-form-item label="包名" prop="packageName">
+              <el-input v-model="formData.packageName"></el-input>
+            </el-form-item>
+            <el-form-item label="是否上架" prop="isShow">
+              <el-switch v-model="formData.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
+                         inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
 
-        <el-form-item label="开始时间" prop="startDate">
-          <el-date-picker v-model="formData.startDate" type="date" placeholder="开始日期" :picker-options="pickerOptions0">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="结束时间" prop="endDate">
-          <el-date-picker v-model="formData.endDate" type="date" placeholder="结束日期" :picker-options="pickerOptions1">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="试玩时长" prop="tryplayTimeLength">
-          <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="Please input"
-                    v-model.number="formData.tryplayTimeLength">
-          </el-input>
-        </el-form-item>
-      </el-form>
+            <el-form-item label="有效时间" prop="startDate">
+              <el-date-picker
+                v-model="effectiveDuration"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="试玩时长" prop="tryplayTimeLength">
+              <el-input-number v-model="formData.tryplayTimeLength" :min="0" label="描述文字"></el-input-number>
+              <!--<el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="Please input" v-model.number="formData.tryplayTimeLength">-->
+              </el-input>
+            </el-form-item>
+          </el-form>
+
+        </el-col>
+      </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
         <el-button v-if="dialogStatus=='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}
@@ -248,6 +254,7 @@
           page: 1,
           limit: 10
         },
+        effectiveDuration: [],
         importanceOptions: [1, 2, 3],
         sortOptions: [{
           label: "ID Ascending",
@@ -268,9 +275,9 @@
           startDate: '',
           endDate: '',
           isShow: '',
-          ApkPath: '',
+          apkPath: '',
           packageName: '',
-          tryplayTimeLength: '',
+          tryplayTimeLength: 0,
         },
         dialogFormVisible: false,
         dialogStatus: "",
@@ -322,12 +329,12 @@
             message: "此项为必填项",
             trigger: "change"
           }],
-          isShow:[{
+          isShow: [{
             required: true,
             message: "此项为必填项",
             trigger: "change"
           }],
-          ApkPath: [{
+          apkPath: [{
             required: true,
             message: "此项为必填项",
             trigger: "change"
@@ -344,7 +351,12 @@
           }, {
             type: 'number',
             message: '必须为数字值'
-          }]
+          }],
+          effectiveDuration: [{
+            required: true,
+            message: '此项为必填项',
+            trigger: 'change'
+          }],
         },
         downloadLoading: false,
         pickerOptions0: {
@@ -366,6 +378,16 @@
         },
         fileList: []
       };
+    },
+    watch: {
+      effectiveDuration(value) {
+        console.log(value)
+        if (value === null) {
+          value = [];
+        }
+        this.formData.startDate = value[0];
+        this.formData.endDate = value[1];
+      }
     },
     filters: {
       statusFilter(status) {
@@ -429,24 +451,27 @@
           startDate: '',
           endDate: '',
           isShow: '',
-          ApkPath: '',
+          apkPath: '',
           packageName: '',
-          tryplayTimeLength: '',
+          tryplayTimeLength: 0,
         };
+        this.effectiveDuration = [];
+
       },
       handleCreate() {
         this.resetTemp();
         this.dialogStatus = "create";
         this.dialogFormVisible = true;
         this.$nextTick(() => {
-          this.$refs["dataForm"].clearValidate();
+          this.$refs["formData"].clearValidate();
         });
       },
       createData() {
-        debugger
-        this.$refs["dataForm"].validate(valid => {
+        this.$refs["formData"].validate(valid => {
           if (valid) {
-            this.$http.post('http://192.168.1.192:9006/1.0.0/task/bk/saveTryPlay', {
+            this.$http.post(this.$baseUrl+this.saveTryPlayRequest, {
+
+              // this.$http.post('http://192.168.1.192:9006/1.0.0/task/bk/saveTryPlay', {
               id: '',
               name: this.formData.name,
               note: this.formData.note,
@@ -456,7 +481,7 @@
               startDate: this.$moment(this.formData.startDate).format('YYYY-MM-DD'),
               endDate: this.$moment(this.formData.endDate).format('YYYY-MM-DD'),
               isShow: this.formData.isShow,
-              ApkPath: this.formData.ApkPath,
+              apkPath: this.formData.apkPath,
               packageName: this.formData.packageName,
               tryplayTimeLength: this.formData.tryplayTimeLength,
             }, {
@@ -478,9 +503,9 @@
         });
       },
       handleUpdate(scope) {
-        let startDate=this.$moment(this.startDate).format('YYYY-MM-DD')
+        let startDate = this.$moment(this.startDate).format('YYYY-MM-DD')
         this.formData = Object.assign(this.formData, {
-          id: '',
+          id: scope.row.id,
           name: scope.row.name,
           note: scope.row.note,
           iconPath: scope.row.iconPath,
@@ -489,22 +514,24 @@
           startDate: scope.row.startDate,
           endDate: scope.row.endDate,
           isShow: scope.row.isShow,
-          ApkPath: scope.row.ApkPath,
+          apkPath: scope.row.apkPath,
           packageName: scope.row.packageName,
           tryplayTimeLength: scope.row.tryplayTimeLength,
         });
+        this.effectiveDuration = [scope.row.startDate, scope.row.endDate]
         this.dialogStatus = "update";
         this.dialogFormVisible = true;
         this.$nextTick(() => {
-          this.$refs["dataForm"].clearValidate();
+          this.$refs["formData"].clearValidate();
         });
       },
       updateData() {
-
         this.$refs.formData.validate(valid => {
           if (valid) {
-            this.$http.post(this.$baseUrl + 'http://192.168.1.192:9006/1.0.0/task/bk/saveTryPlay', {
-              id: '',
+
+            this.$http.post('http://192.168.1.154:9006/1.0.0/task/bk/saveTryPlay', {
+            // this.$http.post(this.$baseUrl + this.saveTryPlayRequest, {
+              id: this.formData.id,
               name: this.formData.name,
               note: this.formData.note,
               iconPath: this.formData.iconPath,
@@ -513,9 +540,21 @@
               startDate: this.formData.startDate,
               endDate: this.formData.endDate,
               isShow: this.formData.isShow,
-              ApkPath: this.formData.ApkPath,
+              apkPath: this.formData.apkPath,
               packageName: this.formData.packageName,
               tryplayTimeLength: this.formData.tryplayTimeLength,
+            }, {
+              headers: {
+                'Authorization': 'Bearer ' + this.$store.state.user.token,
+                // 'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              // transformRequest: [function (data) {
+              //   let ret = '';
+              //   for (let it in data) {
+              //     ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+              //   }
+              //   return ret
+              // }],
             }).then(response => {
               console.log(response)
               response = response.data;
@@ -564,7 +603,7 @@
             index = index2;
           }
         });
-        this.formData.iconPath='';
+        this.formData.iconPath = '';
 
         this.fileList = this.fileList.filter(item => item.uid !== file.uid);
         console.log(this.formData.iconPath);
@@ -577,7 +616,7 @@
 
         this.fileList.push(response);
         console.log(this.formData);
-        this.formData.iconPath=response.url;
+        this.formData.iconPath = response.url;
         console.log(fileList);
         // this.formData.iconPath.forEach((item, index) => {
         //   if (item.url === this.formData.image) {
