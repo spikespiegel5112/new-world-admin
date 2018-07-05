@@ -52,7 +52,7 @@
           <span>{{scope.row.endDate}}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" :label="$t('table.status')" width="100">
+      <el-table-column  :label="$t('table.status')" width="100">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{scope.row.status | statusFilterName}}</el-tag>
         </template>
@@ -71,14 +71,14 @@
     </el-table>
 
     <div class="common-pagination-wrapper">
-      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="queryModel.page" :page-sizes="[10,20,30,50]" :page-size="queryModel.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pagination.page" :page-sizes="[10,20,30,50]" :page-size="pagination.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="dataForm" :model="formData" label-position="right" label-width="120px" style='width: 400px; margin-left:50px;'>
+      <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="120px" style='width: 400px; margin-left:50px;'>
         <el-form-item :label="$t('table.type')" prop="type">
-          <el-select v-model="formData.type" placeholder="Please select">
+          <el-select v-model="formData.type"placeholder="请选择">
             <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">
             </el-option>
           </el-select>
@@ -91,7 +91,7 @@
           <el-input v-model="formData.title"></el-input>
         </el-form-item>
         <el-form-item :label="$t('table.status')">
-          <el-select v-model="formData.status" placeholder="Please select">
+          <el-select v-model="formData.status"placeholder="请选择">
             <el-option v-for="item in  statusOptions" :key="item" :label="item" :value="item">
             </el-option>
           </el-select>
@@ -106,7 +106,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}</el-button>
+        <el-button v-if="dialogStatus==='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}</el-button>
         <el-button v-else type="primary" @click="updateData" v-waves>{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
@@ -222,15 +222,15 @@ export default {
       })
     },
     handleFilter() {
-      this.queryModel.page = 1
+      this.pagination.page = 1
       this.getList()
     },
     handleSizeChange(val) {
-      this.queryModel.limit = val
+      this.pagination.limit = val
       this.getList()
     },
     handleCurrentChange(val) {
-      this.queryModel.page = val
+      this.pagination.page = val
       this.getList()
     },
     updateShelfStatus(row, status) {
@@ -258,11 +258,11 @@ export default {
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+        this.$refs['formData'].clearValidate()
       })
     },
     createData() {
-      this.$refs['dataForm'].validate((valid) => {
+      this.$refs['formData'].validate((valid) => {
         if (valid) {
           this.formData.id = parseInt(Math.random() * 100) + 1024 // mock a id
           this.formData.author = 'vue-element-admin'
@@ -285,11 +285,11 @@ export default {
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+        this.$refs['formData'].clearValidate()
       })
     },
     updateData() {
-      this.$refs['dataForm'].validate((valid) => {
+      this.$refs['formData'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.formData)
           tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464

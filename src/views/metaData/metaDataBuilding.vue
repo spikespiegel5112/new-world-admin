@@ -173,7 +173,7 @@
                 :on-exceed="uploadAvatarExceeded"
                 :file-list="fileList"
                 :data="portraitParams">
-                <el-button size="small" type="primary">点击上传</el-button>
+                <el-button v-waves size="small" type="primary">点击上传</el-button>
                 <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
               </el-upload>
             </el-form-item>
@@ -216,7 +216,7 @@
       <el-row type="flex" justify="center">
         <el-col :span="20">
           <el-form :rules="rules" ref="availabilityFormData" :model="availabilityFormData" label-position="right"
-                   label-width="140px">
+                  label-width="140px">
             <el-form-item label="iOS可用性" prop="iosAvailability">
               <el-switch
                 v-model="availabilityFormData.iosEnable"
@@ -309,7 +309,7 @@
           version: ''
         },
         rules: {
-          label: [{required: true, message: '请输入显示名称', trigger: 'change'}],
+         label: [{required: true, message: '请输入显示名称', trigger: 'change'}],
           name: [{required: true, message: '请输入唯一表示名称', trigger: 'change'}],
           icon: [{required: true, message: '请上传图片', trigger: 'change'}],
           available: [{required: true, message: '请选择是否可用', trigger: 'change'}],
@@ -354,7 +354,7 @@
       getControllableVersionList() {
         this.$http.get(this.$baseUrl + this.versionListRequest).then(response => {
           console.log(response)
-          response = response.data;
+
           this.androidVersionListData = response.androidList;
           this.iosVersionListData = response.iosList;
         }).catch(error => {
@@ -368,7 +368,7 @@
           params: this.queryModel
         }).then(response => {
           console.log(response)
-          response = response.data;
+
           this.list = response.list;
           this.total = response.total;
           this.listLoading = false

@@ -13,7 +13,7 @@
           <ul class="operation-wrapper pull-right">
             <li>
               <div class="common-search-wrapper" @keyup.enter="search">
-                <input v-model="queryModel.name" type="text" placeholder="请输入名称"/>
+                <input v-model="queryModel.keyword" type="text" placeholder="请输入名称"/>
                 <a>
                   <span @click="search" class="el-icon-search"></span>
                 </a>
@@ -81,7 +81,7 @@
           <img :src="scope.row.iconPath+'-style_213x144'" width="80">
         </template>
       </el-table-column>
-      <el-table-column align="center" class-name="status-col" label="积分" width="70">
+      <el-table-column align="center" label="积分" width="70">
         <template slot-scope="scope">
           {{scope.row.bounty}}
         </template>
@@ -89,11 +89,6 @@
       <el-table-column align="center" label="完成数" width="70">
         <template slot-scope="scope">
           {{scope.row.completedNum}}
-        </template>
-      </el-table-column>
-      <el-table-column label="剩余数" width="70">
-        <template slot-scope="scope">
-          {{scope.row.surplusNum}}
         </template>
       </el-table-column>
       <el-table-column align="center" label="提交时间" width="80">
@@ -116,51 +111,73 @@
       </el-table-column>
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)" v-waves>编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)" v-waves>删除</el-button>
+          <el-button type="primary" size="mini" @click="handleUpdate(scope)" v-waves>编辑</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope)" v-waves>删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->
     <div class="common-pagination-wrapper">
       <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                     :current-page="queryModel.page" :page-sizes="[10,20,30,50]" :page-size="queryModel.limit"
+                     :current-page="pagination.page" :page-sizes="[10,20,30,50]" :page-size="pagination.limit"
                      layout="total, sizes, prev, pager, next, jumper" :total="pagination.total">
       </el-pagination>
     </div>
     <!-- 弹框 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="120px"
-               style='width: 400px; margin-left:50px;'>
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="formData.name"></el-input>
-        </el-form-item>
-        <el-form-item label="iconPath" prop="iconPath">
-          <div class="avatar-wrapper">
-            <a v-if="formData.icon!==''" class="close">
-              <span class="iconfont icon-crosswide"></span>
-            </a>
-            <img v-if="formData.icon===''" src="../../image/default/defaultavatar_60_60.png" class="avatar">
-            <img v-else :src="formData.iconPath+'-style_100x100'" class="avatar">
-          </div>
-          <el-upload class="common-avataruploader-wrapper" ref="uploadAvatar"
-                     :action="$baseUrl+'image-upload-service/1.0.0/file/upload'" :limit="1" :show-file-list="false"
-                     :before-upload="handleBeforeUpload" :on-preview="handlePreview" :on-remove="handleRemove"
-                     :on-success="uploadSuccess" :on-exceed="uploadAvatarExceeded" :file-list="fileList"
-                     :data="portraitParams">
-            <el-button size="small" type="primary">点击上传</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
-          </el-upload>
-        </el-form-item>
-        <el-form-item label="描述">
-          <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="Please input"
-                    v-model="formData.note">
-          </el-input>
-        </el-form-item>
-      </el-form>
+      <el-row type="flex" justify="center">
+        <el-col :span="20">
+          <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="150px">
+
+            <el-form-item label="任务名称" prop="name">
+              <el-input v-model="formData.name"></el-input>
+            </el-form-item>
+            <el-form-item label="任务图片" prop="iconPath">
+              <div class="avatar-wrapper">
+                <a v-if="formData.iconPath!==''" class="close">
+                  <span class="iconfont icon-crosswide"></span>
+                </a>
+                <div v-if="formData.iconPath===''||formData.iconPath===null">
+                  暂无图片
+                </div>
+                <img v-else :src="formData.iconPath+'-style_100x100'" class="avatar">
+              </div>
+              <el-upload class="common-avataruploader-wrapper" ref="uploadAvatar"
+                         :action="$prodBaseUrl+'image-upload-service/1.0.0/file/upload'" :limit="1"
+                         :show-file-list="false"
+                         :before-upload="handleBeforeUpload" :on-preview="handlePreview" :on-remove="handleRemove"
+                         :on-success="uploadSuccess" :on-exceed="uploadAvatarExceeded" :file-list="fileList"
+                         :data="portraitParams">
+                <el-button v-waves size="small" type="primary">点击上传</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
+              </el-upload>
+            </el-form-item>
+            <el-form-item label="赏金" prop="bounty">
+              <el-input v-model.number="formData.bounty"></el-input>
+            </el-form-item>
+            <el-form-item label="任务开始结束时间" prop="startDate">
+              <el-date-picker
+                v-model="effectiveDuration"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="是否上架" prop="isShow">
+              <el-switch v-model="formData.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
+                         inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="备注" prop="note">
+              <el-input type="textarea" :autosize="{ minRows: 4}" v-model="formData.note"></el-input>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}
+        <el-button v-if="dialogStatus==='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}
         </el-button>
         <el-button v-else type="primary" @click="updateData" v-waves>{{$t('table.confirm')}}</el-button>
       </div>
@@ -177,6 +194,9 @@
     data() {
       return {
         getbankcardlistRequest: "task-service/1.0.0/cardtask/bk/getbankcardlist",
+        delTaskRequest: 'task-service/1.0.0/task/bk/delTask/',
+        saveBankCardRequest: 'task-service/1.0.0/cardtask/bk/saveBankCard',
+
         value2: "",
         value1: "",
         tableKey: 0,
@@ -233,7 +253,56 @@
             required: true,
             message: "title is required",
             trigger: "change"
-          }]
+          }],
+          note: [{
+            required: true,
+            message: "此项为必填项",
+            trigger: "change"
+          }],
+          iconPath: [{
+            required: true,
+            message: "此项为必填项",
+            trigger: "change"
+          }],
+          bounty: [{
+            required: true,
+            message: "此项为必填项",
+            trigger: "change"
+          }, {
+            type: 'number',
+            message: '必须为数字值',
+            trigger: "change"
+          }, {
+            type: 'number',
+            max: 999999,
+            message: '赏金不得大于999999',
+            trigger: "change"
+          }],
+          startDate: [{
+            required: true,
+            message: "此项为必填项",
+            trigger: "change"
+          }],
+          endDate: [{
+            required: true,
+            message: "此项为必填项",
+            trigger: "change"
+          }],
+          isShow: [{
+            required: true,
+            message: "此项为必填项",
+            trigger: "change"
+          }],
+          submitPath: [{
+            required: true,
+            message: "此项为必填项",
+            trigger: "change"
+          }],
+          effectiveDuration: [{
+            required: true,
+            message: '此项为必填项',
+            trigger: 'change'
+          }],
         },
         downloadLoading: false,
         pickerOptions0: {
@@ -253,8 +322,19 @@
         portraitParams: {
           bucketName: "funyvalley",
           folderName: "task"
-        }
+        },
+        effectiveDuration: []
       };
+    },
+    watch: {
+      effectiveDuration(value) {
+        console.log(value)
+        if (value === null) {
+          value = [];
+        }
+        this.formData.startDate = value[0];
+        this.formData.endDate = value[1];
+      }
     },
     filters: {
       statusFilter(status) {
@@ -276,39 +356,30 @@
           params: Object.assign(this.queryModel, this.pagination)
         }).then(response => {
           console.log(response);
-          response = response.data;
+
           this.tableList = response.content;
-          this.pagination.total = response.totalElements;
+          this.pagination.total = response.numberOfElements;
           this.listLoading = false;
         });
       },
       handleFilter() {
-        this.queryModel.page = 1;
+        this.pagination.page = 1;
         this.getTableData();
       },
       handleSizeChange(val) {
-        this.queryModel.limit = val;
+        this.pagination.limit = val;
         this.getTableData();
       },
       handleCurrentChange(val) {
-        this.queryModel.page = val;
+        this.pagination.page = val;
         this.getTableData();
       },
       updateShelfStatus(scope) {
         console.log(scope);
         //0下架 1上架
-        updateShelfStatusRequest(scope.row.id, scope.row.isShow).then(response => {
-          if (response) {
-            this.$message({
-              message: "操作成功",
-              type: "success"
-            });
-          } else {
-            this.$message({
-              message: "操作失败",
-              type: "error"
-            });
-          }
+        this.$store.dispatch('updateShelfStatus', {
+          id: scope.row.id,
+          isShow: scope.row.isShow
         });
       },
       resetTemp() {
@@ -330,6 +401,28 @@
         });
       },
       createData() {
+        this.$refs.formData.validate(valid => {
+          if (valid) {
+            this.$http.post(this.$baseUrl + this.saveBankCardRequest, {
+              id: '',
+              name: this.formData.name,
+              note: this.formData.note,
+              iconPath: this.formData.iconPath,
+              bounty: this.formData.bounty,
+              startDate: this.$moment(this.formData.startDate).format('YYYY-MM-DD'),
+              endDate: this.$moment(this.formData.endDate).format('YYYY-MM-DD'),
+              isShow: this.formData.isShow,
+              submitPath: this.formData.submitPath,
+            }).then(response => {
+              console.log(response)
+              this.dialogFormVisible = false;
+              this.getTableData();
+              this.$message.success('信息修改成功')
+            }).catch(error => {
+              this.$message.error(error)
+            })
+          }
+        })
       },
       handleUpdate(row) {
         this.formData = Object.assign({}, row); // copy obj
@@ -341,16 +434,47 @@
         });
       },
       updateData() {
+        this.$refs.formData.validate(valid => {
+          if (valid) {
+            this.$http.post(this.$baseUrl + this.saveBankCardRequest, {
+              id: this.formData.id,
+              name: this.formData.name,
+              note: this.formData.note,
+              iconPath: this.formData.iconPath,
+              bounty: this.formData.bounty,
+              startDate: this.$moment(this.formData.startDate).format('YYYY-MM-DD'),
+              endDate: this.$moment(this.formData.endDate).format('YYYY-MM-DD'),
+              isShow: this.formData.isShow,
+              submitPath: this.formData.submitPath,
+            }).then(response => {
+              console.log(response)
+              this.dialogFormVisible = false;
+              this.getTableData();
+              this.$message.success('信息修改成功')
+            }).catch(error => {
+              this.$message.error(error)
+            })
+          }
+        })
       },
-      handleDelete(row) {
-        this.$notify({
-          title: "成功",
-          message: "删除成功",
-          type: "success",
-          duration: 2000
+      handleDelete(scope) {
+        this.$confirm('确认删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http.post(this.$baseUrl + this.delTaskRequest + scope.row.id).then((response) => {
+            console.log(response)
+            this.dialogFormVisible = false;
+            this.$message.success('删除成功');
+            this.getTableData();
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
         });
-        const index = this.tableList.indexOf(row);
-        this.tableList.splice(bankCard, 1);
       },
       changeUpload(file) {
         console.log(file);
@@ -396,10 +520,10 @@
         console.log(file);
         console.log(response);
         console.log(6, fileList);
-
+        this.formData.iconPath = response.url;
         this.fileList.push(response);
         console.log(this.formData);
-        this.formData.detailImage.push(response.url);
+        // this.formData.detailImage.push(response.url);
         console.log(fileList);
         // this.formData.detailImage.forEach((item, index) => {
         //   if (item.url === this.formData.image) {

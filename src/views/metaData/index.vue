@@ -27,7 +27,7 @@
           <img :src="scope.row.iconPath+'-style_100x100'" width="80">
         </template>
       </el-table-column>
-      <el-table-column align="center" class-name="status-col" label="积分" width="60">
+      <el-table-column align="center" label="积分" width="60">
         <template slot-scope="scope">
           {{scope.row.bounty}}
         </template>
@@ -88,16 +88,16 @@
     <!-- 分页 -->
     <div class="common-pagination-wrapper">
       <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                     :current-page="queryModel.page" :page-sizes="[10,20,30,50]" :page-size="queryModel.limit"
+                     :current-page="pagination.page" :page-sizes="[10,20,30,50]" :page-size="pagination.limit"
                      layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
     <!-- 弹框 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="dataForm" :model="formData" label-position="right" label-width="120px"
+      <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="120px"
                style='width: 400px; margin-left:50px;'>
         <!-- <el-form-item :label="$t('table.type')" prop="type">
-          <el-select v-model="formData.type" placeholder="Please select">
+          <el-select v-model="formData.type"placeholder="请选择">
             <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">
             </el-option>
           </el-select>
@@ -136,7 +136,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}</el-button>
+        <el-button v-if="dialogStatus==='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}</el-button>
         <el-button v-else type="primary" @click="updateData" v-waves>{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
@@ -228,15 +228,15 @@
         })
       },
       handleFilter() {
-        this.queryModel.page = 1
+        this.pagination.page = 1
         this.getTableData()
       },
       handleSizeChange(val) {
-        this.queryModel.limit = val
+        this.pagination.limit = val
         this.getTableData()
       },
       handleCurrentChange(val) {
-        this.queryModel.page = val
+        this.pagination.page = val
         this.getTableData()
       },
       updateShelfStatus(row, status) {
@@ -270,11 +270,11 @@
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
+          this.$refs['formData'].clearValidate()
         })
       },
       createData() {
-        this.$refs['dataForm'].validate((valid) => {
+        this.$refs['formData'].validate((valid) => {
           if (valid) {
             this.formData.id = parseInt(Math.random() * 100) + 1024 // mock a id
             this.formData.author = 'vue-element-admin'
@@ -297,7 +297,7 @@
         this.dialogStatus = 'update'
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
+          this.$refs['formData'].clearValidate()
         })
       },
       updateData() {

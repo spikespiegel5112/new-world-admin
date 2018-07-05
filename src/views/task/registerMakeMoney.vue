@@ -74,7 +74,7 @@
           {{scope.$index+1}}
         </template>
       </el-table-column>
-      <el-table-column label="名称" align="center">
+      <el-table-column label="名称" align="center" width="150">
         <template slot-scope="scope">
           {{scope.row.name}}
         </template>
@@ -84,14 +84,24 @@
           <img :src="scope.row.iconPath+'-style_213x144'" width="80">
         </template>
       </el-table-column>
-      <el-table-column align="center" class-name="status-col" label="积分" width="70">
+      <el-table-column align="left" label="备注">
+        <template slot-scope="scope">
+          {{scope.row.note}}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="赏金" width="70">
         <template slot-scope="scope">
           {{scope.row.bounty}}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="完成数" width="70">
+      <el-table-column align="center" label="开始时间" width="100">
         <template slot-scope="scope">
-          {{scope.row.completedNum}}
+          {{scope.row.startDate}}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="结束时间" width="100">
+        <template slot-scope="scope">
+          {{scope.row.endDate}}
         </template>
       </el-table-column>
       <el-table-column align="center" label="提交时间" width="80">
@@ -99,64 +109,93 @@
           <!--{{scope.row.submitPath}}-->
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="isShow" label="上架">
+      <el-table-column align="center" prop="isShow" label="上架" width="80">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
                      inactive-color="#ff4949" @change="updateShelfStatus(scope)">
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="添加时间">
+      <el-table-column align="center" prop="created_at" label="添加时间" width="200">
         <template slot-scope="scope">
           <i class="el-icon-time"></i>
           <span>{{scope.row.createDate}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column align="center" label="操作" width="200">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)" v-waves>编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button type="primary" size="mini" @click="handleUpdate(scope)" v-waves>编辑</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->
     <div class="common-pagination-wrapper">
       <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                     :current-page="queryModel.page" :page-sizes="[10,20,30,50]" :page-size="queryModel.limit"
+                     :current-page="pagination.page" :page-sizes="[10,20,30,50]" :page-size="pagination.limit"
                      layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
     <!-- 弹框 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="120px"
-               style='width: 400px; margin-left:50px;'>
-        <!-- <el-form-item :label="$t('table.type')" prop="type">
-          <el-select v-model="formData.type" placeholder="Please select">
-            <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.date')" prop="timestamp">
-          <el-date-picker v-model="formData.timestamp" type="datetime" placeholder="Please pick a date">
-          </el-date-picker>
-        </el-form-item> -->
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="formData.name"></el-input>
-        </el-form-item>
-        <el-form-item label="iconPath" prop="iconPath">
-          <el-upload class="upload-demo" accept=".png" action="" :auto-upload='false' :on-change='changeUpload'>
-            <el-button size="small" type="primary" plain>上传</el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item label="描述">
-          <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="Please input"
-                    v-model="formData.note">
-          </el-input>
-        </el-form-item>
-      </el-form>
+      <el-row type="flex" justify="center">
+        <el-col :span="20">
+          <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="150px">
+
+            <el-form-item label="任务名称" prop="name">
+              <el-input v-model="formData.name"></el-input>
+            </el-form-item>
+            <el-form-item label="任务图片" prop="iconPath">
+              <div class="avatar-wrapper">
+                <a v-if="formData.iconPath!==''" class="close">
+                  <span class="iconfont icon-crosswide"></span>
+                </a>
+                <div v-if="formData.iconPath===''||formData.iconPath===null">
+                  暂无图片
+                </div>
+                <img v-else :src="formData.iconPath+'-style_100x100'" class="avatar">
+              </div>
+              <el-upload class="common-avataruploader-wrapper" ref="uploadAvatar"
+                         :action="$prodBaseUrl+'image-upload-service/1.0.0/file/upload'" :limit="1"
+                         :show-file-list="false"
+                         :before-upload="handleBeforeUpload" :on-preview="handlePreview" :on-remove="handleRemove"
+                         :on-success="uploadSuccess" :on-exceed="uploadAvatarExceeded" :file-list="fileList"
+                         :data="portraitParams">
+                <el-button v-waves size="small" type="primary">点击上传</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
+              </el-upload>
+            </el-form-item>
+            <el-form-item label="备注" prop="note">
+              <el-input type="textarea" :autosize="{ minRows: 4}" v-model="formData.note"></el-input>
+            </el-form-item>
+            <el-form-item label="赏金" prop="bounty">
+              <el-input v-model.number="formData.bounty"></el-input>
+            </el-form-item>
+            <el-form-item label="是否上架" prop="isShow">
+              <el-switch v-model="formData.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
+                         inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
+
+            <el-form-item label="任务开始结束时间" prop="startDate">
+              <el-date-picker
+                v-model="effectiveDuration"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="注册地址" prop="submitPath">
+              <el-input v-model="formData.submitPath"></el-input>
+            </el-form-item>
+          </el-form>
+
+        </el-col>
+      </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}
+        <el-button v-if="dialogStatus==='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}
         </el-button>
         <el-button v-else type="primary" @click="updateData" v-waves>{{$t('table.confirm')}}</el-button>
       </div>
@@ -171,7 +210,9 @@
   export default {
     data() {
       return {
-        getHomeGuideTaskRequest: 'homeguide/bk/getHomeGuideTask',
+        getregisterlistRequest: 'task-service/1.0.0/register/bk/getregisterlist',
+        saveRegisterTaskRequest: 'task-service/1.0.0/register/bk/saveRegisterTask',
+        delTaskRequest: 'task-service/1.0.0/task/bk/delTask/',
         value2: '',
         value1: '',
         tableKey: 0,
@@ -190,13 +231,15 @@
         statusOptions: ['published', 'draft', 'deleted'],
         showReviewer: false,
         formData: {
-          id: null,
+          id: '',
           name: '',
           note: '',
-          startDate: null,
-          endDate: null,
           iconPath: '',
-          packageName: ''
+          bounty: '',
+          startDate: '',
+          endDate: '',
+          isShow: '',
+          submitPath: '',
         },
         dialogFormVisible: false,
         dialogStatus: '',
@@ -208,8 +251,55 @@
         pvData: [],
         rules: {
           name: [{required: true, message: 'name is required', trigger: 'change'}],
-          timestamp: [{type: 'date', required: true, message: 'timestamp is required', trigger: 'change'}],
-          title: [{required: true, message: 'title is required', trigger: 'change'}]
+          note: [{
+            required: true,
+            message: "此项为必填项",
+            trigger: "change"
+          }],
+          iconPath: [{
+            required: true,
+            message: "此项为必填项",
+            trigger: "change"
+          }],
+          bounty: [{
+            required: true,
+            message: "此项为必填项",
+            trigger: "change"
+          }, {
+            type: 'number',
+            message: '必须为数字值',
+            trigger: "change"
+          }, {
+            type: 'number',
+            max: 999999,
+            message: '赏金不得大于999999',
+            trigger: "change"
+          }],
+          startDate: [{
+            required: true,
+            message: "此项为必填项",
+            trigger: "change"
+          }],
+          endDate: [{
+            required: true,
+            message: "此项为必填项",
+            trigger: "change"
+          }],
+          isShow: [{
+            required: true,
+            message: "此项为必填项",
+            trigger: "change"
+          }],
+          submitPath: [{
+            required: true,
+            message: "此项为必填项",
+            trigger: "change"
+          }],
+          effectiveDuration: [{
+            required: true,
+            message: '此项为必填项',
+            trigger: 'change'
+          }],
         },
         downloadLoading: false,
         pickerOptions0: {
@@ -228,7 +318,19 @@
         portraitParams: {
           bucketName: "funyvalley",
           folderName: "task"
+        },
+        fileList: [],
+        effectiveDuration: []
+      }
+    },
+    watch: {
+      effectiveDuration(value) {
+        console.log(value)
+        if (value === null) {
+          value = [];
         }
+        this.formData.startDate = value[0];
+        this.formData.endDate = value[1];
       }
     },
     filters: {
@@ -248,84 +350,106 @@
       getTableData() {
         this.listLoading = true;
         console.log(Object.assign(this.queryModel, this.pagination))
-        this.$http.get(this.$baseUrl + this.getHomeGuideTaskRequest, {
+        this.$http.get(this.$baseUrl + this.getregisterlistRequest, {
           params: Object.assign(this.queryModel, this.pagination)
         }).then(response => {
-          response = response.data;
+
           this.tableList = response.content;
           this.total = response.totalElements;
           this.listLoading = false
         })
       },
       handleFilter() {
-        this.queryModel.page = 1
+        this.pagination.page = 1
         this.getTableData()
       },
       handleSizeChange(val) {
-        this.queryModel.limit = val
+        this.pagination.limit = val
         this.getTableData()
       },
       handleCurrentChange(val) {
-        this.queryModel.page = val
+        this.pagination.page = val
         this.getTableData()
       },
       updateShelfStatus(scope) {
         console.log(scope);
         //0下架 1上架
-        updateShelfStatusRequest(scope.row.id, scope.row.isShow).then(response => {
-          if (response) {
-            this.$message({
-              message: "操作成功",
-              type: "success"
-            });
-          } else {
-            this.$message({
-              message: "操作失败",
-              type: "error"
-            });
-          }
+        this.$store.dispatch('updateShelfStatus', {
+          id: scope.row.id,
+          isShow: scope.row.isShow
         });
       },
       resetTemp() {
         this.formData = {
-          id: null,
+          id: '',
           name: '',
           note: '',
-          startDate: null,
-          endDate: null,
-          iconPath: ''
-        }
+          iconPath: '',
+          bounty: '',
+          startDate: '',
+          endDate: '',
+          isShow: '',
+          submitPath: '',
+        };
+        this.effectiveDuration = '';
       },
       handleCreate() {
         this.resetTemp()
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
+          this.$refs['formData'].clearValidate()
         })
       },
       createData() {
+        this.$refs["formData"].validate(valid => {
+          if (valid) {
+            this.$http.post(this.$baseUrl + this.saveRegisterTaskRequest, {
+              id: '',
+              name: this.formData.name,
+              note: this.formData.note,
+              iconPath: this.formData.iconPath,
+              bounty: this.formData.bounty,
+              startDate: this.formData.startDate,
+              endDate: this.formData.endDate,
+              isShow: this.formData.isShow,
+              submitPath: this.formData.submitPath,
+            }).then(() => {
+              this.tableList.unshift(this.formData);
+              this.dialogFormVisible = false;
+              this.$message.success('创建成功');
+            });
+          }
+        });
       },
-      handleUpdate(row) {
-        this.formData = Object.assign({}, row) // copy obj
-        this.formData.timestamp = new Date(this.formData.timestamp)
-        this.dialogStatus = 'update'
-        this.dialogFormVisible = true
+      handleUpdate(scope) {
+        console.log(scope)
+        this.formData = Object.assign(this.formData, scope.row);
+        this.effectiveDuration = [this.formData.startDate, this.formData.endDate];
+        this.dialogStatus = 'update';
+        this.dialogFormVisible = true;
         this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
+          this.$refs['formData'].clearValidate()
         })
       },
-      updateData() {
-      },
-      handleDelete(row) {
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000
-        })
-        const index = this.tableList.indexOf(row)
-        this.tableList.splice(register, 1)
+      handleDelete(scope) {
+        this.$confirm('确认删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http.post(this.$baseUrl + this.delTaskRequest + scope.row.id).then((response) => {
+            console.log(response)
+            this.dialogFormVisible = false;
+            this.$message.success('删除成功');
+            this.getTableData();
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
       },
       changeUpload(file) {
         console.log(file)
@@ -337,7 +461,77 @@
         this.getTableData();
       },
       reset() {
-      }
+      },
+      handleBeforeUpload(file) {
+        console.log(file);
+        this.loading = true;
+      },
+      handlePreview(file) {
+        console.log(file);
+      },
+      handleRemove(file, fileList) {
+        console.log(file);
+        console.log(fileList);
+
+        let index = null;
+        fileList.forEach((item, index2) => {
+          if (file.uid === item) {
+            index = index2;
+          }
+        });
+        this.formData.iconPath = '';
+
+        this.fileList = this.fileList.filter(item => item.uid !== file.uid);
+        console.log(this.formData.iconPath);
+      },
+      uploadSuccess(response, file, fileList) {
+        this.loading = false;
+        console.log(file);
+        console.log(response);
+        console.log(6, fileList);
+
+        this.fileList.push(response);
+        console.log(this.formData);
+        this.formData.iconPath = response.url;
+        console.log(fileList);
+        // this.formData.iconPath.forEach((item, index) => {
+        //   if (item.url === this.formData.image) {
+        //     this.formData.iconPath.splice(index, 1)
+        //   }
+        // });
+
+        this.loading = false;
+        this.$message({
+          message: "图片上传成功",
+          type: "success"
+        });
+      },
+      uploadAvatarExceeded(files, fileList) {
+      },
+      updateData() {
+        this.$refs.formData.validate(valid => {
+          if (valid) {
+            this.$http.post(this.$baseUrl + this.saveRegisterTaskRequest, {
+              id: this.formData.id,
+              name: this.formData.name,
+              note: this.formData.note,
+              iconPath: this.formData.iconPath,
+              bounty: this.formData.bounty,
+              startDate: this.$moment(this.formData.startDate).format('YYYY-MM-DD'),
+              endDate: this.$moment(this.formData.endDate).format('YYYY-MM-DD'),
+              isShow: this.formData.isShow,
+              submitPath: this.formData.submitPath,
+            }).then(response => {
+              console.log(response)
+              this.dialogFormVisible = false;
+              this.getTableData();
+              this.$message.success('信息修改成功')
+            }).catch(error => {
+              this.$message.error(error)
+            })
+          }
+        })
+      },
     }
   }
 </script>

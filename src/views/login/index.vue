@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <el-form class="login-form" autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm"
-             label-position="right">
+            label-position="right">
       <h3 class="title">趣谷</h3>
       <el-form-item prop="username">
         <span class="svg-container svg-container_login">
@@ -93,7 +93,7 @@
               }],
             }).then(response => {
               console.log(response)
-              response = response.data;
+
               Cookies.set('Admin-Token', response.access_token);
               Cookies.set('Admin-Login-Id', this.loginForm.username);
 
@@ -110,11 +110,11 @@
                 }
               }).then(response => {
                 console.log(response)
-                response=response.data;
+
                 this.loading = false;
-                if(response.authorities.filter(item=>item.authority==='admin').length>0){
+                if (response.authorities.filter(item => item.authority === 'admin').length > 0) {
                   this.$router.push({path: '/'})
-                }else{
+                } else {
                   this.$message.error('此账号无管理员权限')
                 }
               }).catch(error => {

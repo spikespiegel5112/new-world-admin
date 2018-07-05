@@ -7,16 +7,16 @@ import { getToken } from '@/utils/auth'
 const service = axios.create({
   baseURL: 'http://gateway.zan-qian.com/', // api的base_url
   timeout: 5000, // 请求超时时间
-  transformRequest: [function(data) {
-    // Do whatever you want to transform the data
-    let ret = '';
-    for (const it in data) {
-      ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-    }
-    return ret
-  }],
+  // transformRequest: [function(data) {
+  //   // Do whatever you want to transform the data
+  //   let ret = '';
+  //   for (const it in data) {
+  //     ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+  //   }
+  //   return ret
+  // }],
   headers: {
-    'Content-Type': 'application/json;charset=utf-8'
+    // 'Content-Type': 'application/json;charset=utf-8'
   }
 });
 
@@ -41,7 +41,7 @@ service.interceptors.response.use(
     return response.data
   },
   error => {
-    const result_response = error.response
+    const result_response = error.response;
 
     if (result_response.status === 401) {
       store.dispatch('FedLogOut').then(() => {

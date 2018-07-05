@@ -176,15 +176,6 @@
         list: null,
         total: null,
         listLoading: true,
-        queryModel: {
-          name: '',
-          available: '',
-          actionType: '',
-          actionParam: '',
-          icon: '',
-          page: 1,
-          limit: 20,
-        },
         importanceOptions: [1, 2, 3],
         sortOptions: [{label: 'ID Ascending', key: '+id'}, {label: 'ID Descending', key: '-id'}],
         statusOptions: ['published', 'draft', 'deleted'],
@@ -254,19 +245,19 @@
       }
     },
     mounted() {
-      this.getTableData();
       this.getControllableVersionList();
+      this.getTableData();
     },
     methods: {
       getTableData() {
         this.listLoading = true;
         this.queryModel = Object.assign(this.queryModel, this.pagination);
         this.$http.get(this.$baseUrl + this.featureListRequest, {
-          params: this.queryModel
+          params: Object.assign(this.queryModel, this.pagination)
         }).then(response => {
           console.log(response)
-          this.list = response.data.list;
-          this.pagination.total = response.data.total;
+          this.list = response.list;
+          this.pagination.total = response.total;
           this.listLoading = false;
         }).catch(error => {
           this.$message.error(error.data)
@@ -275,7 +266,7 @@
       getControllableVersionList() {
         this.$http.get(this.$baseUrl + this.versionListRequest).then(response => {
           console.log(response)
-          response = response.data;
+
           this.androidVersionListData = response.androidList;
           this.iosVersionListData = response.iosList;
         }).catch(error => {
@@ -283,15 +274,15 @@
         })
       },
       handleFilter() {
-        this.queryModel.page = 1;
+        this.pagination.page = 1;
         this.getTableData()
       },
       handleSizeChange(val) {
-        this.queryModel.limit = val;
+        this.pagination.limit = val;
         this.getTableData()
       },
       handleCurrentChange(val) {
-        this.queryModel.page = val;
+        this.pagination.page = val;
         this.getTableData()
       },
       resetTemp() {

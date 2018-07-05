@@ -80,7 +80,7 @@
       </el-table-column>
       <el-table-column label="商品图片" width="150" align="center">
         <template slot-scope="scope">
-          <div v-if="scope.row.image===''">默认图片未选择</div>
+          <div v-if="scope.row.image===null">默认图片未选择</div>
           <img v-else :src="scope.row.image+'-style_200x200'" width="80">
         </template>
       </el-table-column>
@@ -130,7 +130,7 @@
     <!-- 分页 -->
     <div class="common-pagination-wrapper">
       <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                     :current-page="pagination.page" :page-sizes="[10,20,30,50]" :page-size="queryModel.limit"
+                     :current-page="pagination.page" :page-sizes="[10,20,30,50]" :page-size="pagination.limit"
                      layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
@@ -169,7 +169,8 @@
                   </ul>
                 </div>
                 <el-upload class="common-avataruploader-wrapper" ref="uploadAvatar"
-                           :action="$baseUrl+'image-upload-service/1.0.0/file/upload'" list-type="text" :multiple="true"
+                           :action="$prodBaseUrl+'image-upload-service/1.0.0/file/upload'" list-type="text"
+                           :multiple="true"
                            :show-file-list="false" :before-upload="handleBeforeUpload" :on-preview="handlePreview"
                            :before-remove="handleRemove"
                            :on-success="uploadSuccess" :on-exceed="uploadAvatarExceeded" :file-list="fileList"
@@ -300,10 +301,10 @@
         }],
         importanceOptions: [1, 2, 3],
         sortOptions: [{
-          label: 'ID Ascending',
+         label: 'ID Ascending',
           key: '+id'
         }, {
-          label: 'ID Descending',
+         label: 'ID Descending',
           key: '-id'
         }],
         statusOptions: ['published', 'draft', 'deleted'],
@@ -511,7 +512,7 @@
         });
         this.$http.post(this.$baseUrl + this.queryGoodsListAllRequest, this.queryModel).then(response => {
           console.log(response)
-          response = response.data;
+
           this.tableData = response.content;
           this.total = response.totalElements;
           this.listLoading = false
@@ -520,7 +521,7 @@
       getProductTypeList() {
         this.$http.get(this.$baseUrl + this.categoryListRequest).then(response => {
           console.log(response);
-          this.productTypeData = response.data;
+          this.productTypeData = response;
         });
       },
       search() {
@@ -540,7 +541,7 @@
         this.getTableData()
       },
       handleSizeChange(val) {
-        this.queryModel.limit = val;
+        this.pagination.limit = val;
         this.getTableData()
       },
       handleCurrentChange(val) {
@@ -548,21 +549,13 @@
 
         this.getTableData()
       },
-      updateShelfStatus(row, status) {
-        updateShelfStatusRequest(row.id, status).then(response => {
-          if (response) {
-            this.$message({
-              message: '操作成功',
-              type: 'success'
-            });
-            row.isShow = status
-          } else {
-            this.$message({
-              message: '操作失败',
-              type: 'error'
-            })
-          }
-        })
+      updateShelfStatus(scope) {
+        console.log(scope);
+        //0下架 1上架
+        this.$store.dispatch('updateShelfStatus', {
+          id: scope.row.id,
+          isShow: scope.row.isShow
+        });
       },
       resetTemp() {
         this.formData = {
