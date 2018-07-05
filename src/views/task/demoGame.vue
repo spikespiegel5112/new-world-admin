@@ -82,7 +82,7 @@
           <img :src="scope.row.iconPath+'-style_100x100'" width="80">
         </template>
       </el-table-column>
-      <el-table-column align="center" class-name="status-col" label="积分" width="60">
+      <el-table-column align="center" label="积分" width="60">
         <template slot-scope="scope">
           {{scope.row.bounty}}
         </template>
@@ -92,10 +92,10 @@
           {{scope.row.completedNum}}
         </template>
       </el-table-column>
-      <!--<el-table-column label="剩余数" width="70">-->
-      <!--<template slot-scope="scope">-->
-      <!--{{scope.row.surplusNum}}-->
-      <!--</template>-->
+      <!--<el-table-column label="备注" width="70">-->
+        <!--<template slot-scope="scope">-->
+          <!--{{scope.row.note}}-->
+        <!--</template>-->
       <!--</el-table-column>-->
       <el-table-column align="center" label="试玩时长" width="80">
         <template slot-scope="scope">
@@ -149,7 +149,7 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width='width: 400px;'>
       <el-row type="flex" justify="center">
         <el-col :span="20">
-          <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="120px">
+          <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="150px">
 
             <el-form-item label="任务名称" prop="name">
               <el-input v-model="formData.name"></el-input>
@@ -159,9 +159,8 @@
                 <a v-if="formData.iconPath!==''" class="close">
                   <span class="iconfont icon-crosswide"></span>
                 </a>
-                <div v-if="formData.iconPath===''">
+                <div v-if="formData.iconPath===''||formData.iconPath===null">
                   暂无图片
-                  <!--<img class="avatar" src="../../image/default/defaultavatar_60_60.png">-->
                 </div>
                 <img v-else :src="formData.iconPath+'-style_100x100'" class="avatar">
               </div>
@@ -171,18 +170,15 @@
                          :before-upload="handleBeforeUpload" :on-preview="handlePreview" :on-remove="handleRemove"
                          :on-success="uploadSuccess" :on-exceed="uploadAvatarExceeded" :file-list="fileList"
                          :data="portraitParams">
-                <el-button size="small" type="primary">点击上传</el-button>
+                <el-button v-waves size="small" type="primary">点击上传</el-button>
                 <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
               </el-upload>
             </el-form-item>
             <el-form-item label="备注" prop="note">
-              <el-input v-model="formData.note"></el-input>
+              <el-input type="textarea" :autosize="{ minRows: 4}" v-model="formData.note"></el-input>
             </el-form-item>
             <el-form-item label="积分/趣币" prop="bounty">
               <el-input v-model.number="formData.bounty"></el-input>
-            </el-form-item>
-            <el-form-item label="剩余数" prop="surplusNum">
-              <el-input v-model.number="formData.surplusNum"></el-input>
             </el-form-item>
             <el-form-item label="apk 下载地址" prop="apkPath">
               <el-input v-model="formData.apkPath"></el-input>
@@ -207,8 +203,6 @@
             </el-form-item>
             <el-form-item label="试玩时长" prop="tryplayTimeLength">
               <el-input-number v-model="formData.tryplayTimeLength" :min="0" label="描述文字"></el-input-number>
-              <!--<el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="Please input" v-model.number="formData.tryplayTimeLength">-->
-              </el-input>
             </el-form-item>
           </el-form>
 
@@ -216,7 +210,7 @@
       </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}
+        <el-button v-if="dialogStatus==='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}
         </el-button>
         <el-button v-else type="primary" @click="updateData" v-waves>{{$t('table.confirm')}}</el-button>
       </div>
@@ -238,9 +232,9 @@
   export default {
     data() {
       return {
-        gettryplaylistRequest: 'task-service/1.0.0/task/bk/gettryplaylist',
-        saveTryPlayRequest: 'task-service/1.0.0/task/bk/saveTryPlay',
-
+        gettryplaylistRequest: 'task-service/1.0.0/task/bk/gettryplaylist/',
+        saveTryPlayRequest: 'task-service/1.0.0/task/bk/saveTryPlay/',
+        delTaskRequest: 'task-service/1.0.0/task/bk/delTask/',
         value2: "",
         value1: "",
         tableKey: 0,
@@ -257,10 +251,10 @@
         effectiveDuration: [],
         importanceOptions: [1, 2, 3],
         sortOptions: [{
-          label: "ID Ascending",
+         label: "ID Ascending",
           key: "+id"
         }, {
-          label: "ID Descending",
+         label: "ID Descending",
           key: "-id"
         }],
         statusOptions: ["published", "draft", "deleted"],
@@ -309,7 +303,13 @@
             trigger: "change"
           }, {
             type: 'number',
-            message: '必须为数字值'
+            message: '必须为数字值',
+            trigger: "change"
+          }, {
+            type: 'number',
+            max: 999999,
+            message: '赏金不得大于999999',
+            trigger: "change"
           }],
           surplusNum: [{
             required: true,
@@ -409,7 +409,7 @@
           params: Object.assign(this.queryModel, this.pagination)
         }).then(response => {
           console.log(response);
-          response = response.data;
+
           this.tableList = response.content;
           this.total = response.totalElements;
           this.listLoading = false;
@@ -426,18 +426,9 @@
       updateShelfStatus(scope) {
         console.log(scope);
         //0下架 1上架
-        updateShelfStatusRequest(scope.row.id, scope.row.isShow).then(response => {
-          if (response) {
-            this.$message({
-              message: "操作成功",
-              type: "success"
-            });
-          } else {
-            this.$message({
-              message: "操作失败",
-              type: "error"
-            });
-          }
+        this.$store.dispatch('updateShelfStatus', {
+          id: scope.row.id,
+          isShow: scope.row.isShow
         });
       },
       resetTemp() {
@@ -456,7 +447,6 @@
           tryplayTimeLength: 0,
         };
         this.effectiveDuration = [];
-
       },
       handleCreate() {
         this.resetTemp();
@@ -469,8 +459,7 @@
       createData() {
         this.$refs["formData"].validate(valid => {
           if (valid) {
-            this.$http.post(this.$baseUrl+this.saveTryPlayRequest, {
-
+            this.$http.post(this.$baseUrl + this.saveTryPlayRequest, {
               // this.$http.post('http://192.168.1.192:9006/1.0.0/task/bk/saveTryPlay', {
               id: '',
               name: this.formData.name,
@@ -484,40 +473,17 @@
               apkPath: this.formData.apkPath,
               packageName: this.formData.packageName,
               tryplayTimeLength: this.formData.tryplayTimeLength,
-            }, {
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Bearer ' + this.$store.state.user.token
-              }
             }).then(() => {
               this.tableList.unshift(this.formData);
               this.dialogFormVisible = false;
-              this.$notify({
-                title: "成功",
-                message: "创建成功",
-                type: "success",
-                duration: 2000
-              });
+              this.$message.success('创建成功');
             });
           }
         });
       },
       handleUpdate(scope) {
-        let startDate = this.$moment(this.startDate).format('YYYY-MM-DD')
-        this.formData = Object.assign(this.formData, {
-          id: scope.row.id,
-          name: scope.row.name,
-          note: scope.row.note,
-          iconPath: scope.row.iconPath,
-          bounty: scope.row.bounty,
-          surplusNum: scope.row.surplusNum,
-          startDate: scope.row.startDate,
-          endDate: scope.row.endDate,
-          isShow: scope.row.isShow,
-          apkPath: scope.row.apkPath,
-          packageName: scope.row.packageName,
-          tryplayTimeLength: scope.row.tryplayTimeLength,
-        });
+        let startDate = this.$moment(this.startDate).format('YYYY-MM-DD');
+        this.formData = scope.row;
         this.effectiveDuration = [scope.row.startDate, scope.row.endDate]
         this.dialogStatus = "update";
         this.dialogFormVisible = true;
@@ -529,8 +495,8 @@
         this.$refs.formData.validate(valid => {
           if (valid) {
 
-            this.$http.post('http://192.168.1.154:9006/1.0.0/task/bk/saveTryPlay', {
-            // this.$http.post(this.$baseUrl + this.saveTryPlayRequest, {
+            // this.$http.post('http://192.168.1.154:9006/1.0.0/task/bk/saveTryPlay', {
+            this.$http.post(this.$baseUrl + this.saveTryPlayRequest, {
               id: this.formData.id,
               name: this.formData.name,
               note: this.formData.note,
@@ -543,21 +509,10 @@
               apkPath: this.formData.apkPath,
               packageName: this.formData.packageName,
               tryplayTimeLength: this.formData.tryplayTimeLength,
-            }, {
-              headers: {
-                'Authorization': 'Bearer ' + this.$store.state.user.token,
-                // 'Content-Type': 'application/x-www-form-urlencoded'
-              },
-              // transformRequest: [function (data) {
-              //   let ret = '';
-              //   for (let it in data) {
-              //     ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-              //   }
-              //   return ret
-              // }],
             }).then(response => {
               console.log(response)
-              response = response.data;
+              this.dialogFormVisible = false;
+              this.getTableData();
               this.$message.success('信息修改成功')
             }).catch(error => {
               this.$message.error(error)
@@ -565,15 +520,24 @@
           }
         })
       },
-      handleDelete(row) {
-        this.$notify({
-          title: "成功",
-          message: "删除成功",
-          type: "success",
-          duration: 2000
+      handleDelete(scope) {
+        this.$confirm('确认删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http.post(this.$baseUrl + this.delTaskRequest + scope.row.id).then((response) => {
+            console.log(response)
+            this.dialogFormVisible = false;
+            this.$message.success('删除成功');
+            this.getTableData();
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
         });
-        const index = this.tableList.indexOf(row);
-        this.tableList.splice(demoGame, 1);
       },
       changeUpload(file) {
         console.log(file);

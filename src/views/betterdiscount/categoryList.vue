@@ -95,7 +95,7 @@
     <!-- 分页 -->
     <!--<div class="common-pagination-wrapper">-->
       <!--<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"-->
-                     <!--:current-page="queryModel.page" :page-sizes="[10,20,30,50]" :page-size="queryModel.limit"-->
+                     <!--:current-page="pagination.page" :page-sizes="[10,20,30,50]" :page-size="pagination.limit"-->
                      <!--layout="total, sizes, prev, pager, next, jumper" :total="total">-->
       <!--</el-pagination>-->
     <!--</div>-->
@@ -135,7 +135,7 @@
                 :file-list="fileList"
                 :data="portraitParams">
 
-                <el-button size="small" type="primary">点击上传</el-button>
+                <el-button v-waves size="small" type="primary">点击上传</el-button>
                 <div slot="tip" class="el-upload__tip">
                   只能上传jpg/png文件，且不超过2MB
                 </div>
@@ -264,21 +264,21 @@
         this.listLoading = true;
         this.$http.get(this.$baseUrl + this.categoryListRequest).then(response => {
           console.log(response);
-          response = response.data;
+
           this.tableData = response;
           this.listLoading = false;
         })
       },
       handleFilter() {
-        this.queryModel.page = 1;
+        this.pagination.page = 1;
         this.getTableData()
       },
       handleSizeChange(val) {
-        this.queryModel.limit = val;
+        this.pagination.limit = val;
         this.getTableData()
       },
       handleCurrentChange(val) {
-        this.queryModel.page = val;
+        this.pagination.page = val;
         this.getTableData()
       },
       updateShelfStatus(row, status) {

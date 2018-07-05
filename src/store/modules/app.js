@@ -1,4 +1,6 @@
 import Cookies from 'js-cookie'
+import request from '@/utils/request'
+import {VueInstance} from "../../main";
 
 const app = {
   state: {
@@ -7,13 +9,20 @@ const app = {
       withoutAnimation: false
     },
     device: 'desktop',
-    actionType:[{
-      name:'native',
-      code:'native'
-    },{
-      name:'url',
-      code:'url'
-    }]
+    actionType: [{
+      name: 'native',
+      code: 'native'
+    }, {
+      name: 'url',
+      code: 'url'
+    }],
+    bountyType: [{
+      name: '趣豆 ',
+      code: 1
+    }, {
+      name: '积分',
+      code: 0
+    }],
   },
   mutations: {
     TOGGLE_SIDEBAR: state => {
@@ -35,16 +44,36 @@ const app = {
     }
   },
   actions: {
-    ToggleSideBar: ({ commit }) => {
+    ToggleSideBar: ({commit}) => {
       commit('TOGGLE_SIDEBAR')
     },
-    CloseSideBar({ commit }, { withoutAnimation }) {
+    CloseSideBar({commit}, {withoutAnimation}) {
       commit('CLOSE_SIDEBAR', withoutAnimation)
     },
-    ToggleDevice({ commit }, device) {
+    ToggleDevice({commit}, device) {
       commit('TOGGLE_DEVICE', device)
+    },
+    updateShelfStatus({commit}, options) {
+      let updateShelfStatusRequest = 'task-service/1.0.0/task/bk/changeStatus/ ' + options.id + '/' + options.isShow + '';
+
+      return new Promise((resolve, reject) => {
+        request.post(VueInstance.$baseUrl + updateShelfStatusRequest).then(response => {
+          VueInstance.$message({
+            message: "操作成功",
+            type: "success"
+          });
+          resolve();
+        }).catch(errpr => {
+          VueInstance.$message({
+            message: "操作失败",
+            type: "error"
+          });
+          reject();
+        })
+      });
+
     }
   }
-}
+};
 
 export default app
