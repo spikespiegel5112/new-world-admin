@@ -72,66 +72,17 @@
           {{scope.$index+1}}
         </template>
       </el-table-column>
-      <el-table-column label="名称" align="center">
+      <el-table-column label="代理商ID" align="center" prop="agentId" width="200"></el-table-column>
+      <el-table-column label="创建时间" align="center" prop="createDate" width="150"></el-table-column>
+      <el-table-column label="备注" align="center">
         <template slot-scope="scope">
-          {{scope.row.name}}
+          <div style="text-align: left;">
+            {{scope.row.note}}
+          </div>
         </template>
       </el-table-column>
-      <el-table-column label="Icon" align="center" width="100">
-        <template slot-scope="scope">
-          <img :src="scope.row.iconPath+'-style_100x100'" width="80">
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="积分" width="60">
-        <template slot-scope="scope">
-          {{scope.row.bounty}}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="完成数" width="70">
-        <template slot-scope="scope">
-          {{scope.row.completedNum}}
-        </template>
-      </el-table-column>
-      <!--<el-table-column label="备注" width="70">-->
-        <!--<template slot-scope="scope">-->
-          <!--{{scope.row.note}}-->
-        <!--</template>-->
-      <!--</el-table-column>-->
-      <el-table-column align="center" label="试玩时长" width="80">
-        <template slot-scope="scope">
-          {{scope.row.tryplayTimeLength}}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="开始/结束时间" width="120">
-        <template slot-scope="scope">
-          {{scope.row.startDate}}
-          <br> {{scope.row.endDate}}
-        </template>
-      </el-table-column>
-      <el-table-column label="APK下载地址">
-        <template slot-scope="scope">
-          {{scope.row.apkPath}}
-        </template>
-      </el-table-column>
-      <el-table-column label="应用包名">
-        <template slot-scope="scope">
-          {{scope.row.packageName}}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="添加时间">
-        <template slot-scope="scope">
-          <i class="el-icon-time"></i>
-          <span>{{scope.row.createDate}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="isShow" label="上架">
-        <template slot-scope="scope">
-          <el-switch v-model="scope.row.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                     inactive-color="#ff4949" @change="updateShelfStatus(scope)">
-          </el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column label="电话号码" align="center" width="150" prop="phone"></el-table-column>
+      <el-table-column align="center" label="操作" width="200">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope)" v-waves>编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope)" v-waves>删除</el-button>
@@ -150,62 +101,19 @@
       <el-row type="flex" justify="center">
         <el-col :span="20">
           <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="150px">
-
-            <el-form-item label="任务名称" prop="name">
+            <el-form-item label="名称" prop="name">
               <el-input v-model="formData.name"></el-input>
             </el-form-item>
-            <el-form-item label="任务图片" prop="iconPath">
-              <div class="avatar-wrapper">
-                <a v-if="formData.iconPath!==''" class="close">
-                  <span class="iconfont icon-crosswide"></span>
-                </a>
-                <div v-if="formData.iconPath===''||formData.iconPath===null">
-                  暂无图片
-                </div>
-                <img v-else :src="formData.iconPath+'-style_100x100'" class="avatar">
-              </div>
-              <el-upload class="common-avataruploader-wrapper" ref="uploadAvatar"
-                         :action="$prodBaseUrl+'image-upload-service/1.0.0/file/upload'" :limit="1"
-                         :show-file-list="false"
-                         :before-upload="handleBeforeUpload" :on-preview="handlePreview" :on-remove="handleRemove"
-                         :on-success="uploadSuccess" :on-exceed="uploadAvatarExceeded" :file-list="fileList"
-                         :data="portraitParams">
-                <el-button v-waves size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
-              </el-upload>
+            <el-form-item label="联系电话" prop="phone">
+              <el-input v-model.number="formData.phone"></el-input>
+            </el-form-item>
+            <el-form-item label="代理商ID" prop="agentId">
+              <el-input v-model="formData.agentId"></el-input>
             </el-form-item>
             <el-form-item label="备注" prop="note">
               <el-input type="textarea" :autosize="{ minRows: 4}" v-model="formData.note"></el-input>
             </el-form-item>
-            <el-form-item label="积分/趣币" prop="bounty">
-              <el-input v-model.number="formData.bounty"></el-input>
-            </el-form-item>
-            <el-form-item label="apk 下载地址" prop="apkPath">
-              <el-input v-model="formData.apkPath"></el-input>
-            </el-form-item>
-            <el-form-item label="包名" prop="packageName">
-              <el-input v-model="formData.packageName"></el-input>
-            </el-form-item>
-            <el-form-item label="是否上架" prop="isShow">
-              <el-switch v-model="formData.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                         inactive-color="#ff4949">
-              </el-switch>
-            </el-form-item>
-
-            <el-form-item label="有效时间" prop="startDate">
-              <el-date-picker
-                v-model="effectiveDuration"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期">
-              </el-date-picker>
-            </el-form-item>
-            <el-form-item label="试玩时长" prop="tryplayTimeLength">
-              <el-input-number v-model="formData.tryplayTimeLength" :min="0" label="描述文字"></el-input-number>
-            </el-form-item>
           </el-form>
-
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
@@ -215,7 +123,6 @@
         <el-button v-else type="primary" @click="updateData" v-waves>{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
-    <!--  -->
   </div>
 
 </template>
@@ -232,9 +139,9 @@
   export default {
     data() {
       return {
-        gettryplaylistRequest: 'task-service/1.0.0/task/bk/gettryplaylist/',
-        saveTryPlayRequest: 'task-service/1.0.0/task/bk/saveTryPlay/',
-        delTaskRequest: 'task-service/1.0.0/task/bk/delTask/',
+        getagentpageRequest: 'besttv-service/1.0.0/agent/bk/getagentpage/',
+        saveAgentInfoRequest: 'besttv-service/1.0.0/agent/bk/saveAgentInfo',
+        delAgentInfoRequest: 'besttv-service/1.0.0/agent/bk/delAgentInfo/',
         value2: "",
         value1: "",
         tableKey: 0,
@@ -251,10 +158,10 @@
         effectiveDuration: [],
         importanceOptions: [1, 2, 3],
         sortOptions: [{
-         label: "ID Ascending",
+          label: "ID Ascending",
           key: "+id"
         }, {
-         label: "ID Descending",
+          label: "ID Descending",
           key: "-id"
         }],
         statusOptions: ["published", "draft", "deleted"],
@@ -262,16 +169,9 @@
         formData: {
           id: '',
           name: '',
+          agentId: "",
+          phone: "",
           note: '',
-          iconPath: '',
-          bounty: '',
-          surplusNum: '',
-          startDate: '',
-          endDate: '',
-          isShow: '',
-          apkPath: '',
-          packageName: '',
-          tryplayTimeLength: 0,
         },
         dialogFormVisible: false,
         dialogStatus: "",
@@ -292,12 +192,7 @@
             message: "此项为必填项",
             trigger: "change"
           }],
-          iconPath: [{
-            required: true,
-            message: "此项为必填项",
-            trigger: "change"
-          }],
-          bounty: [{
+          phone: [{
             required: true,
             message: "此项为必填项",
             trigger: "change"
@@ -305,58 +200,13 @@
             type: 'number',
             message: '必须为数字值',
             trigger: "change"
-          }, {
-            type: 'number',
-            max: 999999,
-            message: '赏金不得大于999999',
-            trigger: "change"
           }],
-          surplusNum: [{
-            required: true,
-            message: "此项为必填项",
-            trigger: "change"
-          }, {
-            type: 'number',
-            message: '必须为数字值'
-          }],
-          startDate: [{
+          agentId: [{
             required: true,
             message: "此项为必填项",
             trigger: "change"
           }],
-          endDate: [{
-            required: true,
-            message: "此项为必填项",
-            trigger: "change"
-          }],
-          isShow: [{
-            required: true,
-            message: "此项为必填项",
-            trigger: "change"
-          }],
-          apkPath: [{
-            required: true,
-            message: "此项为必填项",
-            trigger: "change"
-          }],
-          packageName: [{
-            required: true,
-            message: "此项为必填项",
-            trigger: "change"
-          }],
-          tryplayTimeLength: [{
-            required: true,
-            message: "此项为必填项",
-            trigger: "change"
-          }, {
-            type: 'number',
-            message: '必须为数字值'
-          }],
-          effectiveDuration: [{
-            required: true,
-            message: '此项为必填项',
-            trigger: 'change'
-          }],
+
         },
         downloadLoading: false,
         pickerOptions0: {
@@ -405,7 +255,7 @@
     methods: {
       getTableData() {
         this.listLoading = true;
-        this.$http.get(this.$baseUrl + this.gettryplaylistRequest, {
+        this.$http.get(this.$baseUrl + this.getagentpageRequest, {
           params: Object.assign(this.queryModel, this.pagination)
         }).then(response => {
           console.log(response);
@@ -435,16 +285,9 @@
         this.formData = {
           id: '',
           name: '',
+          agentId: "",
+          phone: "",
           note: '',
-          iconPath: '',
-          bounty: '',
-          surplusNum: '',
-          startDate: '',
-          endDate: '',
-          isShow: '',
-          apkPath: '',
-          packageName: '',
-          tryplayTimeLength: 0,
         };
         this.effectiveDuration = [];
       },
@@ -459,22 +302,14 @@
       createData() {
         this.$refs["formData"].validate(valid => {
           if (valid) {
-            this.$http.post(this.$baseUrl + this.saveTryPlayRequest, {
-              // this.$http.post('http://192.168.1.192:9006/1.0.0/task/bk/saveTryPlay', {
+            this.$http.post(this.$baseUrl + this.saveAgentInfoRequest, {
               id: '',
               name: this.formData.name,
+              agentId: this.formData.agentId,
+              phone: this.formData.phone,
               note: this.formData.note,
-              iconPath: this.formData.iconPath,
-              bounty: this.formData.bounty,
-              surplusNum: this.formData.surplusNum,
-              startDate: this.$moment(this.formData.startDate).format('YYYY-MM-DD'),
-              endDate: this.$moment(this.formData.endDate).format('YYYY-MM-DD'),
-              isShow: this.formData.isShow,
-              apkPath: this.formData.apkPath,
-              packageName: this.formData.packageName,
-              tryplayTimeLength: this.formData.tryplayTimeLength,
             }).then(() => {
-              this.tableList.unshift(this.formData);
+              this.getTableData();
               this.dialogFormVisible = false;
               this.$message.success('创建成功');
             });
@@ -494,21 +329,12 @@
       updateData() {
         this.$refs.formData.validate(valid => {
           if (valid) {
-
-            // this.$http.post('http://192.168.1.154:9006/1.0.0/task/bk/saveTryPlay', {
-            this.$http.post(this.$baseUrl + this.saveTryPlayRequest, {
+            this.$http.post(this.$baseUrl + this.saveAgentInfoRequest, {
               id: this.formData.id,
               name: this.formData.name,
+              agentId: this.formData.agentId,
+              phone: this.formData.phone,
               note: this.formData.note,
-              iconPath: this.formData.iconPath,
-              bounty: this.formData.bounty,
-              surplusNum: this.formData.surplusNum,
-              startDate: this.formData.startDate,
-              endDate: this.formData.endDate,
-              isShow: this.formData.isShow,
-              apkPath: this.formData.apkPath,
-              packageName: this.formData.packageName,
-              tryplayTimeLength: this.formData.tryplayTimeLength,
             }).then(response => {
               console.log(response)
               this.dialogFormVisible = false;
@@ -526,7 +352,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http.post(this.$baseUrl + this.delTaskRequest + scope.row.id).then((response) => {
+          this.$http.post(this.$baseUrl + this.delAgentInfoRequest + scope.row.id).then((response) => {
             console.log(response)
             this.dialogFormVisible = false;
             this.$message.success('删除成功');

@@ -166,6 +166,25 @@ export const constantRouterMap = [{
       meta: {title: '商品列表', icon: 'table'}
     }]
   }, {
+    path: '/bestv',
+    component: Layout,
+    name: 'BesTV',
+    meta: {title: 'BesTV', icon: 'table'},
+    redirect: {
+      name: 'metaDataBuilding',
+    },
+    children: [{
+      path: 'agent',
+      name: 'agent',
+      component: () => import('@/views/besTv/agent'),
+      meta: {title: '代理商', icon: 'table'}
+    }, {
+      path: 'cardnumber',
+      name: 'cardNumber',
+      component: () => import('@/views/besTv/cardNumber'),
+      meta: {title: '自助生成卡号', icon: 'table'}
+    }]
+  }, {
     path: '*',
     redirect: '/404',
     hidden: true
