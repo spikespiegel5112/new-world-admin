@@ -47,7 +47,7 @@
           {{scope.row.tryplayTimeLength}}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="开始/结束时间">
+      <el-table-column align="center" label="开始/结束时间" width="120">
         <template slot-scope="scope">
           {{scope.row.startDate}}<br> {{scope.row.endDate}}
         </template>

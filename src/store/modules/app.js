@@ -23,6 +23,13 @@ const app = {
       name: '积分',
       code: 0
     }],
+    deviceTypeDictionary:[{
+      name:'安卓',
+      code:'android'
+    },{
+      name:'苹果',
+      code:'ios'
+    }]
   },
   mutations: {
     TOGGLE_SIDEBAR: state => {
