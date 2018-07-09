@@ -226,8 +226,7 @@
     getTryPlayList,
     saveTryPlay,
     updateShelfStatusRequest
-  }
-    from "@/api/task";
+  } from "@/api/task";
 
   export default {
     data() {
@@ -549,6 +548,9 @@
         this.getTableData();
       },
       reset() {
+        this.queryModel.name = '';
+        this.pagination.page = 1;
+        this.getTableData();
       },
       handleBeforeUpload(file) {
         console.log(file);

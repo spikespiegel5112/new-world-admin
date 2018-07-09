@@ -122,8 +122,7 @@
         <template slot-scope="scope">
           <!--<el-button type="primary" size="mini" @click="editAvailability(scope)">设置可用性</el-button>-->
           <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope)">删除
-          </el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -151,7 +150,7 @@
               <el-input v-model="formData.name"></el-input>
             </el-form-item>
             <el-form-item label="Icon" prop="icon">
-              <div class="avatar-wrapper" style="">
+              <div class="avatar-wrapper">
                 <a v-if="formData.icon!==''" class="close">
                   <span class="iconfont icon-crosswide"></span>
                 </a>
@@ -346,6 +345,16 @@
 
       }
     },
+    watch: {
+      effectiveDuration(value) {
+        console.log(value)
+        if (value === null) {
+          value = [];
+        }
+        this.formData.startDate = value[0];
+        this.formData.endDate = value[1];
+      }
+    },
     mounted() {
       this.getControllableVersionList();
       this.getTableData()
@@ -448,6 +457,8 @@
       handleUpdate(scope) {
         console.log(scope)
         this.formData = Object.assign({}, scope.row); // copy obj
+        this.effectiveDuration = [scope.row.startDate, scope.row.endDate]
+
         this.dialogStatus = 'update';
         this.dialogFormVisible = true;
         this.$nextTick(() => {

@@ -147,7 +147,6 @@
             </el-form-item>
             <el-form-item label="商品图片" prop="detailImage">
               <div class="common-imguploadpreview-wrapper">
-                <!--{{formData.detailImage}}-->
                 <el-checkbox-group v-show="false" v-model="formData.detailImage">
                   <el-checkbox v-for='item in formData.detailImage' :key="item" :label="item"></el-checkbox>
                 </el-checkbox-group>
@@ -178,13 +177,11 @@
 
                   <el-button class="add" type="primary">上传</el-button>
 
-
                   <div slot="tip" class="el-upload__tip">
                     只能上传jpg/png文件，且不超过2MB
                   </div>
                 </el-upload>
               </div>
-
             </el-form-item>
 
             <el-form-item label="商品价格" prop="price">
