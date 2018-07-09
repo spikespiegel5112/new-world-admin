@@ -486,6 +486,9 @@
         this.getTableData();
       },
       reset() {
+        this.queryModel.name = '';
+        this.pagination.page = 1;
+        this.getTableData();
       },
       upShelf() {
       },

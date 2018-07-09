@@ -111,7 +111,7 @@
               <el-input v-model="formData.summary"></el-input>
             </el-form-item>
             <el-form-item label="图片" prop="imageUrl">
-              <div class="avatar-wrapper" style="">
+              <div class="avatar-wrapper">
                 <a v-if="formData.imageUrl!==''" class="close">
                   <span class="iconfont icon-crosswide"></span>
                 </a>
@@ -395,6 +395,11 @@
 
       },
       reset() {
+        this.queryModel.name = '';
+        this.queryModel.type = null;
+        this.queryModel.goodsNumber = '';
+        this.pagination.page = 1;
+        this.getTableData();
       },
       handleBeforeUpload(file) {
         console.log(file)

@@ -1,329 +1,573 @@
 <template>
   <div class="app-container">
     <div class="common-querytable-wrapper">
-      <el-input @keyup.enter.native="handleFilter" style="width: 200px;" :placeholder="$t('table.title')" v-model="queryModel.keyword">
-      </el-input>
-      <!-- <el-select clearable style="width: 90px" v-model="queryModel.importance" :placeholder="$t('table.importance')">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item">
-        </el-option>
-      </el-select> -->
-      <el-select clearable style="width: 220px" v-model="queryModel.location" :placeholder="$t('table.type')">
-        <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key">
-        </el-option>
-      </el-select>
-      <el-select @change='handleFilter' style="width: 140px" v-model="queryModel.sort">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key">
-        </el-option>
-      </el-select>
-      <el-button type="primary" v-waves icon="el-icon-search" @click="handleFilter">{{$t('table.search')}}</el-button>
-      <el-button @click="handleCreate" type="primary" icon="el-icon-edit">{{$t('table.add')}}</el-button>
+      <div class="queryform-wrapper">
+        <div class="outside">
+          <el-form class="basearea">
+            <ul class="pull-left">
+              <li>
+                <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate" v-waves>新增</el-button>
+              </li>
+            </ul>
+          </el-form>
+          <ul class="operation-wrapper pull-right">
+            <li>
+              <!--<div class="common-search-wrapper" @keyup.enter="search">-->
+                <!--<input v-model="queryModel.keyword" type="text" placeholder="请输入标题"/>-->
+                <!--<a>-->
+                  <!--<span @click="search" class="el-icon-search"></span>-->
+                <!--</a>-->
+              <!--</div>-->
+            </li>
+            <li>
+              <el-button size="mini" class="expand" type="text" @click='expand'>高级搜索<i class="el-icon-arrow-down"></i>
+              </el-button>
+            </li>
+          </ul>
+        </div>
+        <div class="expandarea" :class="{active:expandQuery}">
+          <el-form ref="form" :model="queryModel" size="mini" label-width="100px">
+            <el-row>
+              <el-col :span="8">
+                <el-form-item label="类型：">
+                  <el-select clearable v-model="queryModel.location" placeholder="请选择">
+                    <el-option v-for="item in calendarTypeOptions" :key="item.code" :label="item.name+'('+item.code+')'"
+                               :value="item.code">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+              <el-col :span="8">
+
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="23" pull-right>
+                <el-form-item class="pull-right">
+                  <el-button type="primary" size="mini" icon="el-icon-search" @click="search" v-waves>搜索
+                  </el-button>
+                  <el-button type="primary" size="mini" icon="el-icon-refresh" @click="reset" v-waves>重置
+                  </el-button>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+        </div>
+      </div>
     </div>
 
-    <el-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit highlight-current-row
-      style="width: 100%">
-      <el-table-column align="center" :label="$t('table.id')" width="65">
+    <el-table :key='tableKey' :data="tableList" v-loading="listLoading" element-loading-text="载入中" border fit
+              highlight-current-row :default-sort="{prop: 'id', order: 'descending'}" @sort-change="changeTableSort">
+      <el-table-column align="center" label="ID" width="65" prop="id" sortable="custom"></el-table-column>
+      <el-table-column align="center" label="缩略图" width="100px">
         <template slot-scope="scope">
-          <span>{{scope.row.id}}</span>
+          <img :src="scope.row.image+'-style_100x100'">
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('table.image')" width="100px">
+      <el-table-column align="center" label="点击链接" prop="url"></el-table-column>
+      <el-table-column align="center" label="视频链接" prop="video" width="200px"></el-table-column>
+      <el-table-column align="center" label="Android可用性">
         <template slot-scope="scope">
-          <img :src="scope.row.image+'-style_25x25'">
+          <el-switch
+            v-model="scope.row.android"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            disabled>
+          </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" height="10px" :label="$t('table.url')">
+      <el-table-column align="center" label="iOS可用性">
         <template slot-scope="scope">
-          <span class="link-type"></span><!--{{scope.row.url}}-->
-          <!-- <span class="link-type" @click="handleUpdate(scope.row)">{{scope.row.url}}</span> -->
+          <el-switch
+            v-model="scope.row.ios"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            disabled>
+          </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('table.video')">
+      <el-table-column align="center" label="创建时间" width="150px">
         <template slot-scope="scope">
-          <span class="link-type">{{scope.row.video}}</span>
+          {{$moment(scope.row.createDate).format('YYYY-MM-DD hh:mm:ss')}}
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('table.type')">
+      <el-table-column align="center" label="结束时间" width="150px">
         <template slot-scope="scope">
-          <el-tag>{{scope.row.location | typeFilter}}</el-tag>
+          {{$moment(scope.row.endDate).format('YYYY-MM-DD hh:mm:ss')}}
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('table.endDate')">
+      <el-table-column align="center" label="状态" width="80">
         <template slot-scope="scope">
-          <span>{{scope.row.endDate}}</span>
+          <el-tag :type="statusDictionary.filter(item=>item.code===scope.row.status)[0].type">
+            {{statusDictionary.filter(item=>item.code===scope.row.status)[0].name}}
+          </el-tag>
         </template>
       </el-table-column>
-      <el-table-column  :label="$t('table.status')" width="100">
+      <el-table-column align="center" :label="$t('table.actions')" width="300px">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{scope.row.status | statusFilterName}}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" :label="$t('table.actions')" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <router-link :to="'/advertising/edit/'+scope.row.id"><el-button type="primary" size="mini">{{$t('table.edit')}}</el-button></router-link>
-          <el-button v-if="scope.row.status=='0'" size="mini" type="success" @click="updateShelfStatus(scope.row,'1')">{{$t('table.publish')}}
+          <el-button @click="handleUpdate(scope)" type="primary" size="mini">编辑</el-button>
+          <el-button v-if="scope.row.status==='0'" size="mini" type="success" @click="updateShelfStatus(scope.row,'1')">
+            编辑
           </el-button>
-           <el-button v-if="scope.row.status=='1'" size="mini" @click="updateShelfStatus(scope.row,'0')">{{$t('table.draft')}}
-          </el-button>
-          <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleDelete(scope.row)">{{$t('table.delete')}}
+          <el-button v-if="scope.row.status==='1'" size="mini" @click="updateShelfStatus(scope.row,'0')">草稿</el-button>
+          <el-button v-if="scope.row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(scope)">
+            {{$t('table.delete')}}
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <div class="common-pagination-wrapper">
-      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pagination.page" :page-sizes="[10,20,30,50]" :page-size="pagination.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                     :current-page="pagination.page" :page-sizes="[10,20,30,50]" :page-size="pagination.limit"
+                     layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="120px" style='width: 400px; margin-left:50px;'>
-        <el-form-item :label="$t('table.type')" prop="type">
-          <el-select v-model="formData.type"placeholder="请选择">
-            <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.date')" prop="timestamp">
-          <el-date-picker v-model="formData.timestamp" type="datetime" placeholder="Please pick a date">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item :label="$t('table.title')" prop="title">
-          <el-input v-model="formData.title"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('table.status')">
-          <el-select v-model="formData.status"placeholder="请选择">
-            <el-option v-for="item in  statusOptions" :key="item" :label="item" :value="item">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.importance')">
-          <el-rate style="margin-top:8px;" v-model="formData.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max='3'></el-rate>
-        </el-form-item>
-        <el-form-item :label="$t('table.remark')">
-          <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="Please input" v-model="formData.remark">
-          </el-input>
-        </el-form-item>
-      </el-form>
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="850px">
+      <el-row type="flex" justify="center">
+        <el-col :span="20">
+          <elForm :rules="rules" ref="formData" :model="formData" label-position="right" label-width="140px">
+            <el-form-item label="点击链接" prop="url">
+              <el-input v-model="formData.url"></el-input>
+            </el-form-item>
+            <el-form-item label="类型" prop="location">
+              <el-select v-model="formData.location" placeholder="请选择">
+                <el-option v-for="item in calendarTypeOptions" :key="item.code" :label="item.name" :value="item.code">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="开始结束时间" prop="endDate">
+              <el-date-picker v-model="formData.endDate"
+                              align="right"
+                              value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="缩略图" prop="image">
+              <div class="common-avataruploader-wrapper">
+                <a v-if="formData.image!==''" class="close">
+                  <span class="el-icon-close"></span>
+                </a>
+                <img v-if="formData.image===''" src="../../image/default/defaultavatar_60_60.png"
+                     class="avatar" @onerror="setDefaultImage">
+                <img v-else :src="formData.image+'-style_100x100'"
+                     class="avatar">
+              </div>
+              <el-upload
+                class="common-avataruploader-wrapper"
+                ref="uploadAvatar"
+                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
+                :limit="1"
+                :show-file-list="false"
+                :before-upload="handleBeforeUpload"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :on-success="uploadSuccess"
+                :on-exceed="uploadAvatarExceeded"
+                :file-list="fileList"
+                :data="portraitParams">
+                <el-button v-waves size="small" type="primary">点击上传</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
+              </el-upload>
+            </el-form-item>
+            <el-form-item label="视频地址" prop="video">
+              <el-input v-model="formData.video"></el-input>
+            </el-form-item>
+            <el-form-item label="iOS可用性" prop="ios">
+              <el-switch
+                v-model="formData.ios"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="Android可用性" prop="android">
+              <el-switch
+                v-model="formData.android"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="上线" prop="status">
+              <el-switch
+                v-model="formData.status"
+                active-value="1"
+                inactive-value="0"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
+          </elForm>
+        </el-col>
+      </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus==='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}</el-button>
+        <el-button v-if="dialogStatus==='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}
+        </el-button>
         <el-button v-else type="primary" @click="updateData" v-waves>{{$t('table.confirm')}}</el-button>
       </div>
-    </el-dialog>
-
-    <el-dialog title="Reading statistics" :visible.sync="dialogPvVisible">
-      <el-table :data="pvData" border fit highlight-current-row>
-        <el-table-column prop="key" label="Channel"> </el-table-column>
-        <el-table-column prop="pv" label="Pv"> </el-table-column>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">{{$t('table.confirm')}}</el-button>
-      </span>
     </el-dialog>
 
   </div>
 </template>
 
 <script>
-import { findList, createAdvertising, updateAdvertising, deleteAdvertising } from '@/api/advertising'
-import waves from '@/directive/waves' // 水波纹指令
+  import {findList, createAdvertising, updateAdvertising, deleteAdvertising} from '@/api/advertising'
 
-const calendarTypeOptions = [
-  { key: 'start_the', display_name: '启动页' },
-  { key: 'sign_in', display_name: '签到' },
-  { key: 'notice', display_name: '公告' },
-  { key: 'better_discount', display_name: '好折扣' }
-]
 
-// arr to obj ,such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
-
-export default {
-  name: 'complexTable',
-  directives: {
-    waves
-  },
-  data() {
-    return {
-      tableKey: 0,
-      list: null,
-      total: null,
-      listLoading: true,
-      queryModel: {
-        page: 1,
-        limit: 20,
-        importance: null,
-        title: null,
-        type: null,
-        sort: '+id'
-      },
-      importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      statusOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
-      formData: {
-        id: null,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
-      },
-      dialogFormVisible: false,
-      dialogStatus: '',
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
-      dialogPvVisible: false,
-      pvData: [],
-      rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'change' }]
-      },
-      downloadLoading: false
-    }
-  },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        0: 'info',
-        1: 'success'
-      }
-      return statusMap[status]
-    },
-    statusFilterName(status) {
-      const statusMap = {
-        0: '草稿',
-        1: '发布'
-      }
-      return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
-    }
-  },
-  mounted() {
-    this.getList()
-  },
-  methods: {
-    getList() {
-      this.listLoading = true
-      findList(this.queryModel).then(response => {
-        this.list = response.list
-        this.total = response.total
-        this.listLoading = false
-      })
-    },
-    handleFilter() {
-      this.pagination.page = 1
-      this.getList()
-    },
-    handleSizeChange(val) {
-      this.pagination.limit = val
-      this.getList()
-    },
-    handleCurrentChange(val) {
-      this.pagination.page = val
-      this.getList()
-    },
-    updateShelfStatus(row, status) {
-      row.status = status
-      updateAdvertising(row).then(response => {
-        this.$message({
-          message: '操作成功',
-          type: 'success'
-        })
-      })
-    },
-    resetTemp() {
-      this.formData = {
-        id: null,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
-      }
-    },
-    handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['formData'].clearValidate()
-      })
-    },
-    createData() {
-      this.$refs['formData'].validate((valid) => {
-        if (valid) {
-          this.formData.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.formData.author = 'vue-element-admin'
-          createAdvertising(this.formData).then(() => {
-            this.list.unshift(this.formData)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '创建成功',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
-    handleUpdate(row) {
-      this.formData = Object.assign({}, row) // copy obj
-      this.formData.timestamp = new Date(this.formData.timestamp)
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['formData'].clearValidate()
-      })
-    },
-    updateData() {
-      this.$refs['formData'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.formData)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateAdvertising(tempData).then(() => {
-            for (const v of this.list) {
-              if (v.id === this.formData.id) {
-                const index = this.list.indexOf(v)
-                this.list.splice(index, 1, this.formData)
-                break
-              }
-            }
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '更新成功',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
-    handleDelete(row) {
-      deleteAdvertising(row.id).then(response => {
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
+  export default {
+    name: 'complexTable',
+    data() {
+      return {
+        advertisingUpdate: 'advertising-service/1.0.0/advertising/update',
+        advertisingListRequest: 'advertising-service/1.0.0/advertising/list',
+        advertisingCreateRequest: 'advertising-service/1.0.0/advertising',
+        advertisingDeleteRequest: 'advertising-service/1.0.0/advertising',
+        calendarTypeOptions: [
+          {code: 'start_the', name: '启动页'},
+          {code: 'sign_in', name: '签到'},
+          {code: 'notice', name: '公告'},
+          {code: 'better_discount', name: '好折扣'}
+        ],
+        statusDictionary: [{
+          code: 0,
+          type: 'info',
+          name: '草稿'
+        }, {
+          code: 1,
           type: 'success',
-          duration: 2000
+          name: '发布'
+        }],
+        tableKey: 0,
+        tableList: [],
+        total: null,
+        listLoading: true,
+        queryModel: {
+          location: '',
+          sort: '+id'
+        },
+        pagination: {
+          page: 1,
+          limit: 20,
+        },
+        importanceOptions: [1, 2, 3],
+        sortOptions: [{label: 'ID Ascending', key: '+id'}, {label: 'ID Descending', key: '-id'}],
+        statusOptions: ['published', 'draft', 'deleted'],
+        showReviewer: false,
+        formData: {
+          id: '',
+          image: '',
+          url: '',
+          location: '',
+          ios: false,
+          android: false,
+          video: '',
+          status: '',
+          endDate: '',
+        },
+        dialogFormVisible: false,
+        dialogStatus: '',
+        textMap: {
+          update: 'Edit',
+          create: 'Create'
+        },
+        dialogPvVisible: false,
+        pvData: [],
+        rules: {
+          location: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          createDate: [{type: 'date', required: true, message: '请选择可用时间段', trigger: 'change'}],
+          image: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          url: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          ios: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          android: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          video: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          status: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          endDate: [{required: true, message: '此项为必填项', trigger: 'change'}],
+        },
+        downloadLoading: false,
+        expandQuery: false,
+        fileList: [],
+        portraitParams: {
+          bucketName: "funyvalley",
+          folderName: "advertising"
+        },
+        effectiveDuration: [],
+        pickerOptions2: {
+          shortcuts: [{
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }]
+        },
+      }
+    },
+    computed: {
+      calendarTypeKeyValue() {
+        this.calendarTypeOptions.reduce((acc, cur) => {
+          acc[cur.key] = cur.name
+          return acc
+        }, {})
+      }
+    },
+    watch: {
+      effectiveDuration(value) {
+        console.log(value)
+        if (value === null) {
+          value = [];
+        }
+        this.formData.createDate = value[0];
+        this.formData.endDate = value[1];
+      }
+    },
+    filters: {
+      statusFilter(status) {
+        const statusDictionary = {
+          0: {
+            type: 'info',
+            name: '草稿'
+          },
+          1: {
+            type: 'success',
+            name: '发布'
+          }
+        };
+        return statusDictionary[status]
+      },
+      typeFilter(type) {
+        return this.calendarTypeKeyValue[type]
+      }
+    },
+    mounted() {
+      this.getTableData()
+    },
+    methods: {
+      getTableData() {
+        this.listLoading = true;
+        this.$http.get(this.$baseUrl + this.advertisingListRequest, {
+          params: Object.assign(this.queryModel, this.pagination)
+        }).then(response => {
+          console.log(response)
+          this.pagination.total = response.total;
+          this.tableList = response.list;
+          this.listLoading = false;
+        });
+      },
+      handleFilter() {
+        this.pagination.page = 1;
+        this.getTableData()
+      },
+      handleSizeChange(val) {
+        this.pagination.limit = val
+        this.getTableData()
+      },
+      handleCurrentChange(val) {
+        this.pagination.page = val
+        this.getTableData()
+      },
+      updateShelfStatus(row, status) {
+        row.status = status
+        updateAdvertising(row).then(response => {
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          })
         })
-      })
-      const index = this.list.indexOf(row)
-      this.list.splice(index, 1)
+      },
+      resetTemp() {
+        this.formData = {
+          id: '',
+          image: '',
+          url: '',
+          location: '',
+          ios: false,
+          android: false,
+          video: '',
+          status: '',
+          endDate: '',
+        }
+      },
+      handleCreate() {
+        this.resetTemp();
+        this.dialogStatus = 'create';
+        this.dialogFormVisible = true;
+        this.$nextTick(() => {
+          this.$refs['formData'].clearValidate()
+        })
+      },
+      createData() {
+        this.$refs['formData'].validate((valid) => {
+          if (valid) {
+            this.$http.post(this.$baseUrl + this.advertisingCreateRequest, this.formData).then(response => {
+              this.dialogFormVisible = false;
+              this.$message.success('创建成功');
+              this.getTableData()
+            });
+          }
+        })
+      },
+      handleUpdate(scope) {
+        console.log(scope)
+        this.formData = Object.assign(this.formData, {
+          id: scope.row.id,
+          image: scope.row.image,
+          url: scope.row.url,
+          location: scope.row.location,
+          ios: scope.row.ios,
+          android: scope.row.android,
+          video: scope.row.video,
+          status: scope.row.status.toString(),
+          endDate: scope.row.endDate,
+        });
+        this.dialogStatus = 'update';
+        this.dialogFormVisible = true;
+        console.log(typeof scope.row.status.toString(),)
+        this.$nextTick(() => {
+          this.$refs['formData'].clearValidate()
+        })
+      },
+      updateData() {
+        this.$refs['formData'].validate((valid) => {
+          if (valid) {
+            this.$http.post(this.$baseUrl + this.advertisingUpdate, this.formData).then(() => {
+              this.getTableData();
+              this.dialogFormVisible = false;
+              this.$message.success('更新成功')
+            })
+          }
+        })
+      },
+      handleDelete(scope) {
+        console.log(scope)
+        this.$confirm('确认删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http.delete(this.$baseUrl + this.advertisingDeleteRequest + `/${scope.row.id}`,{}).then(response => {
+            console.log(response)
+            this.$message.success('删除成功');
+            this.getTableData();
+          }).catch(error=>{
+            console.log(error)
+          })
+        }).catch(error => {
+          console.log(error)
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+
+
+      },
+      expand() {
+        this.expandQuery = !this.expandQuery;
+      },
+      search() {
+        this.getTableData();
+      },
+      reset() {
+        this.queryModel.name = '';
+        this.pagination.page = 1;
+        this.queryModel.location = '';
+
+        this.getTableData();
+      },
+      changeTableSort(row, column) {
+        this.queryModel.sort === '+id' ? this.queryModel.sort = '-id' : this.queryModel.sort = '+id';
+        this.getTableData()
+      },
+      handleBeforeUpload(file) {
+        console.log(file)
+        let suffixDictionary = ['jpg', 'jpeg', 'png'];
+        let index1 = file.name.lastIndexOf('.') + 1;
+        let index2 = file.name.length;
+        let fileSuffix = file.name.substring(index1, index2);
+        if (suffixDictionary.filter(item => item === fileSuffix).length === 0) {
+          this.$message({
+            message: '文件必须为' + suffixDictionary.join('、') + '类型文件',
+            type: 'error'
+          });
+          return false;
+        }
+        if (file.size > 1024 * 1024 * 2) {
+          this.$message({
+            message: '文件不得大于2M',
+            type: 'error'
+          });
+          return false;
+        }
+        this.loading = true;
+      },
+      editAvailability(scope) {
+        console.log(scope.row)
+
+        this.availabilityFormData = Object.assign({}, {
+          "moduleId": scope.row.id,
+          "type": scope.row.type,
+          "iosEnable": scope.row.iosEnable,
+          "androidEnable": scope.row.androidEnable,
+          "version": scope.row.version,
+        })
+        console.log(this.availabilityFormData)
+        this.availabilityFlag = true;
+
+      },
+      handlePreview(file) {
+        console.log(file);
+        this.fileList.push(file);
+      },
+      uploadSuccess(response) {
+        this.loading = false;
+        console.log(response)
+        this.formData.image = response.url;
+        this.loading = false;
+        this.$message({
+          message: '图片上传成功',
+          type: 'success'
+        });
+      },
+      handleRemove() {
+
+      },
+      uploadAvatarExceeded() {
+
+      },
+      setDefaultImage() {
+        this.formData.image = '../../image/default/defaultavatar_60_60.png'
+      }
     }
   }
-}
 </script>
