@@ -93,9 +93,9 @@
         </template>
       </el-table-column>
       <!--<el-table-column label="备注" width="70">-->
-        <!--<template slot-scope="scope">-->
-          <!--{{scope.row.note}}-->
-        <!--</template>-->
+      <!--<template slot-scope="scope">-->
+      <!--{{scope.row.note}}-->
+      <!--</template>-->
       <!--</el-table-column>-->
       <el-table-column align="center" label="试玩时长" width="80">
         <template slot-scope="scope">
@@ -250,10 +250,10 @@
         effectiveDuration: [],
         importanceOptions: [1, 2, 3],
         sortOptions: [{
-         label: "ID Ascending",
+          label: "ID Ascending",
           key: "+id"
         }, {
-         label: "ID Descending",
+          label: "ID Descending",
           key: "-id"
         }],
         statusOptions: ["published", "draft", "deleted"],
@@ -446,6 +446,7 @@
           tryplayTimeLength: 0,
         };
         this.effectiveDuration = [];
+        this.fileList = []
       },
       handleCreate() {
         this.resetTemp();
@@ -481,8 +482,7 @@
         });
       },
       handleUpdate(scope) {
-        let startDate = this.$moment(this.startDate).format('YYYY-MM-DD');
-        this.formData = scope.row;
+        this.formData = Object.assign(this.formData, scope.row); // copy obj
         this.effectiveDuration = [scope.row.startDate, scope.row.endDate]
         this.dialogStatus = "update";
         this.dialogFormVisible = true;
@@ -579,16 +579,9 @@
         console.log(file);
         console.log(response);
         console.log(6, fileList);
-
-        this.fileList.push(response);
-        console.log(this.formData);
         this.formData.iconPath = response.url;
+        this.fileList.push(response);
         console.log(fileList);
-        // this.formData.iconPath.forEach((item, index) => {
-        //   if (item.url === this.formData.image) {
-        //     this.formData.iconPath.splice(index, 1)
-        //   }
-        // });
 
         this.loading = false;
         this.$message({

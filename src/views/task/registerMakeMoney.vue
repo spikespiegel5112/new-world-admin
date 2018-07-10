@@ -391,7 +391,8 @@
           isShow: '',
           submitPath: '',
         };
-        this.effectiveDuration = '';
+        this.effectiveDuration = [];
+        this.fileList = []
       },
       handleCreate() {
         this.resetTemp()
