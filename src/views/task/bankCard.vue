@@ -234,6 +234,7 @@
           endDate: null,
           iconPath: "",
           packageName: "",
+          needActivation:0,
           isSHow: 0,
         },
         dialogFormVisible: false,
@@ -442,10 +443,10 @@
         })
       },
       handleUpdate(scope) {
-        this.formData = scope.row; // copy obj
-        // this.formData = Object.assign(this.formData, scope.row); // copy obj
+        this.formData = Object.assign(this.formData,scope.row); // copy obj
+
+        scope.row.needActivation === true ? this.formData.needActivation = 1 :  this.formData.needActivation = 0;
         this.effectiveDuration = [scope.row.startDate, scope.row.endDate];
-        scope.row.needActivation === true ? this.formData.needActivation = 1 : this.formData.needActivation = 0;
         this.dialogStatus = "update";
         this.dialogFormVisible = true;
         this.$nextTick(() => {
