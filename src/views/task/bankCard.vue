@@ -97,8 +97,8 @@
           <span>{{scope.row.createDate}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="任务开始时间" prop="startDate"></el-table-column>
-      <el-table-column align="center" label="任务结束时间" prop="endDate"></el-table-column>
+      <el-table-column align="center" label="开始时间" prop="startDate"></el-table-column>
+      <el-table-column align="center" label="结束时间" prop="endDate"></el-table-column>
       <el-table-column align="center" prop="created_at" label="上架">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
@@ -106,10 +106,9 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="needActivation" label="是否需要激活">
+      <el-table-column align="center" label="是否需要激活">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.needActivation" :active-value="1" :inactive-value="0" active-color="#13ce66" inactive-color="#ff4949" disabled>
-          </el-switch>
+          <el-switch v-model="scope.row.needActivation" active-color="#13ce66" inactive-color="#ff4949" disabled></el-switch>
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作" width="220">
@@ -169,11 +168,11 @@
             </el-form-item>
             <el-form-item label="是否上架" prop="isShow">
               <el-switch v-model="formData.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                         inactive-color="#ff4949">
+                         inactive-color="#ff4949" @change="dsds">
               </el-switch>
             </el-form-item>
             <el-form-item label="是否需要激活" prop="needActivation">
-              <el-switch v-model="formData.needActivation" :active-value="1" :inactive-value="0" active-color="#13ce66" inactive-color="#ff4949">
+              <el-switch v-model="formData.needActivation" :active-value="1" :inactive-value="0" active-color="#13ce66" inactive-color="#ff4949" @change="dsds">
               </el-switch>
             </el-form-item>
             <el-form-item label="备注" prop="note">
@@ -236,7 +235,6 @@
           iconPath: "",
           packageName: "",
           isSHow: 0,
-          needActivation: false
         },
         dialogFormVisible: false,
         dialogStatus: "",
@@ -308,6 +306,11 @@
             trigger: "change"
           }],
           effectiveDuration: [{
+            required: true,
+            message: '此项为必填项',
+            trigger: 'change'
+          }],
+          needActivation: [{
             required: true,
             message: '此项为必填项',
             trigger: 'change'
@@ -400,7 +403,7 @@
           endDate: null,
           iconPath: "",
           isSHow: 0,
-          needActivation: false
+          needActivation: 0
         };
         this.effectiveDuration = [];
         this.fileList = []
@@ -439,8 +442,10 @@
         })
       },
       handleUpdate(scope) {
-        this.formData = Object.assign(this.formData, scope.row); // copy obj
+        this.formData = scope.row; // copy obj
+        // this.formData = Object.assign(this.formData, scope.row); // copy obj
         this.effectiveDuration = [scope.row.startDate, scope.row.endDate];
+        scope.row.needActivation === true ? this.formData.needActivation = 1 : this.formData.needActivation = 0;
         this.dialogStatus = "update";
         this.dialogFormVisible = true;
         this.$nextTick(() => {
@@ -542,6 +547,9 @@
         });
       },
       uploadAvatarExceeded(files, fileList) {
+      },
+      dsds(val){
+        console.log(val)
       }
     }
   };

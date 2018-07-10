@@ -116,7 +116,7 @@
                   <span class="iconfont icon-crosswide"></span>
                 </a>
                 <img v-if="formData.imageUrl===''||formData.imageUrl===undefined||formData.imageUrl===null"
-                     src="../../image/default/defaultavatar_60_60.png"
+                     src="../../../static/img/default/defaultavatar_60_60.png"
                      class="avatar">
                 <img v-else :src="formData.imageUrl+'-style_100x100'"
                      class="avatar">

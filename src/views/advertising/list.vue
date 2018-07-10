@@ -31,7 +31,7 @@
               <el-col :span="8">
                 <el-form-item label="类型：">
                   <el-select clearable v-model="queryModel.location" placeholder="请选择">
-                    <el-option v-for="item in calendarTypeOptions" :key="item.code" :label="item.name+'('+item.code+')'"
+                    <el-option v-for="item in calendarTypeOptions" :key="item.code" :label="item.name"
                                :value="item.code">
                     </el-option>
                   </el-select>
@@ -133,7 +133,7 @@
     <div class="common-pagination-wrapper">
       <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
                      :current-page="pagination.page" :page-sizes="[10,20,30,50]" :page-size="pagination.limit"
-                     layout="total, sizes, prev, pager, next, jumper" :total="total">
+                     layout="total, sizes, prev, pager, next, jumper" :total="pagination.total">
       </el-pagination>
     </div>
 
@@ -161,8 +161,8 @@
                 <a v-if="formData.image!==''" class="close">
                   <span class="el-icon-close"></span>
                 </a>
-                <img v-if="formData.image===''" src="../../image/default/defaultavatar_60_60.png"
-                     class="avatar" @onerror="setDefaultImage">
+                <img v-if="formData.image===''" src="../../../static/img/default/defaultavatar_60_60.png"
+                     class="avatar">
                 <img v-else :src="formData.image+'-style_100x100'"
                      class="avatar">
               </div>
@@ -565,9 +565,6 @@
       uploadAvatarExceeded() {
 
       },
-      setDefaultImage() {
-        this.formData.image = '../../image/default/defaultavatar_60_60.png'
-      }
     }
   }
 </script>

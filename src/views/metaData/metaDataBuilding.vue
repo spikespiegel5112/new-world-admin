@@ -154,7 +154,7 @@
                 <a v-if="formData.icon!==''" class="close">
                   <span class="iconfont icon-crosswide"></span>
                 </a>
-                <img v-if="formData.icon===''" src="../../image/default/defaultavatar_60_60.png"
+                <img v-if="formData.icon===''" src="../../../static/img/default/defaultavatar_60_60.png"
                      class="avatar">
                 <img v-else :src="formData.icon+'-style_100x100'"
                      class="avatar">
