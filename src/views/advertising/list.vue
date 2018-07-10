@@ -31,7 +31,7 @@
               <el-col :span="8">
                 <el-form-item label="类型：">
                   <el-select clearable v-model="queryModel.location" placeholder="请选择">
-                    <el-option v-for="item in calendarTypeOptions" :key="item.code" :label="item.name+'('+item.code+')'"
+                    <el-option v-for="item in calendarTypeOptions" :key="item.code" :label="item.name"
                                :value="item.code">
                     </el-option>
                   </el-select>
@@ -133,7 +133,7 @@
     <div class="common-pagination-wrapper">
       <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
                      :current-page="pagination.page" :page-sizes="[10,20,30,50]" :page-size="pagination.limit"
-                     layout="total, sizes, prev, pager, next, jumper" :total="total">
+                     layout="total, sizes, prev, pager, next, jumper" :total="pagination.total">
       </el-pagination>
     </div>
 

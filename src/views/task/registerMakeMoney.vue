@@ -15,7 +15,7 @@
           <ul class="operation-wrapper pull-right">
             <li>
               <div class="common-search-wrapper" @keyup.enter="search">
-                <input v-model="queryModel.name" type="text" placeholder="请输入名称"/>
+                <input v-model="queryModel.keyword" type="text" placeholder="请输入名称"/>
                 <a>
                   <span @click="search" class="el-icon-search"></span>
                 </a>
@@ -96,12 +96,12 @@
       </el-table-column>
       <el-table-column align="center" label="开始时间" width="100">
         <template slot-scope="scope">
-          {{scope.row.startDate}}
+          {{scope.row.startDate!==null?$moment(scope.row.startDate).format('YYYY-MM-DD'):''}}
         </template>
       </el-table-column>
       <el-table-column align="center" label="结束时间" width="100">
         <template slot-scope="scope">
-          {{scope.row.endDate}}
+          {{scope.row.endDate!==null?$moment(scope.row.endDate).format('YYYY-MM-DD'):''}}
         </template>
       </el-table-column>
       <el-table-column align="center" label="提交时间" width="80">
@@ -353,7 +353,7 @@
         this.$http.get(this.$baseUrl + this.getregisterlistRequest, {
           params: Object.assign(this.queryModel, this.pagination)
         }).then(response => {
-
+          console.log(response)
           this.tableList = response.content;
           this.total = response.totalElements;
           this.listLoading = false

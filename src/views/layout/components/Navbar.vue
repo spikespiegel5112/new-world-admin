@@ -18,7 +18,7 @@
 
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img class="user-avatar" :src="image+'-style_100x100'">
+          <img class="user-avatar" :src="avatarImage" @error="getDefaultImage">
           <i class="el-icon-caret-bottom"></i>
         </div>
         <el-dropdown-menu class="user-dropdown" slot="dropdown">
@@ -70,15 +70,20 @@
       Hamburger,
       LangSelect
     },
+    data(){
+      return {
+        avatarImage:this.$store.state.user.image!==undefined?this.$store.state.user.image+'-style_100x100':'../../static/img/default/defaultavatar_60_60.png'
+      }
+    },
     computed: {
       ...mapGetters([
         'sidebar',
         'avatar',
         'image'
-      ])
+      ]),
     },
     mounted() {
-      // console.log(mapGetters)
+      console.log(this.$store.state.user)
     },
     methods: {
       toggleSideBar() {
@@ -88,6 +93,10 @@
         this.$store.dispatch('LogOut').then(() => {
           location.reload() // 为了重新实例化vue-router对象 避免bug
         })
+      },
+      getDefaultImage(e){
+        console.log(e)
+        this.image='../../../image/default/defaultavatar_60_60.png'
       }
     }
   }
@@ -96,7 +105,7 @@
 <style rel="stylesheet/scss" lang="scss" scoped>
   .navbar {
     height: 50px;
-    line-height: 50px;
+    /*line-height: 50px;*/
     border-radius: 0px !important;
     .hamburger-container {
       line-height: 58px;
@@ -125,7 +134,8 @@
         height: 20px;
       }
       .international {
-        vertical-align: top;
+        height: 50px;
+        vertical-align: middle;
       }
       .theme-switch {
         vertical-align: 15px;

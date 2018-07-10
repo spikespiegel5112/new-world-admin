@@ -1,5 +1,4 @@
 <template>
-
   <div class="app-container">
     <div class="common-querytable-wrapper">
       <div class="queryform-wrapper">

@@ -108,7 +108,7 @@
       </el-table-column>
       <el-table-column align="center" prop="needActivation" label="是否需要激活">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.needActivation" :active-value="1" :inactive-value="0" active-color="#13ce66" inactive-color="#ff4949" disabled>
+          <el-switch v-model="scope.row.needActivation" active-color="#13ce66" inactive-color="#ff4949" disabled>
           </el-switch>
         </template>
       </el-table-column>
