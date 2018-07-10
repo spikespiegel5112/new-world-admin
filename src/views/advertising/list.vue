@@ -161,8 +161,8 @@
                 <a v-if="formData.image!==''" class="close">
                   <span class="el-icon-close"></span>
                 </a>
-                <img v-if="formData.image===''" src="../../image/default/defaultavatar_60_60.png"
-                     class="avatar" @onerror="setDefaultImage">
+                <img v-if="formData.image===''" src="../../../static/img/default/defaultavatar_60_60.png"
+                     class="avatar">
                 <img v-else :src="formData.image+'-style_100x100'"
                      class="avatar">
               </div>
@@ -565,9 +565,6 @@
       uploadAvatarExceeded() {
 
       },
-      setDefaultImage() {
-        this.formData.image = '../../image/default/defaultavatar_60_60.png'
-      }
     }
   }
 </script>

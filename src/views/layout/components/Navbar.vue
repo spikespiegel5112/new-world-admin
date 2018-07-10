@@ -18,7 +18,7 @@
 
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img class="user-avatar" :src="avatarImage" @error="getDefaultImage">
+          <img class="user-avatar" :src="avatarImage">
           <i class="el-icon-caret-bottom"></i>
         </div>
         <el-dropdown-menu class="user-dropdown" slot="dropdown">
@@ -94,10 +94,6 @@
           location.reload() // 为了重新实例化vue-router对象 避免bug
         })
       },
-      getDefaultImage(e){
-        console.log(e)
-        this.image='../../../image/default/defaultavatar_60_60.png'
-      }
     }
   }
 </script>

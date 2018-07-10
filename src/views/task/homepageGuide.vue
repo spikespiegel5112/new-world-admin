@@ -94,7 +94,8 @@
           {{scope.row.note}}
         </template>
       </el-table-column>
-
+      <el-table-column align="center" label="开始时间" prop="startDate" width="120"></el-table-column>
+      <el-table-column align="center" label="结束时间" prop="endDate" width="120"></el-table-column>
       <el-table-column align="center" label="完成数" width="70">
         <template slot-scope="scope">
           {{scope.row.completedNum}}
@@ -237,7 +238,12 @@
           startDate: null,
           endDate: null,
           iconPath: '',
-          packageName: ''
+          packageName: '',
+          "bounty": '',
+          "surplusNum": null,
+          "completedNum": null,
+          "isShow": 0,
+          "bountyType": 0
         },
         dialogFormVisible: false,
         dialogStatus: '',
@@ -248,6 +254,7 @@
         dialogPvVisible: false,
         pvData: [],
         rules: {
+
           name: [{required: true, message: 'name is required', trigger: 'change'}],
           note: [{
             required: false,
@@ -274,7 +281,7 @@
             trigger: "change"
           }],
           startDate: [{
-            required: false,
+            required: true,
             message: "此项为必填项",
             trigger: "change"
           }],
@@ -288,16 +295,26 @@
             message: "此项为必填项",
             trigger: "change"
           }],
-          submitPath: [{
+          packageName: [{
             required: false,
             message: "此项为必填项",
             trigger: "change"
           }],
-          effectiveDuration: [{
+          surplusNum: [{
             required: true,
             message: '此项为必填项',
             trigger: 'change'
           }],
+          completedNum: [{
+            required: true,
+            message: '此项为必填项',
+            trigger: 'change'
+          }],
+          bountyType: [{
+            required: true,
+            message: '此项为必填项',
+            trigger: 'change'
+          }]
         },
         downloadLoading: false,
         pickerOptions0: {
@@ -337,7 +354,7 @@
           published: 'success',
           draft: 'gray',
           deleted: 'danger'
-        }
+        };
         return statusMap[status]
       }
     },

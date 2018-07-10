@@ -97,8 +97,8 @@
           <span>{{scope.row.createDate}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="任务开始时间" prop="startDate"></el-table-column>
-      <el-table-column align="center" label="任务结束时间" prop="endDate"></el-table-column>
+      <el-table-column align="center" label="开始时间" prop="startDate"></el-table-column>
+      <el-table-column align="center" label="结束时间" prop="endDate"></el-table-column>
       <el-table-column align="center" prop="created_at" label="上架">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"

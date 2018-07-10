@@ -152,7 +152,7 @@
                 </el-checkbox-group>
                 <div v-if="fileList.length===0">
                   暂无图片
-                  <!--<img class="avatar" src="../../image/default/defaultavatar_60_60.png">-->
+                  <!--<img class="avatar" src="../../static/img/default/defaultavatar_60_60.png">-->
                 </div>
                 <div v-else v-for="(item, index) in formData.detailImage" class="image-item">
                   <!--{{defaultImageIndex}}-->
