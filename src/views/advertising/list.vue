@@ -157,7 +157,7 @@
               </el-date-picker>
             </el-form-item>
             <el-form-item label="缩略图" prop="image">
-              <div class="common-avataruploader-wrapper">
+              <div class="common-imguploadpreview-wrapper">
                 <a v-if="formData.image!==''" class="close">
                   <span class="el-icon-close"></span>
                 </a>
@@ -167,7 +167,7 @@
                      class="avatar">
               </div>
               <el-upload
-                class="common-avataruploader-wrapper"
+                class="common-imguploadpreview-wrapper"
                 ref="uploadAvatar"
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 :limit="1"
@@ -565,6 +565,10 @@
       uploadAvatarExceeded() {
 
       },
+      deleteImage(index) {
+        this.formData.iconPath = '';
+        this.fileList.splice(index, 1);
+      }
     }
   }
 </script>

@@ -142,26 +142,6 @@
             <el-form-item label="任务名称" prop="name">
               <el-input v-model="formData.name"></el-input>
             </el-form-item>
-            <!--<el-form-item label="任务图片" prop="iconPath">-->
-              <!--<div class="common-avataruploader-wrapper">-->
-                <!--<a v-if="formData.iconPath!==''" class="close">-->
-                  <!--<span class="iconfont icon-crosswide"></span>-->
-                <!--</a>-->
-                <!--<div v-if="formData.iconPath===''||formData.iconPath===null">-->
-                  <!--暂无图片-->
-                <!--</div>-->
-                <!--<img v-else :src="formData.iconPath+'-style_100x100'" class="avatar">-->
-              <!--</div>-->
-              <!-- ref="uploadAvatar"-->
-                         <!--:action="$prodBaseUrl+'image-upload-service/1.0.0/file/upload'" :limit="1"-->
-                         <!--:show-file-list="false"-->
-                         <!--:before-upload="handleBeforeUpload" :on-preview="handlePreview" :on-remove="handleRemove"-->
-                         <!--:on-success="uploadSuccess" :on-exceed="uploadAvatarExceeded" :file-list="fileList"-->
-                         <!--:data="portraitParams">-->
-                <!--<el-button v-waves size="small" type="primary">点击上传</el-button>-->
-                <!--<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>-->
-              <!--</el-upload>-->
-            <!--</el-form-item>-->
             <el-form-item label="赏金" prop="bounty">
               <el-input v-model.number="formData.bounty"></el-input>
             </el-form-item>

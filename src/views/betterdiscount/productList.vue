@@ -810,6 +810,7 @@
       deleteImage(index) {
         this.formData.detailImage.splice(index, 1);
         this.defaultImageIndex = this.defaultImageIndex - 1 >= 0 ? this.defaultImageIndex - 1 : 0;
+        this.fileList.splice(index, 1);
       }
     }
   }

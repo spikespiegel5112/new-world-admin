@@ -292,7 +292,7 @@
         })
       },
       handleUpdate(row) {
-        this.formData = Object.assign({}, row) // copy obj
+        this.formData = Object.assign({}, row)
         this.formData.timestamp = new Date(this.formData.timestamp)
         this.dialogStatus = 'update'
         this.dialogFormVisible = true

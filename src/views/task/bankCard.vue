@@ -104,7 +104,7 @@
           <br> {{scope.row.endDate}}
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="上架" width="110">
+      <el-table-column align="center" label="上架" width="110">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
                      inactive-color="#ff4949" @change="updateShelfStatus(scope)">
@@ -113,7 +113,8 @@
       </el-table-column>
       <el-table-column align="center" label="是否需要激活" width="110">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.needActivation" active-color="#13ce66" inactive-color="#ff4949" disabled></el-switch>
+          <el-switch v-model="scope.row.needActivation" active-color="#13ce66" inactive-color="#ff4949"
+                     disabled></el-switch>
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作" width="220">
@@ -135,21 +136,27 @@
       <el-row type="flex" justify="center">
         <el-col :span="20">
           <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="150px">
-
             <el-form-item label="任务名称" prop="name">
               <el-input v-model="formData.name"></el-input>
             </el-form-item>
             <el-form-item label="任务图片" prop="iconPath">
-              <div class="common-avataruploader-wrapper">
+              <div class="common-imguploadpreview-wrapper">
                 <a v-if="formData.iconPath!==''" class="close">
                   <span class="iconfont icon-crosswide"></span>
                 </a>
                 <div v-if="formData.iconPath===''||formData.iconPath===null">
                   暂无图片
                 </div>
-                <img v-else :src="formData.iconPath+'-style_100x100'" class="avatar">
+                <div v-else v-for="(item, index) in [formData.iconPath]" class="image-item">
+                  <img :src="item+'-style_100x100'" class="avatar">
+                  <ul class="operator">
+                    <li>
+                      <a class="el-icon-delete" @click="deleteImage(index)"></a>
+                    </li>
+                  </ul>
+                </div>
               </div>
-               ref="uploadAvatar"
+              <el-upload ref="uploadAvatar"
                          :action="$prodBaseUrl+'image-upload-service/1.0.0/file/upload'" :limit="1"
                          :show-file-list="false"
                          :before-upload="handleBeforeUpload" :on-preview="handlePreview" :on-remove="handleRemove"
@@ -180,7 +187,8 @@
               </el-switch>
             </el-form-item>
             <el-form-item label="是否需要激活" prop="needActivation">
-              <el-switch v-model="formData.needActivation" :active-value="1" :inactive-value="0" active-color="#13ce66" inactive-color="#ff4949" @change="dsds">
+              <el-switch v-model="formData.needActivation" :active-value="1" :inactive-value="0" active-color="#13ce66"
+                         inactive-color="#ff4949">
               </el-switch>
             </el-form-item>
             <el-form-item label="备注" prop="note">
@@ -242,7 +250,7 @@
           endDate: null,
           iconPath: "",
           packageName: "",
-          needActivation:0,
+          needActivation: 0,
           isSHow: 0,
           submitPath: ''
         },
@@ -412,10 +420,10 @@
           startDate: null,
           endDate: null,
           iconPath: "",
+          packageName: "",
           isSHow: 0,
           needActivation: 0,
           submitPath: ''
-
         };
         this.effectiveDuration = [];
         this.fileList = []
@@ -454,9 +462,21 @@
         })
       },
       handleUpdate(scope) {
-        this.formData = Object.assign(this.formData,scope.row); // copy obj
+        // this.formData = Object.assign(this.formData, scope.row);
+        this.formData = {
+          id: scope.row.id,
+          name: scope.row.name,
+          note: scope.row.note,
+          iconPath: scope.row.iconPath,
+          bounty: scope.row.bounty,
+          startDate: this.$moment(scope.row.startDate).format('YYYY-MM-DD'),
+          endDate: this.$moment(scope.row.endDate).format('YYYY-MM-DD'),
+          isShow: scope.row.isShow,
+          needActivation: scope.row.needActivation,
+          submitPath: scope.row.submitPath,
+        };
 
-        scope.row.needActivation === true ? this.formData.needActivation = 1 :  this.formData.needActivation = 0;
+        scope.row.needActivation === true ? this.formData.needActivation = 1 : this.formData.needActivation = 0;
         this.effectiveDuration = [scope.row.startDate, scope.row.endDate];
         this.dialogStatus = "update";
         this.dialogFormVisible = true;
@@ -532,9 +552,6 @@
         console.log(file);
       },
       handleRemove(file, fileList) {
-        console.log(file);
-        console.log(fileList);
-
         let index = null;
         fileList.forEach((item, index2) => {
           if (file.uid === item) {
@@ -545,13 +562,9 @@
       },
       uploadSuccess(response, file, fileList) {
         this.loading = false;
-        console.log(file);
-        console.log(response);
-        console.log(6, fileList);
         this.formData.iconPath = response.url;
         this.fileList.push(response);
         console.log(this.formData);
-
         this.loading = false;
         this.$message({
           message: "图片上传成功",
@@ -560,8 +573,12 @@
       },
       uploadAvatarExceeded(files, fileList) {
       },
-      dsds(val){
-        console.log(val)
+      deleteImage(index) {
+        this.formData.iconPath = '';
+        this.fileList.splice(index, 1);
+      },
+      dsds(data) {
+        console.log(data)
       }
     }
   };

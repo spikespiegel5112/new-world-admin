@@ -488,7 +488,7 @@
         });
       },
       handleUpdate(scope) {
-        this.formData = Object.assign(this.formData, scope.row); // copy obj
+        this.formData = Object.assign(this.formData, scope.row);
         this.effectiveDuration = [scope.row.startDate, scope.row.endDate]
         this.dialogStatus = "update";
         this.dialogFormVisible = true;
@@ -598,7 +598,8 @@
       uploadAvatarExceeded(files, fileList) {
       },
       deleteImage(index) {
-        this.formData.iconPath='';
+        this.formData.iconPath = '';
+        this.fileList.splice(index, 1);
       }
     }
   }

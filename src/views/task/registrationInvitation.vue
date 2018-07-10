@@ -142,7 +142,7 @@
               <el-input v-model="formData.name"></el-input>
             </el-form-item>
             <!--<el-form-item label="任务图片" prop="iconPath">-->
-              <!--<div class="common-avataruploader-wrapper">-->
+              <!--<div class="common-imguploadpreview-wrapper">-->
                 <!--<a v-if="formData.iconPath!==''" class="close">-->
                   <!--<span class="iconfont icon-crosswide"></span>-->
                 <!--</a>-->
