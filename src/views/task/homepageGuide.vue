@@ -385,7 +385,9 @@
           startDate: null,
           endDate: null,
           iconPath: ''
-        }
+        };
+        this.effectiveDuration = [];
+        this.fileList = []
       },
       handleCreate() {
         this.resetTemp()

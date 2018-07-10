@@ -91,17 +91,14 @@
           {{scope.row.completedNum}}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="提交时间" width="80">
-        <template slot-scope="scope">
-          <!--{{scope.row.submitPath}}-->
-        </template>
-      </el-table-column>
+      <!--<el-table-column align="center" prop="submitDate" label="提交时间" width="100"></el-table-column>-->
       <el-table-column align="center" prop="created_at" label="添加时间">
         <template slot-scope="scope">
-          <i class="el-icon-time"></i>
           <span>{{scope.row.createDate}}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="任务开始时间" prop="startDate"></el-table-column>
+      <el-table-column align="center" label="任务结束时间" prop="endDate"></el-table-column>
       <el-table-column align="center" prop="created_at" label="上架">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
@@ -109,7 +106,13 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column align="center" prop="needActivation" label="是否需要激活">
+        <template slot-scope="scope">
+          <el-switch v-model="scope.row.needActivation" :active-value="1" :inactive-value="0" active-color="#13ce66" inactive-color="#ff4949" disabled>
+          </el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="操作" width="220">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope)" v-waves>编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope)" v-waves>删除</el-button>
@@ -167,6 +170,10 @@
             <el-form-item label="是否上架" prop="isShow">
               <el-switch v-model="formData.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
                          inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="是否需要激活" prop="needActivation">
+              <el-switch v-model="formData.needActivation" :active-value="1" :inactive-value="0" active-color="#13ce66" inactive-color="#ff4949">
               </el-switch>
             </el-form-item>
             <el-form-item label="备注" prop="note">
@@ -227,7 +234,9 @@
           startDate: null,
           endDate: null,
           iconPath: "",
-          packageName: ""
+          packageName: "",
+          isSHow: 0,
+          needActivation: false
         },
         dialogFormVisible: false,
         dialogStatus: "",
@@ -389,8 +398,12 @@
           note: "",
           startDate: null,
           endDate: null,
-          iconPath: ""
+          iconPath: "",
+          isSHow: 0,
+          needActivation: false
         };
+        this.effectiveDuration = [];
+        this.fileList = []
       },
       handleCreate() {
         this.resetTemp();
@@ -412,6 +425,7 @@
               startDate: this.$moment(this.formData.startDate).format('YYYY-MM-DD'),
               endDate: this.$moment(this.formData.endDate).format('YYYY-MM-DD'),
               isShow: this.formData.isShow,
+              needActivation: this.formData.needActivation,
               submitPath: this.formData.submitPath,
             }).then(response => {
               console.log(response)
@@ -424,9 +438,9 @@
           }
         })
       },
-      handleUpdate(row) {
-        this.formData = Object.assign({}, row); // copy obj
-        this.formData.timestamp = new Date(this.formData.timestamp);
+      handleUpdate(scope) {
+        this.formData = Object.assign(this.formData, scope.row); // copy obj
+        this.effectiveDuration = [scope.row.startDate, scope.row.endDate];
         this.dialogStatus = "update";
         this.dialogFormVisible = true;
         this.$nextTick(() => {
@@ -445,6 +459,7 @@
               startDate: this.$moment(this.formData.startDate).format('YYYY-MM-DD'),
               endDate: this.$moment(this.formData.endDate).format('YYYY-MM-DD'),
               isShow: this.formData.isShow,
+              needActivation: this.formData.needActivation,
               submitPath: this.formData.submitPath,
             }).then(response => {
               console.log(response)
@@ -509,14 +524,7 @@
             index = index2;
           }
         });
-        this.formData.detailImage.splice(index, 1);
-        this.formData.detailImage.forEach((item, index) => {
-          if (item === this.formData.image) {
-            this.formData.image = item;
-          }
-        });
         this.fileList = this.fileList.filter(item => item.uid !== file.uid);
-        console.log(this.formData.detailImage);
       },
       uploadSuccess(response, file, fileList) {
         this.loading = false;
@@ -526,13 +534,6 @@
         this.formData.iconPath = response.url;
         this.fileList.push(response);
         console.log(this.formData);
-        // this.formData.detailImage.push(response.url);
-        console.log(fileList);
-        // this.formData.detailImage.forEach((item, index) => {
-        //   if (item.url === this.formData.image) {
-        //     this.formData.detailImage.splice(index, 1)
-        //   }
-        // });
 
         this.loading = false;
         this.$message({
