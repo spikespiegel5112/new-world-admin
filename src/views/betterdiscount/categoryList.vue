@@ -111,7 +111,7 @@
               <el-input v-model="formData.summary"></el-input>
             </el-form-item>
             <el-form-item label="图片" prop="imageUrl">
-              <div class="avatar-wrapper">
+              <div class="common-imguploadpreview-wrapper">
                 <a v-if="formData.imageUrl!==''" class="close">
                   <span class="iconfont icon-crosswide"></span>
                 </a>
@@ -122,7 +122,7 @@
                      class="avatar">
               </div>
               <el-upload
-                class="common-avataruploader-wrapper"
+                class="common-imguploadpreview-wrapper"
                 ref="uploadAvatar"
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 :limit="1"
@@ -187,12 +187,14 @@
         total: null,
         listLoading: true,
         queryModel: {
-          page: 1,
-          limit: 20,
           importance: null,
           keyword: '',
           type: null,
           sort: '+id'
+        },
+        pagination:{
+          page: 1,
+          limit: 20,
         },
         importanceOptions: [1, 2, 3],
         sortOptions: [{label: 'ID Ascending', key: '+id'}, {label: 'ID Descending', key: '-id'}],
@@ -236,14 +238,6 @@
           disabledDate: (time) => {
             return time.getTime() < this.value1
           }
-        },
-        queryModel: {
-          "reportingUnit": '',
-          "platformId": '',
-          "status": '',
-          "name": '',
-          "gender": '',
-          "birthday": '',
         },
         iosVersionListData: [],
         androidVersionListData: [],
@@ -434,6 +428,7 @@
         this.loading = false;
         console.log(response)
         this.formData.imageUrl = response.url;
+        this.fileList.push(response);
         this.loading = false;
         this.$message({
           message: '图片上传成功',
@@ -462,6 +457,10 @@
           })
         }
       },
+      deleteImage(index) {
+        this.formData.iconPath = '';
+        this.fileList.splice(index, 1);
+      }
     }
   }
 </script>

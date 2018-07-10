@@ -150,17 +150,24 @@
               <el-input v-model="formData.name"></el-input>
             </el-form-item>
             <el-form-item label="Icon" prop="icon">
-              <div class="avatar-wrapper">
+              <div class="common-imguploadpreview-wrapper">
                 <a v-if="formData.icon!==''" class="close">
                   <span class="iconfont icon-crosswide"></span>
                 </a>
-                <img v-if="formData.icon===''" src="../../../static/img/default/defaultavatar_60_60.png"
-                     class="avatar">
-                <img v-else :src="formData.icon+'-style_100x100'"
-                     class="avatar">
+                <div v-if="formData.icon===''||formData.icon===null">
+                  暂无图片
+                </div>
+                <div v-else v-for="(item, index) in [formData.icon]" class="image-item">
+                  <img :src="item+'-style_100x100'" class="avatar">
+                  <ul class="operator">
+                    <li>
+                      <a class="el-icon-delete" @click="deleteImage(index)"></a>
+                    </li>
+                  </ul>
+                </div>
               </div>
               <el-upload
-                class="common-avataruploader-wrapper"
+                class="common-imguploadpreview-wrapper"
                 ref="uploadAvatar"
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 :limit="1"
@@ -407,10 +414,11 @@
           "icon": "",
           iosEnable: false,
           androidEnable: false
-        }
+        };
+        this.fileList = []
       },
       handleCreate() {
-        // this.resetTemp();
+        this.resetTemp();
         this.dialogStatus = 'create';
         this.dialogFormVisible = true;
         if (this.$refs.formData !== undefined) {
@@ -456,7 +464,7 @@
       },
       handleUpdate(scope) {
         console.log(scope)
-        this.formData = Object.assign({}, scope.row); // copy obj
+        this.formData = Object.assign({}, scope.row);
         this.effectiveDuration = [scope.row.startDate, scope.row.endDate]
 
         this.dialogStatus = 'update';
@@ -650,6 +658,10 @@
         this.getTableData();
       },
       reset() {
+      },
+      deleteImage(index) {
+        this.formData.icon = '';
+        this.fileList.splice(index, 1);
       }
     }
   }

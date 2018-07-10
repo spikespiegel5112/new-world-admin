@@ -142,7 +142,7 @@
               <el-input v-model="formData.name"></el-input>
             </el-form-item>
             <!--<el-form-item label="任务图片" prop="iconPath">-->
-              <!--<div class="avatar-wrapper">-->
+              <!--<div class="common-imguploadpreview-wrapper">-->
                 <!--<a v-if="formData.iconPath!==''" class="close">-->
                   <!--<span class="iconfont icon-crosswide"></span>-->
                 <!--</a>-->
@@ -151,7 +151,7 @@
                 <!--</div>-->
                 <!--<img v-else :src="formData.iconPath+'-style_100x100'" class="avatar">-->
               <!--</div>-->
-              <!--<el-upload class="common-avataruploader-wrapper" ref="uploadAvatar"-->
+              <!-- ref="uploadAvatar"-->
                          <!--:action="$prodBaseUrl+'image-upload-service/1.0.0/file/upload'" :limit="1"-->
                          <!--:show-file-list="false"-->
                          <!--:before-upload="handleBeforeUpload" :on-preview="handlePreview" :on-remove="handleRemove"-->

@@ -331,7 +331,7 @@
         })
       },
       handleUpdate(scope) {
-        this.formData = Object.assign({}, scope.row); // copy obj
+        this.formData = Object.assign({}, scope.row);
         console.log(this.formData)
 
         this.dialogStatus = 'update';
@@ -495,6 +495,10 @@
         this.getTableData()
       },
       reset() {
+      },
+      deleteImage(index) {
+        this.formData.iconPath = '';
+        this.fileList.splice(index, 1);
       }
     }
   }
