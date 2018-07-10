@@ -286,7 +286,7 @@
             trigger: "change"
           }],
           note: [{
-            required: true,
+            required: false,
             message: "此项为必填项",
             trigger: "change"
           }],
