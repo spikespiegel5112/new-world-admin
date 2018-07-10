@@ -71,7 +71,7 @@
           {{scope.$index+1}}
         </template>
       </el-table-column>
-      <el-table-column label="名称" alignuk="center">
+      <el-table-column label="名称" alignuk="center" width="200">
         <template slot-scope="scope">
           {{scope.row.name}}
         </template>
@@ -91,22 +91,27 @@
           {{scope.row.completedNum}}
         </template>
       </el-table-column>
-      <!--<el-table-column align="center" prop="submitDate" label="提交时间" width="100"></el-table-column>-->
-      <el-table-column align="center" prop="created_at" label="添加时间">
+      <el-table-column align="center" prop="submitPath" label="注册链接">
         <template slot-scope="scope">
-          <span>{{scope.row.createDate}}</span>
+          <div style="text-align: left">
+            {{scope.row.submitPath}}
+          </div>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="开始时间" prop="startDate"></el-table-column>
-      <el-table-column align="center" label="结束时间" prop="endDate"></el-table-column>
-      <el-table-column align="center" prop="created_at" label="上架">
+      <el-table-column align="center" label="开始/结束时间" width="120">
+        <template slot-scope="scope">
+          {{scope.row.startDate}}
+          <br> {{scope.row.endDate}}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" prop="created_at" label="上架" width="110">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
                      inactive-color="#ff4949" @change="updateShelfStatus(scope)">
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="是否需要激活">
+      <el-table-column align="center" label="是否需要激活" width="110">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.needActivation" active-color="#13ce66" inactive-color="#ff4949" disabled></el-switch>
         </template>
@@ -156,6 +161,9 @@
             </el-form-item>
             <el-form-item label="赏金" prop="bounty">
               <el-input v-model.number="formData.bounty"></el-input>
+            </el-form-item>
+            <el-form-item label="注册链接" prop="submitPath">
+              <el-input type="textarea" :autosize="{ minRows: 4}" v-model="formData.submitPath"></el-input>
             </el-form-item>
             <el-form-item label="任务开始结束时间" prop="startDate">
               <el-date-picker
@@ -236,6 +244,7 @@
           packageName: "",
           needActivation:0,
           isSHow: 0,
+          submitPath: ''
         },
         dialogFormVisible: false,
         dialogStatus: "",
@@ -263,7 +272,7 @@
             trigger: "change"
           }],
           note: [{
-            required: true,
+            required: false,
             message: "此项为必填项",
             trigger: "change"
           }],
@@ -404,7 +413,9 @@
           endDate: null,
           iconPath: "",
           isSHow: 0,
-          needActivation: 0
+          needActivation: 0,
+          submitPath: ''
+
         };
         this.effectiveDuration = [];
         this.fileList = []
