@@ -111,7 +111,7 @@
               <el-input v-model="formData.summary"></el-input>
             </el-form-item>
             <el-form-item label="图片" prop="imageUrl">
-              <div class="avatar-wrapper">
+              <div class="common-avataruploader-wrapper">
                 <a v-if="formData.imageUrl!==''" class="close">
                   <span class="iconfont icon-crosswide"></span>
                 </a>

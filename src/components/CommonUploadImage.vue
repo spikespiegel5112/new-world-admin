@@ -1,6 +1,6 @@
 <template>
   <div class="common-avataruploader-wrapper">
-    <!--<div class="avatar-wrapper">-->
+    <!--<div class="common-avataruploader-wrapper">-->
     <!--<a v-if="fileList.length!==0" class="close">-->
     <!--<span class="iconfont icon-crosswide"></span>-->
     <!--</a>-->

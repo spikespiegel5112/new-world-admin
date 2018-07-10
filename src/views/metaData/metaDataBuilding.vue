@@ -150,7 +150,7 @@
               <el-input v-model="formData.name"></el-input>
             </el-form-item>
             <el-form-item label="Icon" prop="icon">
-              <div class="avatar-wrapper">
+              <div class="common-avataruploader-wrapper">
                 <a v-if="formData.icon!==''" class="close">
                   <span class="iconfont icon-crosswide"></span>
                 </a>

@@ -140,7 +140,7 @@
   position: relative;
   .image-item {
     display: inline-block;
-    margin: 0 15px 0 0;
+    margin: 0 15px 15px 0;
     width: 110px;
     height: 110px;
     position: relative;
@@ -190,11 +190,9 @@
         }
       }
     }
-
   }
   .add {
     display: inline-block;
-
     margin: 10px 0;
     &:before {
       content: '';
@@ -210,32 +208,33 @@
 }
 
 .common-avataruploader-wrapper {
-  .close {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    text-align: center;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    font-size: 15px;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    span {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      line-height: 20px;
-      position: relative;
-      bottom: 5px;
-    }
-  }
+
   .avatar-wrapper {
     width: 100px;
     min-height: 100px;
     cursor: pointer;
     margin-top: 5px;
     position: relative;
+    .close {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      text-align: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      font-size: 15px;
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      span {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+        position: relative;
+        bottom: 5px;
+      }
+    }
     .user-avatar {
       width: 40px;
       height: 40px;

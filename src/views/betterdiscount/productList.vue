@@ -155,7 +155,6 @@
                   <!--<img class="avatar" src="../../static/img/default/defaultavatar_60_60.png">-->
                 </div>
                 <div v-else v-for="(item, index) in formData.detailImage" class="image-item">
-                  <!--{{defaultImageIndex}}-->
                   <span v-if="defaultImageIndex===index" class="check el-icon-circle-check"></span>
                   <img :src="item+'-style_100x100'" class="avatar">
                   <ul class="operator">
@@ -167,7 +166,7 @@
                     </li>
                   </ul>
                 </div>
-                <el-upload class="common-avataruploader-wrapper" ref="uploadAvatar"
+                <el-upload ref="uploadAvatar"
                            :action="$prodBaseUrl+'image-upload-service/1.0.0/file/upload'" list-type="text"
                            :multiple="true"
                            :show-file-list="false" :before-upload="handleBeforeUpload" :on-preview="handlePreview"
