@@ -112,14 +112,28 @@
             </el-form-item>
             <el-form-item label="图片" prop="imageUrl">
               <div class="common-imguploadpreview-wrapper">
-                <a v-if="formData.imageUrl!==''" class="close">
-                  <span class="iconfont icon-crosswide"></span>
-                </a>
-                <img v-if="formData.imageUrl===''||formData.imageUrl===undefined||formData.imageUrl===null"
-                     src="../../../static/img/default/defaultavatar_60_60.png"
-                     class="avatar">
-                <img v-else :src="formData.imageUrl+'-style_100x100'"
-                     class="avatar">
+                <div v-if="formData.imageUrl===''||formData.imageUrl===null">
+                  暂无图片
+                </div>
+                <div v-else v-for="(item, index) in [formData.imageUrl]" class="image-item">
+                  <img :src="item+'-style_100x100'" class="avatar">
+                  <ul class="operator">
+                    <li>
+                      <a class="el-icon-delete" @click="deleteImage(index)"></a>
+                    </li>
+                  </ul>
+                </div>
+
+
+
+                <!--<a v-if="formData.imageUrl!==''" class="close">-->
+                  <!--<span class="iconfont icon-crosswide"></span>-->
+                <!--</a>-->
+                <!--<img v-if="formData.imageUrl===''||formData.imageUrl===undefined||formData.imageUrl===null"-->
+                     <!--src="../../../static/img/default/defaultavatar_60_60.png"-->
+                     <!--class="avatar">-->
+                <!--<img v-else :src="formData.imageUrl+'-style_100x100'"-->
+                     <!--class="avatar">-->
               </div>
               <el-upload
                 class="common-imguploadpreview-wrapper"
@@ -134,7 +148,6 @@
                 :on-exceed="uploadAvatarExceeded"
                 :file-list="fileList"
                 :data="portraitParams">
-
                 <el-button v-waves size="small" type="primary">点击上传</el-button>
                 <div slot="tip" class="el-upload__tip">
                   只能上传jpg/png文件，且不超过2MB
@@ -142,10 +155,9 @@
               </el-upload>
             </el-form-item>
             <el-form-item label="状态" prop="status">
-              <el-select v-model="formData.status" placeholder="请选择">
-                <el-option v-for="item in statusDictionary" :key="item.code" :label="item.name"
-                           :value="item.code"></el-option>
-              </el-select>
+              <el-switch v-model="formData.status" active-value="1" inactive-value="0" active-color="#13ce66"
+                         inactive-color="#ff4949">
+              </el-switch>
             </el-form-item>
           </el-form>
         </el-col>
@@ -458,7 +470,7 @@
         }
       },
       deleteImage(index) {
-        this.formData.iconPath = '';
+        this.formData.imageUrl = '';
         this.fileList.splice(index, 1);
       }
     }
