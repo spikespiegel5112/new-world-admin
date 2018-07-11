@@ -48,6 +48,16 @@ const app = {
     }, {
       name: '未知类型',
       code: 6
+    }],
+    deviceType: [{
+      name: 'iOS',
+      code: 'ios'
+    }, {
+      name: 'Android',
+      code: 'android'
+    }, {
+      name: '全部',
+      code: 'all'
     }]
   },
   mutations: {

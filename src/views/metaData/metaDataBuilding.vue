@@ -246,12 +246,12 @@
       </div>
     </el-dialog>
   </el-row>
-</template>
+</template>`
 
 <script>
   import {getMetaDataBuildListRequest} from '@/api/metaData'
   import {updateMetaDataBuildListRequest} from '@/api/metaData'
-  import CommonTag from '@/components/CommonTag.vue'
+  import CommonTag from '@/views/common/CommonTag.vue'
 
   export default {
     components: {

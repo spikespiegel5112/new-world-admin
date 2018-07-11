@@ -11,6 +11,7 @@ import axios from 'axios'
 // import locale from 'element-ui/lib/locale/lang/zh-CN' // lang i18n
 
 import '@/styles/index.scss' // global css
+import 'simditor/styles/simditor.scss';
 
 import App from './App'
 import router from './router/router'
@@ -75,7 +76,7 @@ Vue.prototype.$baseUrl = process.env.NODE_ENV === 'production' ? 'http://gateway
 
 // Vue.prototype.$baseUrl = process.env.NODE_ENV === 'production' ? '/' : 'http://192.168.1.112:9002/';
 
-import CommonUploadImage from './components/CommonUploadImage.vue'
+import CommonUploadImage from './views/common/CommonUploadImage.vue'
 
 Vue.component('CommonUploadImage', CommonUploadImage);
 

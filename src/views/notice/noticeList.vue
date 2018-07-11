@@ -219,7 +219,7 @@
     data() {
       return {
         queryNoticeListAllRequest: 'notice-service/1.0.0/queryNoticeListAll',
-        queryNoticedetailRequest:'notice-service/1.0.0/queryNoticedetail',
+        queryNoticedetailRequest: 'notice-service/1.0.0/queryNoticedetail',
         calendarTypeOptions: [
           {code: 'start_the', name: '启动页'},
           {code: 'sign_in', name: '签到'},
@@ -360,7 +360,7 @@
     methods: {
       getTableData() {
         this.listLoading = true;
-        this.$http.get(this.$baseUrl + this.queryNoticeListAllRequest+`/${this.pagination.page}`).then(response => {
+        this.$http.get(this.$baseUrl + this.queryNoticeListAllRequest + `/${this.pagination.page}`).then(response => {
           console.log(response)
           this.pagination.total = response.numberOfElements;
           this.tableList = response.content;
@@ -421,18 +421,19 @@
         })
       },
       handleUpdate(scope) {
+        console.log(scope)
         this.$router.push({
-          name:'noticeEdit',
-          params:{
-            id:scope.row.id,
-            deviceType:scope.row.deviceType
+          name: 'noticeEdit',
+          query: {
+            id: scope.row.id,
+            deviceType: scope.row.deviceType
           }
         });
         console.log(scope)
-        this.$http.post(this.$baseUrl+this.queryNoticedetailRequest,{
-          id:scope.row.id,
-          deviceType:scope.row.deviceType
-        }).then(response=>{
+        this.$http.post(this.$baseUrl + this.queryNoticedetailRequest, {
+          id: scope.row.id,
+          deviceType: scope.row.deviceType
+        }).then(response => {
           console.log(response)
           this.formData = Object.assign(this.formData, {
             id: scope.row.id,
@@ -450,7 +451,7 @@
           this.$nextTick(() => {
             this.$refs['formData'].clearValidate()
           })
-        }).catch(error=>{
+        }).catch(error => {
 
         });
 
