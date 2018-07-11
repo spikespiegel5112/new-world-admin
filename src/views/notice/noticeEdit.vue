@@ -35,7 +35,7 @@
                 <!--v-model="formData.noticeContent.content"-->
                 <!--:config='editorConfig'-->
                 <!--/>-->
-                <CommonSimditor :config="wangEditorConfig" :editorContent="formData.noticeContent" @change="changeEditorContent"/>
+                <CommonSimditor :config="simditorConfig" :editorContent="formData.noticeContent" @change="changeEditorContent"/>
 
               </el-form-item>
             </el-form>
@@ -84,12 +84,7 @@
 
 
         },
-        wangEditorConfig:[
-          'title',
-          'bold',
-          'italic',
-          'underline',
-        ],
+        simditorConfig:[],
         rules: {
           title: [{
             required: true,
@@ -138,7 +133,7 @@
       this.activated = true;
       this.getDetailData();
       setTimeout(()=>{
-        this.wangEditorConfig=[
+        this.simditorConfig=[
           'title',
           'bold',
           'italic',

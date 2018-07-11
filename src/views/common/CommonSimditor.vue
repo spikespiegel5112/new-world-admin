@@ -48,7 +48,7 @@
     data() {
       return {
         editorInstance: {},
-        editorContentInner: ''
+        editorContentInner: '',
       }
     },
     computed: {
@@ -64,15 +64,16 @@
     watch: {
       editorContent(value) {
         console.log(value)
+        this.editorContentInner = value;
         this.editorInstance.setValue(value);
       },
-      config(value){
+      config(value) {
         console.log(value)
         this.editorInstance = new Simditor({
           textarea: $('#editor'),
-          toolbar:value
+          toolbar: value
         });
-
+        this.editorInstance.setValue(this.editorContentInner);
       },
       layoutHeight(value) {
 
@@ -81,7 +82,6 @@
     mounted() {
       this.editorInstance = new Simditor({
         textarea: $('#editor'),
-
       });
 
 
