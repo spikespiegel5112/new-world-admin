@@ -399,7 +399,6 @@
         this.getTableData()
       },
       handleCurrentChange(val) {
-        debugger
         this.pagination.page = val;
         this.getTableData()
       },

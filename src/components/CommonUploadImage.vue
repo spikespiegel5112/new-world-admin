@@ -119,8 +119,6 @@
     },
     methods: {
       handleBeforeUpload(file) {
-        debugger
-
         console.log(file)
         let suffixDictionary = ['jpg', 'jpeg', 'png'];
         let index1 = file.name.lastIndexOf('.') + 1;
@@ -163,7 +161,6 @@
       },
       onChange(file, fileList){
         console.log(fileList)
-        debugger
       }
 
     }
