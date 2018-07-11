@@ -9,27 +9,37 @@
       text-color="#bfcbd9"
       active-text-color="#409EFF"
     >
-      <sidebar-item :routes="routes"></sidebar-item>
+      <sidebar-item :routes="routeData"></sidebar-item>
     </el-menu>
   </el-scrollbar>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import SidebarItem from './SidebarItem'
+  import {mapGetters} from 'vuex'
+  import SidebarItem from './SidebarItem'
 
-export default {
-  components: { SidebarItem },
-  computed: {
-    ...mapGetters([
-      'sidebar'
-    ]),
-    routes() {
-      return this.$router.options.routes
+  export default {
+    components: {SidebarItem},
+    data() {
+      return {
+        routeData: []
+      }
     },
-    isCollapse() {
-      return !this.sidebar.opened
+    mounted() {
+      this.routeData = this.$router.options.routes
+    },
+    computed: {
+      ...mapGetters([
+        'sidebar'
+      ]),
+      routes() {
+        // debugger
+        console.log(this.$router.options.routes)
+        return this.$router.options.routes
+      },
+      isCollapse() {
+        return !this.sidebar.opened
+      }
     }
   }
-}
 </script>

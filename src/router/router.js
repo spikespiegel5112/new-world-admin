@@ -133,19 +133,33 @@ export const constantRouterMap = [{
       title: '广告',
       icon: 'table'
     },
-    children: [
-      // {
-      //   path: 'create',
-      //   name: 'createAdvertising',
-      //   component: () => import('@/views/advertising/create'),
-      //   meta: {title: '添加广告', icon: 'edit'}
-      // },
-      {
-        path: 'list',
-        name: 'advertisingList',
-        component: () => import('@/views/advertising/list'),
-        meta: {title: '广告列表', icon: 'list'}
-      }]
+    children: [{
+      path: 'list',
+      name: 'advertisingList',
+      component: () => import('@/views/advertising/list'),
+      meta: {title: '广告列表', icon: 'list'}
+    }]
+  }, {
+    path: '/notice',
+    component: Layout,
+    redirect: '/notice/list',
+    name: 'notice',
+    meta: {
+      title: '公告',
+      icon: 'table'
+    },
+    children: [{
+      hidden: true,
+      path: 'edit',
+      name: 'noticeEdit',
+      component: () => import('@/views/notice/noticeEdit'),
+      meta: {title: '编辑公告', icon: 'list'}
+    }, {
+      path: 'list',
+      name: 'noticeList',
+      component: () => import('@/views/notice/noticeList'),
+      meta: {title: '公告列表', icon: 'list'}
+    }]
   }, {
     path: '/betterDiscount',
     component: Layout,

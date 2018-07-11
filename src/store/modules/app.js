@@ -23,12 +23,31 @@ const app = {
       name: '积分',
       code: 0
     }],
-    deviceTypeDictionary:[{
-      name:'安卓',
-      code:'android'
-    },{
-      name:'苹果',
-      code:'ios'
+    deviceTypeDictionary: [{
+      name: '安卓',
+      code: 'android'
+    }, {
+      name: '苹果',
+      code: 'ios'
+    }],
+    noticeTypeDictionary: [{
+      name: '视频',
+      code: 1
+    }, {
+      name: '视频',
+      code: 2
+    }, {
+      name: '版本更新',
+      code: 3
+    }, {
+      name: '菠菜公告',
+      code: 4
+    }, {
+      name: '排行榜公告',
+      code: 5
+    }, {
+      name: '未知类型',
+      code: 6
     }]
   },
   mutations: {
