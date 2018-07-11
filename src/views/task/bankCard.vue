@@ -71,17 +71,17 @@
           {{scope.$index+1}}
         </template>
       </el-table-column>
-      <el-table-column label="名称" alignuk="center" width="200">
+      <el-table-column label="名称" alignuk="center">
         <template slot-scope="scope">
           {{scope.row.name}}
         </template>
       </el-table-column>
-      <el-table-column label="Icon" align="center" width="100">
+      <el-table-column label="Icon" align="center">
         <template slot-scope="scope">
-          <img :src="scope.row.iconPath+'-style_213x144'" width="80">
+          <img :src="scope.row.iconPath+'-style_213x144'">
         </template>
       </el-table-column>
-      <el-table-column align="center" label="积分" width="70">
+      <el-table-column align="center" label="积分">
         <template slot-scope="scope">
           {{scope.row.bounty}}
         </template>
@@ -91,14 +91,14 @@
           {{scope.row.completedNum}}
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="submitPath" label="注册链接">
-        <template slot-scope="scope">
-          <div style="text-align: left">
-            {{scope.row.submitPath}}
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="开始/结束时间" width="120">
+      <!--<el-table-column align="center" prop="submitPath" label="注册链接">-->
+        <!--<template slot-scope="scope">-->
+          <!--<div style="text-align: left">-->
+            <!--{{scope.row.submitPath}}-->
+          <!--</div>-->
+        <!--</template>-->
+      <!--</el-table-column>-->
+      <el-table-column align="center" label="开始/结束时间">
         <template slot-scope="scope">
           {{scope.row.startDate}}
           <br> {{scope.row.endDate}}
@@ -141,9 +141,6 @@
             </el-form-item>
             <el-form-item label="任务图片" prop="iconPath">
               <div class="common-imguploadpreview-wrapper">
-                <a v-if="formData.iconPath!==''" class="close">
-                  <span class="iconfont icon-crosswide"></span>
-                </a>
                 <div v-if="formData.iconPath===''||formData.iconPath===null">
                   暂无图片
                 </div>
@@ -187,8 +184,7 @@
               </el-switch>
             </el-form-item>
             <el-form-item label="是否需要激活" prop="needActivation">
-              <el-switch v-model="formData.needActivation" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                         inactive-color="#ff4949">
+              <el-switch v-model="formData.needActivation" :active-value="1" :inactive-value="0" active-color="#13ce66" inactive-color="#ff4949">
               </el-switch>
             </el-form-item>
             <el-form-item label="备注" prop="note">
@@ -265,18 +261,7 @@
         rules: {
           name: [{
             required: true,
-            message: "name is required",
-            trigger: "change"
-          }],
-          timestamp: [{
-            type: "date",
-            required: true,
-            message: "timestamp is required",
-            trigger: "change"
-          }],
-          title: [{
-            required: true,
-            message: "title is required",
+            message: "此项为必填项",
             trigger: "change"
           }],
           note: [{
@@ -421,8 +406,8 @@
           endDate: null,
           iconPath: "",
           packageName: "",
-          isSHow: 0,
           needActivation: 0,
+          isSHow: 0,
           submitPath: ''
         };
         this.effectiveDuration = [];

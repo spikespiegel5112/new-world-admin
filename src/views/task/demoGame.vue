@@ -107,11 +107,11 @@
           <br> {{scope.row.endDate}}
         </template>
       </el-table-column>
-      <el-table-column label="APK下载地址">
-        <template slot-scope="scope">
-          {{scope.row.apkPath}}
-        </template>
-      </el-table-column>
+      <!--<el-table-column label="APK下载地址">-->
+        <!--<template slot-scope="scope">-->
+          <!--{{scope.row.apkPath}}-->
+        <!--</template>-->
+      <!--</el-table-column>-->
       <el-table-column label="应用包名">
         <template slot-scope="scope">
           {{scope.row.packageName}}
@@ -202,13 +202,14 @@
               <el-date-picker
                 v-model="effectiveDuration"
                 type="daterange"
+                value-format="yyyy-MM-dd"
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="试玩时长" prop="tryplayTimeLength">
-              <el-input-number v-model="formData.tryplayTimeLength" :min="0" label="描述文字"></el-input-number>
+              <el-input-number v-model.number="formData.tryplayTimeLength" :min="0" label="描述文字"></el-input-number>
             </el-form-item>
           </el-form>
 
@@ -273,7 +274,7 @@
           surplusNum: '',
           startDate: '',
           endDate: '',
-          isShow: '',
+          isShow: 0,
           apkPath: '',
           packageName: '',
           tryplayTimeLength: 0,
@@ -446,7 +447,7 @@
           surplusNum: '',
           startDate: '',
           endDate: '',
-          isShow: '',
+          isShow: 0,
           apkPath: '',
           packageName: '',
           tryplayTimeLength: 0,

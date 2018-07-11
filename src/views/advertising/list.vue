@@ -13,10 +13,10 @@
           <ul class="operation-wrapper pull-right">
             <li>
               <!--<div class="common-search-wrapper" @keyup.enter="search">-->
-                <!--<input v-model="queryModel.keyword" type="text" placeholder="请输入标题"/>-->
-                <!--<a>-->
-                  <!--<span @click="search" class="el-icon-search"></span>-->
-                <!--</a>-->
+              <!--<input v-model="queryModel.keyword" type="text" placeholder="请输入标题"/>-->
+              <!--<a>-->
+              <!--<span @click="search" class="el-icon-search"></span>-->
+              <!--</a>-->
               <!--</div>-->
             </li>
             <li>
@@ -72,13 +72,13 @@
     <el-table :key='tableKey' :data="tableList" v-loading="listLoading" element-loading-text="载入中" border fit
               highlight-current-row :default-sort="{prop: 'id', order: 'descending'}" @sort-change="changeTableSort">
       <el-table-column align="center" label="ID" width="65" prop="id" sortable="custom"></el-table-column>
-      <el-table-column align="center" label="缩略图" width="100px">
+      <el-table-column align="center" label="缩略图" width="300px">
         <template slot-scope="scope">
           <img :src="scope.row.image+'-style_100x100'">
         </template>
       </el-table-column>
-      <el-table-column align="center" label="点击链接" prop="url"></el-table-column>
-      <el-table-column align="center" label="视频链接" prop="video" width="200px"></el-table-column>
+      <!--<el-table-column align="center" label="点击链接" prop="url"></el-table-column>-->
+      <!--<el-table-column align="center" label="视频链接" prop="video" width="200px"></el-table-column>-->
       <el-table-column align="center" label="Android可用性">
         <template slot-scope="scope">
           <el-switch
@@ -99,14 +99,14 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="创建时间" width="150px">
+      <el-table-column align="center" label="创建时间" width="250px">
         <template slot-scope="scope">
           {{$moment(scope.row.createDate).format('YYYY-MM-DD hh:mm:ss')}}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="结束时间" width="150px">
+      <el-table-column align="center" label="结束时间" width="250px">
         <template slot-scope="scope">
-          {{$moment(scope.row.endDate).format('YYYY-MM-DD hh:mm:ss')}}
+          {{$moment(scope.row.endDate).format('YYYY-MM-DD')}}
         </template>
       </el-table-column>
       <el-table-column align="center" label="状态" width="80">
@@ -116,7 +116,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('table.actions')" width="300px">
+      <el-table-column align="center" :label="$t('table.actions')" width="200px">
         <template slot-scope="scope">
           <el-button @click="handleUpdate(scope)" type="primary" size="mini">编辑</el-button>
           <el-button v-if="scope.row.status==='0'" size="mini" type="success" @click="updateShelfStatus(scope.row,'1')">
@@ -142,7 +142,7 @@
         <el-col :span="20">
           <elForm :rules="rules" ref="formData" :model="formData" label-position="right" label-width="140px">
             <el-form-item label="点击链接" prop="url">
-              <el-input v-model="formData.url"></el-input>
+              <el-input type="textarea" :autosize="{ minRows: 4}" v-model="formData.url"></el-input>
             </el-form-item>
             <el-form-item label="类型" prop="location">
               <el-select v-model="formData.location" placeholder="请选择">
@@ -150,21 +150,26 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="开始结束时间" prop="endDate">
+            <el-form-item label="结束时间" prop="endDate">
               <el-date-picker v-model="formData.endDate"
                               align="right"
-                              value-format="yyyy-MM-dd">
+                              value-format="yyyy-MM-dd"
+                              placeholder="请选择">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="缩略图" prop="image">
               <div class="common-imguploadpreview-wrapper">
-                <a v-if="formData.image!==''" class="close">
-                  <span class="el-icon-close"></span>
-                </a>
-                <img v-if="formData.image===''" src="../../../static/img/default/defaultavatar_60_60.png"
-                     class="avatar">
-                <img v-else :src="formData.image+'-style_100x100'"
-                     class="avatar">
+                <div v-if="formData.image===''||formData.image===null">
+                  暂无图片
+                </div>
+                <div v-else v-for="(item, index) in [formData.image]" class="image-item">
+                  <img :src="item+'-style_100x100'" class="avatar">
+                  <ul class="operator">
+                    <li>
+                      <a class="el-icon-delete" @click="deleteImage(index)"></a>
+                    </li>
+                  </ul>
+                </div>
               </div>
               <el-upload
                 class="common-imguploadpreview-wrapper"
@@ -274,7 +279,7 @@
           ios: false,
           android: false,
           video: '',
-          status: '',
+          status: 0,
           endDate: '',
         },
         dialogFormVisible: false,
@@ -414,7 +419,7 @@
           ios: false,
           android: false,
           video: '',
-          status: '',
+          status: 0,
           endDate: '',
         }
       },
@@ -475,11 +480,11 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http.delete(this.$baseUrl + this.advertisingDeleteRequest + `/${scope.row.id}`,{}).then(response => {
+          this.$http.delete(this.$baseUrl + this.advertisingDeleteRequest + `/${scope.row.id}`, {}).then(response => {
             console.log(response)
             this.$message.success('删除成功');
             this.getTableData();
-          }).catch(error=>{
+          }).catch(error => {
             console.log(error)
           })
         }).catch(error => {
@@ -566,7 +571,7 @@
 
       },
       deleteImage(index) {
-        this.formData.iconPath = '';
+        this.formData.image = '';
         this.fileList.splice(index, 1);
       }
     }

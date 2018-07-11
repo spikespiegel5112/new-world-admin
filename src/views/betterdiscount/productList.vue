@@ -104,11 +104,11 @@
           {{scope.row.summary}}
         </template>
       </el-table-column>
-      <el-table-column label="购买链接" width="150">
-        <template slot-scope="scope">
-          {{scope.row.buyUrl}}
-        </template>
-      </el-table-column>
+      <!--<el-table-column label="购买链接" width="150">-->
+        <!--<template slot-scope="scope">-->
+          <!--{{scope.row.buyUrl}}-->
+        <!--</template>-->
+      <!--</el-table-column>-->
       <el-table-column label="是否上架" width="60">
         <template slot-scope="scope">
           {{groundingStatusDictionary.filter(item=>item.code===scope.row.status)[0].name}}
