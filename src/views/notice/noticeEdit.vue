@@ -189,7 +189,8 @@
           console.log(response)
           response = response.resultlist[0];
           this.formData.content = response.content;
-
+          this.formData.deviceType = response.deviceType;
+          this.formData.noticeTile = response.noticeTile;
         })
       },
       publish() {
@@ -219,7 +220,7 @@
           type: 'warning'
         }).then(() => {
           this.$router.push({
-            name: 'notice'
+            name: 'noticeList'
           });
           this.$message({
             message: '已取消编辑'

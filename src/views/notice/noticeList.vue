@@ -77,24 +77,24 @@
           <img :src="scope.row.image+'-style_100x100'">
         </template>
       </el-table-column>
-      <el-table-column align="center" label="公告类型" width="250px">
+      <el-table-column align="center" label="公告类型">
         <template slot-scope="scope">
           <!--{{scope.row.noticeType}}-->
           {{scope.row.noticeType!==null?$store.state.app.noticeTypeDictionary.filter(item=>item.code===scope.row.noticeType)[0].name:''}}
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="创建时间" width="250px">
+      <el-table-column align="center" label="创建时间" width="150px">
         <template slot-scope="scope">
           {{$moment(scope.row.createDate).format('YYYY-MM-DD hh:mm:ss')}}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="公告日期" width="250px">
+      <el-table-column align="center" label="公告日期" width="150px">
         <template slot-scope="scope">
           {{$moment(scope.row.noticeDate).format('YYYY-MM-DD')}}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="公告状态" width="250px">
+      <el-table-column align="center" label="公告状态" width="100px">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.isShow" active-value="yes" inactive-value="no" active-color="#13ce66"
                      inactive-color="#ff4949" disabled>

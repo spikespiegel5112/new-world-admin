@@ -317,8 +317,8 @@
         });
       },
       handleUpdate(scope) {
-        let startDate = this.$moment(this.startDate).format('YYYY-MM-DD');
         this.formData = scope.row;
+        this.formData.phone=Number(this.formData.phone);
         this.effectiveDuration = [scope.row.startDate, scope.row.endDate]
         this.dialogStatus = "update";
         this.dialogFormVisible = true;

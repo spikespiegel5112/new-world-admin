@@ -103,12 +103,12 @@
       <el-row type="flex" justify="center">
         <el-col :span="20">
           <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="150px">
-            <el-form-item label="设备类型" prop="deviceType">
-              <el-select v-model="formData.deviceType" @change="getProductListData">
-                <el-option v-for="item in $store.state.app.deviceTypeDictionary" :label="item.name"
-                           :value="item.code" :key="item.code"></el-option>
-              </el-select>
-            </el-form-item>
+            <!--<el-form-item label="设备类型" prop="deviceType">-->
+              <!--<el-select v-model="formData.deviceType" @change="getProductListData">-->
+                <!--<el-option v-for="item in $store.state.app.deviceTypeDictionary" :label="item.name"-->
+                           <!--:value="item.code" :key="item.code"></el-option>-->
+              <!--</el-select>-->
+            <!--</el-form-item>-->
             <el-form-item label="产品ID" prop="productId">
               <el-select v-model="formData.productId">
                 <el-option v-for="item in productListData" :label="item.productDesc" :value="item.productId"
