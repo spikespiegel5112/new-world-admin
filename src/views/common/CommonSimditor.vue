@@ -1,6 +1,7 @@
 <template>
   <div class="editor" ref="editor">
-    <div id="editor"></div>
+    <!--<el-input type="textarea"  :model="editorContentInner"></el-input>-->
+    <el-input type="textarea" id="editor" v-model="editorContentInner"></el-input>
     <!--<button v-on:click="getContent">查看内容</button>-->
   </div>
 </template>
@@ -10,8 +11,16 @@
 
   export default {
     props: {
+      config: {
+        type: Object,
+        default: {},
+        required: false
+      },
       editorContent: {
         type: String,
+        // default:function () {
+        //   return {}
+        // },
         default: '',
         required: false
       },
@@ -20,28 +29,30 @@
         default: '',
         required: false
       },
-      config: {
+      toolbar: {
         type: Array,
-        default: [
-          'title',
-          'bold',
-          'italic',
-          'underline',
-          'strikethrough',
-          'fontScale',
-          'color',
-          'ol',             // ordered list
-          'ul',             // unordered list
-          'blockquote',
-          'code',           // code block
-          'table',
-          'link',
-          'image',
-          'hr',             // horizontal ruler
-          'indent',
-          'outdent',
-          'alignment'
-        ],
+        default: function () {
+          return [
+            'title',
+            'bold',
+            'italic',
+            'underline',
+            'strikethrough',
+            'fontScale',
+            'color',
+            'ol',             // ordered list
+            'ul',             // unordered list
+            'blockquote',
+            'code',           // code block
+            'table',
+            'link',
+            'image',
+            'hr',             // horizontal ruler
+            'indent',
+            'outdent',
+            'alignment'
+          ]
+        },
         required: false
       }
     },
@@ -49,6 +60,20 @@
       return {
         editorInstance: {},
         editorContentInner: '',
+        defaultConfig: {
+          textarea: $('#editor'),
+          placeholder: '',
+          defaultImage: 'images/image.png',
+          params: {},
+          upload: false,
+          tabIndent: true,
+          toolbar: true,
+          toolbarFloat: true,
+          toolbarFloatOffset: 0,
+          toolbarHidden: false,
+          pasteImage: false,
+          cleanPaste: false
+        }
       }
     },
     computed: {
@@ -65,24 +90,48 @@
       editorContent(value) {
         console.log(value)
         this.editorContentInner = value;
-        this.editorInstance.setValue(value);
+        // this.editorInstance.setValue(value);
+      },
+      editorContentInner(value){
+        console.log(value)
       },
       config(value) {
-        console.log(value)
-        this.editorInstance = new Simditor({
+        let params = Object.assign(this.defaultConfig, {
           textarea: $('#editor'),
-          toolbar: value
-        });
-        this.editorInstance.setValue(this.editorContentInner);
+        }, value);
+        this.editorInstance = new Simditor(params);
+        this.editorInstance.setValue(this.editorContent);
+        this.editorInstance.on('valuechanged', (e, src) => {
+          console.log(e)
+          // console.log(this.editorInstance.getValue())
+          this.editorContentInner=this.editorInstance.getValue();
+          // console.log(this.editorContentInner)
+          // console.log(src)
+          this.$emit('update:editorContent', this.editorContentInner)
+        })
+        this.editorInstance.uploader.on('uploadsuccess', (e,fileObj,ddd)=>{
+          console.log(e)
+          console.log(fileObj)
+          console.log(ddd)
+          console.log(this.editorInstance)
+          this.editorInstance.readImageFile(fileObj, e=>{
+            console.log(e)
+          })
+        })
+        this.editorInstance.on('uploadsuccess',(e, src)=>{
+          console.log(e)
+        })
       },
       layoutHeight(value) {
 
+      },
+      init() {
       }
     },
     mounted() {
-      this.editorInstance = new Simditor({
-        textarea: $('#editor'),
-      });
+      // this.editorInstance = new Simditor({
+      //   textarea: $('#editor'),
+      // });
 
 
       this.getHeight();

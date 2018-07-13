@@ -6,14 +6,14 @@
           <div slot="header">
             <el-row :gutter="20">
               <el-col :span="24">
-                <el-form ref="editNoticeFromTitle" :model="formData.notice"
+                <el-form ref="editNoticeFromTitle" :model="formData"
                          :rules="rules"
                          label-width="100px"
                          size="small">
                   <el-form-item label="标题" prop="noticeTile">
                     <el-input v-model="formData.noticeTile"></el-input>
                   </el-form-item>
-                  <el-form-item label="设备类型" prop="title">
+                  <el-form-item label="设备类型" prop="deviceType">
                     <el-select v-model="formData.deviceType">
                       <el-option v-for="item in $store.state.app.deviceType" :value="item.code" :label="item.name"
                                  :key="item.code"></el-option>
@@ -24,9 +24,8 @@
             </el-row>
           </div>
           <div class="management-noticeedit-wrapper" :style="{height:layoutHeight-190+'px'}">
-
             <el-form ref="editNoticeFromContent"
-                     :model="formData.content"
+                     :model="formData"
                      :rules="rules"
                      label-width="0"
                      size="small">
@@ -35,8 +34,11 @@
                 <!--v-model="formData.noticeContent.content"-->
                 <!--:config='editorConfig'-->
                 <!--/>-->
-                <CommonSimditor :config="simditorConfig" :editorContent="formData.noticeContent" @change="changeEditorContent"/>
 
+                <CommonSimditor :config="simditorConfig"
+                                :editorContent.sync="formData.content"
+                                :changeEditorContent="changeEditorContent"
+                />
               </el-form-item>
             </el-form>
           </div>
@@ -48,7 +50,6 @@
           </el-row>
         </el-card>
       </el-main>
-
     </el-container>
   </el-container>
 </template>
@@ -56,7 +57,6 @@
 <script>
   import CommonWangEditor from '@/views/common/CommonWangEditor.vue'
   import CommonSimditor from '@/views/common/CommonSimditor.vue'
-  // import noticeMockData from '../../../static/mock/noticeDetail.json'
 
   export default {
     name: "dashboard",
@@ -67,6 +67,7 @@
       return {
         queryNoticedetailRequest: 'notice-service/1.0.0/queryNoticedetail',
         updateNoticeRequest: 'notice-service/1.0.0/updateNotice',
+        addAndUpdateNoticeRequest: 'notice-service/1.0.0/addAndUpdateNotice',
         loading: false,
         submitting: false,
         activated: false,
@@ -80,15 +81,29 @@
           height: Number(this.$store.state.layoutHeight - 290)
         },
         formData: {
-          deviceType: '',
-
-
+          "id": '',
+          "noticeTile": '',
+          "noticeType": '',
+          "image": '',
+          "content": '',
+          "noticeUrl": '',
+          "noticeStatus": '',
+          "noticeDate": '',
+          "deviceType": '',
+          "videoUrl": '',
+          "level": '',
+          "summary": ''
         },
-        simditorConfig:[],
+        simditorConfig: {},
         rules: {
-          title: [{
+          noticeTile: [{
             required: true,
             message: '请输入标题',
+            trigger: 'change'
+          }],
+          deviceType: [{
+            required: true,
+            message: '此项为必填项',
             trigger: 'change'
           }],
           content: [{
@@ -125,21 +140,36 @@
       }
     },
     watch: {
-      queryDateRange(value) {
-
+      'formData.content': function (value) {
+        // console.log(value)
       }
     },
     mounted() {
       this.activated = true;
-      this.getDetailData();
-      setTimeout(()=>{
-        this.simditorConfig=[
-          'title',
-          'bold',
-          'italic',
-          'underline',
-        ]
-      },500)
+      if (this.$route.query.id !== null) {
+        this.getDetailData();
+      }
+      setTimeout(() => {
+        this.simditorConfig = {
+          toolbar: [
+            'image'
+          ],
+          upload: {
+            url: this.$prodBaseUrl + 'image-upload-service/1.0.0/file/upload', //文件上传的接口地址
+            params: {
+              bucketName: "funyvalley",
+              folderName: "task"
+            }, //键值对,指定文件上传接口的额外参数,上传的时候随文件一起提交
+            fileKey: 'file', //服务器端获取文件数据的参数名
+            connectionCount: 3,
+            leaveConfirm: '正在上传文件',
+            uploadSuccess(e, file, result) {
+              debugger
+              console.log(result)
+            }
+          }
+        }
+      }, 500)
     },
     methods: {
       initTinyMCE() {
@@ -158,14 +188,27 @@
         }).then(response => {
           console.log(response)
           response = response.resultlist[0];
-          this.formData.noticeContent = response.content;
+          this.formData.content = response.content;
 
         })
       },
       publish() {
-        this.$refs['editNoticeFromTitle'].validate(valid1 => {
-          if (valid1) {
-
+        this.$refs['editNoticeFromTitle'].validate(valid => {
+          if (valid) {
+            this.$http.post(this.$baseUrl + this.addAndUpdateNoticeRequest, {
+              "id": this.formData.id,
+              "noticeTile": this.formData.noticeTile,
+              "noticeType": this.formData.noticeType,
+              "image": this.formData.image,
+              "content": this.formData.content,
+              "noticeUrl": this.formData.noticeUrl,
+              "noticeStatus": this.formData.noticeStatus,
+              "noticeDate": this.formData.noticeDate,
+              "deviceType": this.formData.deviceType,
+              "videoUrl": this.formData.videoUrl,
+              "level": this.formData.level,
+              "summary": this.formData.summary
+            })
           }
         });
       },
@@ -185,7 +228,7 @@
 
       },
       changeEditorContent(data) {
-        this.formData.noticeContent.content = data
+        this.formData.content = data
       }
     }
   }

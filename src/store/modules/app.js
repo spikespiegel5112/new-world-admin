@@ -24,13 +24,16 @@ const app = {
       code: 0
     }],
     deviceTypeDictionary: [{
-      name: '安卓',
+      name: 'Android',
       code: 'android'
     }, {
-      name: '苹果',
+      name: 'iOS',
       code: 'ios'
     }],
     noticeTypeDictionary: [{
+      name: '所有类型',
+      code: 'all'
+    }, {
       name: '视频',
       code: 1
     }, {

@@ -80,7 +80,7 @@
       <el-table-column align="center" label="公告类型" width="250px">
         <template slot-scope="scope">
           <!--{{scope.row.noticeType}}-->
-          {{$store.state.app.noticeTypeDictionary.filter(item=>item.code===scope.row.noticeType)[0].name}}
+          {{scope.row.noticeType!==null?$store.state.app.noticeTypeDictionary.filter(item=>item.code===scope.row.noticeType)[0].name:''}}
         </template>
       </el-table-column>
 
@@ -402,12 +402,19 @@
         }
       },
       handleCreate() {
-        this.resetTemp();
-        this.dialogStatus = 'create';
-        this.dialogFormVisible = true;
-        this.$nextTick(() => {
-          this.$refs['formData'].clearValidate()
-        })
+        this.$router.push({
+          name: 'noticeEdit',
+          query: {
+            id: null,
+            deviceType: ''
+          }
+        });
+        // this.resetTemp();
+        // this.dialogStatus = 'create';
+        // this.dialogFormVisible = true;
+        // this.$nextTick(() => {
+        //   this.$refs['formData'].clearValidate()
+        // })
       },
       createData() {
         this.$refs['formData'].validate((valid) => {

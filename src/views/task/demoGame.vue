@@ -119,7 +119,6 @@
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="添加时间">
         <template slot-scope="scope">
-          <i class="el-icon-time"></i>
           <span>{{scope.row.createDate}}</span>
         </template>
       </el-table-column>
@@ -128,6 +127,12 @@
           <el-switch v-model="scope.row.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
                      inactive-color="#ff4949" @change="updateShelfStatus(scope)">
           </el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" prop="isShow" label="是否过期">
+        <template slot-scope="scope">
+          <el-tag v-if="$moment().format('x')-$moment(scope.row.endDate).format('x')>0" type="danger">过期</el-tag>
+          <el-tag v-else type="success">未过期</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作">
