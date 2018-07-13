@@ -117,6 +117,12 @@
                      disabled></el-switch>
         </template>
       </el-table-column>
+      <el-table-column align="center" prop="isShow" label="是否过期">
+        <template slot-scope="scope">
+          <el-tag v-if="$moment().format('x')-$moment(scope.row.endDate).format('x')>0" type="danger">过期</el-tag>
+          <el-tag v-else type="success">未过期</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="操作" width="220">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope)" v-waves>编辑</el-button>
@@ -187,6 +193,7 @@
               <el-switch v-model="formData.needActivation" :active-value="1" :inactive-value="0" active-color="#13ce66" inactive-color="#ff4949">
               </el-switch>
             </el-form-item>
+
             <el-form-item label="备注" prop="note">
               <el-input type="textarea" :autosize="{ minRows: 4}" v-model="formData.note"></el-input>
             </el-form-item>

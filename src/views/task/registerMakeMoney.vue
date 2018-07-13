@@ -122,6 +122,12 @@
           <span>{{scope.row.createDate}}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" prop="isShow" label="是否过期">
+        <template slot-scope="scope">
+          <el-tag v-if="$moment().format('x')-$moment(scope.row.endDate).format('x')>0" type="danger">过期</el-tag>
+          <el-tag v-else type="success">未过期</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="操作" width="200">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope)" v-waves>编辑</el-button>
