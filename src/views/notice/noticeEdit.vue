@@ -13,12 +13,16 @@
                   <el-form-item label="标题" prop="noticeTile">
                     <el-input v-model="formData.noticeTile"></el-input>
                   </el-form-item>
+                  <el-form-item label="副标题" prop="deviceType">
+                    <el-input type="textarea" v-model="formData.summary"></el-input>
+                  </el-form-item>
                   <el-form-item label="设备类型" prop="deviceType">
                     <el-select v-model="formData.deviceType">
                       <el-option v-for="item in $store.state.app.deviceType" :value="item.code" :label="item.name"
                                  :key="item.code"></el-option>
                     </el-select>
                   </el-form-item>
+
                 </el-form>
               </el-col>
             </el-row>
@@ -152,7 +156,24 @@
       setTimeout(() => {
         this.simditorConfig = {
           toolbar: [
-            'image'
+            'title',
+            'bold',
+            'italic',
+            'underline',
+            'strikethrough',
+            'fontScale',
+            'color',
+            'ol',
+            'ul',
+            'blockquote',
+            'code',
+            'table',
+            'link',
+            'image',
+            'hr',
+            'indent',
+            'outdent',
+            'alignment',
           ],
           upload: {
             url: this.$prodBaseUrl + 'image-upload-service/1.0.0/file/upload', //文件上传的接口地址
@@ -164,7 +185,6 @@
             connectionCount: 3,
             leaveConfirm: '正在上传文件',
             uploadSuccess(e, file, result) {
-              debugger
               console.log(result)
             }
           }
@@ -226,7 +246,6 @@
             message: '已取消编辑'
           });
         });
-
       },
       changeEditorContent(data) {
         this.formData.content = data

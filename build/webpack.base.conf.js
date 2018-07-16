@@ -36,6 +36,9 @@ module.exports = {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
+      // 'simditor_modified$': '/static/assets/js/simditor/simditor_modified.js',
+      'simditor_modified$': resolve('/static/assets/js/simditor/simditor_modified.js'),
+      'simpleUploader$': resolve('/static/assets/js/simditor/uploader.js'),
       '@': resolve('src'),
     }
   },
@@ -91,8 +94,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
-      'window.jQuery': 'jquery',
-      'window.$': 'jquery',
+      simpleUploader: 'simpleUploader'
     })
   ],
   node: {

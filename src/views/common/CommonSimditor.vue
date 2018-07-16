@@ -7,7 +7,8 @@
 </template>
 
 <script>
-  import Simditor from 'simditor'
+  import Simditor from 'simditor_modified'
+  // import Simditor from '/static/assets/js/simditor/simditor.js'
 
   export default {
     props: {

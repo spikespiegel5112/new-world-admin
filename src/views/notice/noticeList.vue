@@ -72,11 +72,8 @@
     <el-table :key='tableKey' :data="tableList" v-loading="listLoading" element-loading-text="载入中" border fit
               highlight-current-row :default-sort="{prop: 'id', order: 'descending'}" @sort-change="changeTableSort">
       <el-table-column align="center" label="ID" width="65" prop="id" sortable="custom"></el-table-column>
-      <el-table-column align="center" label="缩略图" width="300px">
-        <template slot-scope="scope">
-          <img :src="scope.row.image+'-style_100x100'">
-        </template>
-      </el-table-column>
+      <el-table-column align="center" label="标题" prop="noticeTile" width="300px"></el-table-column>
+      <!--<el-table-column align="center" label="副标题" prop="summary" width="300px"></el-table-column>-->
       <el-table-column align="center" label="公告类型">
         <template slot-scope="scope">
           <!--{{scope.row.noticeType}}-->
