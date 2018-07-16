@@ -79,7 +79,7 @@
       </el-form>
     </el-row>
 
-    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
+    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row :height="metaTableHeight">
       <el-table-column label="No" type="index" width="50" align="center" fixed></el-table-column>
       <el-table-column label="名称" align="center" prop="name"></el-table-column>
       <el-table-column align="center" label="Android可用性" prop="available">
@@ -232,6 +232,11 @@
           limit: 20,
           total: 0
         }
+      }
+    },
+    computed:{
+      metaTableHeight(){
+        return this.$store.state.app.tableHeight-140;
       }
     },
     filters: {

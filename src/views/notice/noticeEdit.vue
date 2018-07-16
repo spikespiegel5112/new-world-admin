@@ -18,16 +18,17 @@
                   </el-form-item>
                   <el-form-item label="设备类型" prop="deviceType">
                     <el-select v-model="formData.deviceType">
-                      <el-option v-for="item in $store.state.app.deviceType" :value="item.code" :label="item.name"
+                      <el-option v-for="item in $store.state.app.deviceType"
+                                 :value="item.code"
+                                 :label="item.name"
                                  :key="item.code"></el-option>
                     </el-select>
                   </el-form-item>
-
                 </el-form>
               </el-col>
             </el-row>
           </div>
-          <div class="management-noticeedit-wrapper" :style="{height:layoutHeight-190+'px'}">
+          <div class="management-noticeedit-wrapper">
             <el-form ref="editNoticeFromContent"
                      :model="formData"
                      :rules="rules"
@@ -42,6 +43,7 @@
                 <CommonSimditor :config="simditorConfig"
                                 :editorContent.sync="formData.content"
                                 :changeEditorContent="changeEditorContent"
+                                :height='editorHeight'
                 />
               </el-form-item>
             </el-form>
@@ -82,7 +84,7 @@
         },
         noticeDetailData: {},
         editorConfig: {
-          height: Number(this.$store.state.layoutHeight - 290)
+          height: Number(this.$store.state.app.layoutHeight - 290)
         },
         formData: {
           "id": '',
@@ -124,23 +126,13 @@
         return this.$route.query.noticeId;
       },
       layoutHeight() {
-        return this.$store.state.layoutHeight;
+        return this.$store.state.app.layoutHeight;
       },
-      tableHeight() {
-        let height = {};
-        if (this.currentUserType !== '1') {
-          height = {
-            height: this.$store.state.layoutHeight - 280 + 'px'
-          }
-        } else {
-          height = {
-            height: this.$store.state.layoutHeight - 170 + 'px'
-          }
-        }
-        return height
+      editorHeight() {
+        return this.$store.state.app.layoutHeight - 280
       },
       currentUserType() {
-        return this.$store.state.personalProfile.user.userType;
+        return this.$store.state.app.personalProfile.user.userType;
       }
     },
     watch: {
@@ -149,6 +141,8 @@
       }
     },
     mounted() {
+      console.log(this.$store.state.app.layoutHeight)
+
       this.activated = true;
       if (this.$route.query.id !== null) {
         this.getDetailData();
@@ -229,6 +223,12 @@
               "videoUrl": this.formData.videoUrl,
               "level": this.formData.level,
               "summary": this.formData.summary
+            }).then(response => {
+              console.log(response)
+              this.$message.success('公告发布成功');
+              this.$router.push({
+                name: 'noticeList'
+              })
             })
           }
         });

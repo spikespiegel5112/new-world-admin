@@ -70,7 +70,7 @@
     </div>
 
     <el-table :key='tableKey' :data="tableList" v-loading="listLoading" element-loading-text="载入中" border fit
-              highlight-current-row :default-sort="{prop: 'id', order: 'descending'}" @sort-change="changeTableSort">
+              highlight-current-row :default-sort="{prop: 'id', order: 'descending'}" @sort-change="changeTableSort" :height="$store.state.app.tableHeight">
       <el-table-column align="center" label="ID" width="65" prop="id" sortable="custom"></el-table-column>
       <el-table-column align="center" label="缩略图" width="300px">
         <template slot-scope="scope">
@@ -344,7 +344,11 @@
           acc[cur.key] = cur.name
           return acc
         }, {})
-      }
+      },
+      layoutHeight() {
+        console.log(this.$store.state.app.layoutHeight)
+        return this.$store.state.app.layoutHeight;
+      },
     },
     watch: {
       effectiveDuration(value) {
@@ -527,9 +531,9 @@
           });
           return false;
         }
-        if (file.size > 1024 * 1024 * 2) {
+        if (file.size > 1024 * 1024 * 10) {
           this.$message({
-            message: '文件不得大于2M',
+            message: '文件不得大于20M',
             type: 'error'
           });
           return false;

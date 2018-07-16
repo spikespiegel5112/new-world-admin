@@ -8,6 +8,8 @@ const app = {
       opened: !+Cookies.get('sidebarStatus'),
       withoutAnimation: false
     },
+    layoutHeight: 0,
+    tableHeight: 0,
     device: 'desktop',
     actionType: [{
       name: 'native',
@@ -64,6 +66,10 @@ const app = {
     }]
   },
   mutations: {
+    UPDATE_LAYOUT_HEIGHT(state, payload) {
+      state.layoutHeight = payload;
+      state.tableHeight = payload - 115;
+    },
     TOGGLE_SIDEBAR: state => {
       if (state.sidebar.opened) {
         Cookies.set('sidebarStatus', 1)
@@ -80,7 +86,8 @@ const app = {
     },
     TOGGLE_DEVICE: (state, device) => {
       state.device = device
-    }
+    },
+
   },
   actions: {
     ToggleSideBar: ({commit}) => {
@@ -111,8 +118,11 @@ const app = {
         })
       });
 
+    },
+    updateLayoutHeight({commit}, payload) {
+      commit('UPDATE_LAYOUT_HEIGHT', payload)
     }
-  }
+  },
 };
 
 export default app

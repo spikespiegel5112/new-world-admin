@@ -86,7 +86,7 @@
       </el-form>
     </el-row>
 
-    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
+    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row :height="metaTableHeight">
       <el-table-column label="No" type="index" width="50" align="center" fixed></el-table-column>
       <el-table-column label="显示名称" align="center" prop="label"></el-table-column>
       <el-table-column label="唯一表示名称" align="center" prop="name"></el-table-column>
@@ -350,6 +350,11 @@
         searchTxt: '',
         expandQuery: '',
 
+      }
+    },
+    computed:{
+      metaTableHeight(){
+        return this.$store.state.app.tableHeight-140;
       }
     },
     watch: {

@@ -127,7 +127,7 @@ export const constantRouterMap = [{
   }, {
     path: '/advertising',
     component: Layout,
-    redirect: '/advertising/list',
+    redirect: '/advertising/advertistingList',
     name: 'advertising',
     meta: {
       title: '广告',
@@ -136,7 +136,7 @@ export const constantRouterMap = [{
     children: [{
       path: 'list',
       name: 'advertisingList',
-      component: () => import('@/views/advertising/list'),
+      component: () => import('@/views/advertising/advertistingList'),
       meta: {title: '广告列表', icon: 'list'}
     }]
   }, {

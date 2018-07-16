@@ -34,12 +34,35 @@ export default {
         withoutAnimation: this.sidebar.withoutAnimation,
         mobile: this.device === 'mobile'
       }
+    },
+    layoutReady(){
+      return this.$store.state.app.layoutHeight>0;
     }
+  },
+  mounted(){
+    this.autoHeight();
   },
   methods: {
     handleClickOutside() {
       this.$store.dispatch('CloseSideBar', { withoutAnimation: false })
-    }
+    },
+    autoHeight() {
+      this.$autoHeight({
+        target: '.app-main',
+        offset: -50
+      });
+      let layoutHeight = this.$autoHeight({
+        target: '.app-main',
+        reference: '.main-container',
+        offset: -50,
+        returnValue: true
+      });
+      console.log(this.$store)
+      // layoutHeight = layoutHeight < 700 ? 700 : layoutHeight
+      this.$nextTick(()=>{
+        this.$store.dispatch('updateLayoutHeight', layoutHeight);
+      })
+    },
   }
 }
 </script>

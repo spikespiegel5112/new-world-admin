@@ -62,7 +62,7 @@
       </div>
     </div>
     <el-table :data="tableData" v-loading.body="listLoading" element-loading-text="Loading" border fit
-              highlight-current-row>
+              highlight-current-row :height="$store.state.app.tableHeight">
       <el-table-column align="center" label='ID' width="50">
         <template slot-scope="scope">
           {{scope.row.id}}

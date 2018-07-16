@@ -1,7 +1,7 @@
 <template>
-  <div class="editor" ref="editor">
+  <div class="editor  aaaa" ref="editor" :style="editorStyle">
     <!--<el-input type="textarea"  :model="editorContentInner"></el-input>-->
-    <el-input type="textarea" id="editor" v-model="editorContentInner"></el-input>
+    <div id="editor" v-model="editorContentInner"></div>
     <!--<button v-on:click="getContent">查看内容</button>-->
   </div>
 </template>
@@ -55,6 +55,11 @@
           ]
         },
         required: false
+      },
+      height: {
+        type: Number,
+        default: 300,
+        required: false
       }
     },
     data() {
@@ -82,8 +87,9 @@
         return this.$store.state.layoutHeight;
       },
       editorStyle() {
+        console.log(this.height)
         return {
-          height: this.$store.state.layoutHeight - 260 + 'px',
+          height: this.height + 'px',
         }
       }
     },
@@ -93,7 +99,7 @@
         this.editorContentInner = value;
         // this.editorInstance.setValue(value);
       },
-      editorContentInner(value){
+      editorContentInner(value) {
         console.log(value)
       },
       config(value) {
@@ -105,21 +111,21 @@
         this.editorInstance.on('valuechanged', (e, src) => {
           console.log(e)
           // console.log(this.editorInstance.getValue())
-          this.editorContentInner=this.editorInstance.getValue();
+          this.editorContentInner = this.editorInstance.getValue();
           // console.log(this.editorContentInner)
           // console.log(src)
           this.$emit('update:editorContent', this.editorContentInner)
         })
-        this.editorInstance.uploader.on('uploadsuccess', (e,fileObj,ddd)=>{
+        this.editorInstance.uploader.on('uploadsuccess', (e, fileObj, ddd) => {
           console.log(e)
           console.log(fileObj)
           console.log(ddd)
           console.log(this.editorInstance)
-          this.editorInstance.readImageFile(fileObj, e=>{
+          this.editorInstance.readImageFile(fileObj, e => {
             console.log(e)
           })
         })
-        this.editorInstance.on('uploadsuccess',(e, src)=>{
+        this.editorInstance.on('uploadsuccess', (e, src) => {
           console.log(e)
         })
       },
@@ -149,7 +155,9 @@
   }
 </script>
 <style lang="css">
-  /*@import 'simditor/styles/simditor.css';*/
+  .simditor{
+    height: 100%;
+  }
 </style>
 <style lang="scss">
   /*@import 'simditor/styles/simditor.scss';*/

@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function findList(query) {
   return request({
-    url: '/advertising-service/1.0.0/advertising/list',
+    url: '/advertising-service/1.0.0/advertising/advertistingList',
     method: 'get',
     params: query
   })

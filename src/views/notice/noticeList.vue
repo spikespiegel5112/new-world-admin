@@ -70,7 +70,7 @@
     </div>
 
     <el-table :key='tableKey' :data="tableList" v-loading="listLoading" element-loading-text="载入中" border fit
-              highlight-current-row :default-sort="{prop: 'id', order: 'descending'}" @sort-change="changeTableSort">
+              highlight-current-row :default-sort="{prop: 'id', order: 'descending'}" @sort-change="changeTableSort" :height="$store.state.app.tableHeight">
       <el-table-column align="center" label="ID" width="65" prop="id" sortable="custom"></el-table-column>
       <el-table-column align="center" label="标题" prop="noticeTile" width="300px"></el-table-column>
       <!--<el-table-column align="center" label="副标题" prop="summary" width="300px"></el-table-column>-->

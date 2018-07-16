@@ -70,7 +70,7 @@
 
 
     <el-table :data="tableData" v-loading.body="listLoading" element-loading-text="Loading" border fit
-              highlight-current-row>
+              highlight-current-row :height="$store.state.app.tableHeight">
       <el-table-column align="center" label='ID' width="40" prop="id"></el-table-column>
       <el-table-column label="商品类目" align="center" prop="title"></el-table-column>
       <el-table-column label="商品类目副标题" align="center" prop="summary"></el-table-column>
