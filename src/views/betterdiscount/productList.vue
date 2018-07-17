@@ -178,7 +178,7 @@
 
                   <el-button class="add" type="primary">上传</el-button>
                   <div slot="tip" class="el-upload__tip">
-                    只能上传jpg/png文件，且不超过2MB
+                    只能上传jpg/png文件，且不超过10MB
                   </div>
                 </el-upload>
               </div>

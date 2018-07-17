@@ -4,7 +4,7 @@
     <sidebar class="sidebar-container"></sidebar>
     <div class="main-container">
       <navbar></navbar>
-      <app-main></app-main>
+      <app-main v-if="heightReadyFlag"></app-main>
     </div>
   </div>
 </template>
@@ -18,6 +18,11 @@
       Navbar,
       Sidebar,
       AppMain
+    },
+    data(){
+      return{
+        heightReadyFlag:false
+      }
     },
     mixins: [ResizeMixin],
     computed: {
@@ -39,30 +44,39 @@
       }
     },
     created() {
-      this.autoHeight();
     },
     mounted() {
+      this.autoHeight();
+      this.changeHeight();
     },
     methods: {
       handleClickOutside() {
         this.$store.dispatch('CloseSideBar', {withoutAnimation: false})
       },
       autoHeight() {
-        this.$autoHeight({
-          target: '.app-main',
-          offset: -50
-        });
-        let layoutHeight = this.$autoHeight({
-          target: '.app-main',
-          reference: '.main-container',
-          offset: -80,
-          returnValue: true
-        });
-        console.log(this.$store)
-        // layoutHeight = layoutHeight < 700 ? 700 : layoutHeight
-        this.$nextTick(() => {
+        let layoutHeight;
+        setTimeout(() => {
+          this.$autoHeight({
+            target: '.app-main',
+            offset: -75
+          });
+          layoutHeight = this.$autoHeight({
+            target: '.app-main',
+            reference: '.main-container',
+            offset: -80,
+            returnValue: true
+          });
+        }, 500)
+        setTimeout(()=>{
           this.$store.dispatch('updateLayoutHeight', layoutHeight);
-        })
+          this.heightReadyFlag=true;
+        },1000)
+      },
+      changeHeight() {
+        let that = this;
+        window.onresize = () => {
+          that.autoHeight();
+        };
       },
     }
   }

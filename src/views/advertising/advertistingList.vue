@@ -185,7 +185,7 @@
                 :file-list="fileList"
                 :data="portraitParams">
                 <el-button v-waves size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过50MB</div>
               </el-upload>
             </el-form-item>
             <el-form-item label="视频地址" prop="video">
@@ -302,7 +302,8 @@
         fileList: [],
         portraitParams: {
           bucketName: "funyvalley",
-          folderName: "advertising"
+          folderName: "advertising",
+          fileMaxSize: 50
         },
         effectiveDuration: [],
         pickerOptions2: {
@@ -407,7 +408,8 @@
           video: '',
           status: 0,
           endDate: '',
-        }
+        };
+        this.fileList = []
       },
       handleCreate() {
         this.resetTemp();

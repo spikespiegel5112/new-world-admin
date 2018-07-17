@@ -80,7 +80,7 @@ import CommonUploadImage from './views/common/CommonUploadImage.vue'
 
 Vue.component('CommonUploadImage', CommonUploadImage);
 
-let VueInstance=new Vue({
+let VueInstance = new Vue({
   el: '#app',
   router,
   store,

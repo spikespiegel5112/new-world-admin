@@ -27,7 +27,7 @@
 
       <i class="el-icon-plus"></i>
       <div slot="tip" class="el-upload__tip">
-        只能上传jpg/png文件，且不超过2MB
+        只能上传jpg/png文件，且不超过10MB
       </div>
     </el-upload>
   </div>
