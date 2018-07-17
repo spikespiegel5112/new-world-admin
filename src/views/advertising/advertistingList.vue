@@ -31,8 +31,8 @@
               <el-col :span="8">
                 <el-form-item label="类型：">
                   <el-select clearable v-model="queryModel.location" placeholder="请选择">
-                    <el-option v-for="item in calendarTypeOptions" :key="item.location" :label="item.name"
-                               :value="item.location">
+                    <el-option v-for="item in calendarTypeOptions" :key="item.code" :label="item.name"
+                               :value="item.code">
                     </el-option>
                   </el-select>
                 </el-form-item>
@@ -81,7 +81,7 @@
       <el-table-column align="center" label="类型" prop="location">
         <template slot-scope="scope">
           <div v-if="calendarTypeOptions.length!==0">
-            {{calendarTypeOptions.filter(item=>item.location===scope.row.location)[0].name}}
+            {{calendarTypeOptions.filter(item=>item.code===scope.row.location)[0].name}}
           </div>
         </template>
       </el-table-column>
@@ -153,8 +153,8 @@
             </el-form-item>
             <el-form-item label="类型" prop="location">
               <el-select v-model="formData.location" placeholder="请选择">
-                <el-option v-for="item in calendarTypeOptions" :key="item.location" :label="item.name"
-                           :value="item.location">
+                <el-option v-for="item in calendarTypeOptions" :key="item.code" :label="item.name"
+                           :value="item.code">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -384,7 +384,12 @@
       getAdvertisingLocation() {
         this.$http.get(this.$baseUrl + this.location_listRequest).then(response => {
           console.log(response)
-          this.calendarTypeOptions = response;
+          response.forEach(item => {
+            this.calendarTypeOptions.push({
+              name: item.name,
+              code: item.location
+            })
+          });
         }).catch(error => {
           console.log(error)
           this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)

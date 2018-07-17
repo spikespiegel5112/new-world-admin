@@ -71,15 +71,16 @@
       <el-form label-position="top" label-width="80px">
         <el-form-item label="审核版本">
           <CommonTag title="iOS" :tagData="iosVersionListData" buttonText="添加版本" :metaData="['ios']"
-                     @add="handleAddIosList" @delete="handleDeleteIosList"/>
+                     @add="handleAddMetaDataList" @delete="handleDeleteMetaData"/>
           <CommonTag title="Android" :tagData="androidVersionListData" buttonText="添加版本"
                      :metaData="['android']"
-                     @add="handleAddIosList" @delete="handleDeleteIosList"/>
+                     @add="handleAddMetaDataList" @delete="handleDeleteMetaData"/>
         </el-form-item>
       </el-form>
     </el-row>
 
-    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row :height="metaTableHeight">
+    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row
+              :height="metaTableHeight">
       <el-table-column label="No" type="index" width="50" align="center" fixed></el-table-column>
       <el-table-column label="名称" align="center" prop="name"></el-table-column>
       <el-table-column align="center" label="Android可用性" prop="available">
@@ -234,9 +235,9 @@
         }
       }
     },
-    computed:{
-      metaTableHeight(){
-        return this.$store.state.app.tableHeight-140;
+    computed: {
+      metaTableHeight() {
+        return this.$store.state.app.tableHeight - 140;
       }
     },
     filters: {
@@ -462,19 +463,15 @@
       editAvailability() {
         this.dialogFormVisible = true;
       },
-      handleAddIosList(data, type) {
+      handleAddMetaDataList(data, type) {
         console.log(data)
         console.log(type)
-        if (data.length === 0) {
+        if (data.length > 0 && data.filter(item => item === data[data.length - 1]).length > 1) {
           return
         }
         this.$http.post(this.$baseUrl + this.versionControlRequest, {
           deviceType: type,
           version: data[data.length - 1]
-        }, {
-          headers: {
-            'Authorization': 'Bearer ' + this.$store.state.user.token
-          }
         }).then(response => {
           console.log(response)
           this.$message.success(response.response.data)
@@ -483,7 +480,7 @@
           this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },
-      handleDeleteIosList() {
+      handleDeleteMetaData(data, index, type) {
         this.$http.delete(this.$baseUrl + this.versionControlRequest + `${type}/${data}`, {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
