@@ -387,7 +387,10 @@
           this.tableList = response.content;
           this.pagination.total = response.numberOfElements;
           this.listLoading = false;
-        });
+        }).catch(error => {
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+        })
       },
       handleFilter() {
         this.pagination.page = 1;
@@ -453,7 +456,8 @@
               this.getTableData();
               this.$message.success('信息修改成功')
             }).catch(error => {
-              this.$message.error(error)
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
             })
           }
         })
@@ -501,7 +505,8 @@
               this.getTableData();
               this.$message.success('信息修改成功')
             }).catch(error => {
-              this.$message.error(error)
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
             })
           }
         })
@@ -517,7 +522,12 @@
             this.dialogFormVisible = false;
             this.$message.success('删除成功');
             this.getTableData();
-          });
+          }).then(response=>{
+            console.log(response)
+          }).catch(error => {
+            console.log(error)
+            this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+          })
         }).catch(() => {
           this.$message({
             type: 'info',

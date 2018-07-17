@@ -203,7 +203,6 @@
         <el-button v-else type="primary" @click="updateData" v-waves>{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
@@ -272,10 +271,10 @@
           location: [{required: true, message: '此项为必填项', trigger: 'change'}],
           createDate: [{type: 'date', required: true, message: '请选择可用时间段', trigger: 'change'}],
           image: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          url: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          url: [{required: false, message: '此项为必填项', trigger: 'change'}],
           ios: [{required: true, message: '此项为必填项', trigger: 'change'}],
           android: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          video: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          video: [{required: false, message: '此项为必填项', trigger: 'change'}],
           status: [{required: true, message: '此项为必填项', trigger: 'change'}],
           endDate: [{required: true, message: '此项为必填项', trigger: 'change'}],
         },
@@ -363,7 +362,9 @@
           this.pagination.total = response.numberOfElements;
           this.tableList = response.content;
           this.listLoading = false;
-        });
+        }).catch(error => {
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+        })
       },
       handleFilter() {
         this.pagination.page = 1;
@@ -421,7 +422,10 @@
               this.dialogFormVisible = false;
               this.$message.success('创建成功');
               this.getTableData()
-            });
+            }).catch(error => {
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+            })
           }
         })
       },
@@ -457,8 +461,8 @@
             this.$refs['formData'].clearValidate()
           })
         }).catch(error => {
-
-        });
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+        })
 
       },
       updateData() {
@@ -468,6 +472,8 @@
               this.getTableData();
               this.dialogFormVisible = false;
               this.$message.success('更新成功')
+            }).catch(error => {
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
             })
           }
         })
@@ -484,7 +490,7 @@
             this.$message.success('删除成功');
             this.getTableData();
           }).catch(error => {
-            console.log(error)
+            this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
           })
         }).catch(error => {
           console.log(error)

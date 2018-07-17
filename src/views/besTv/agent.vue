@@ -229,8 +229,8 @@
         fileList: []
       };
     },
-    computed:{
-      tableHeight(){
+    computed: {
+      tableHeight() {
         return this.$store.state.app.tableHeight
       }
     },
@@ -268,7 +268,10 @@
           this.tableList = response.content;
           this.total = response.totalElements;
           this.listLoading = false;
-        });
+        }).catch(error => {
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+        })
       },
       handleSizeChange(val) {
         this.pagination.limit = val;
@@ -317,13 +320,16 @@
               this.getTableData();
               this.dialogFormVisible = false;
               this.$message.success('创建成功');
-            });
+            }).catch(error => {
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+            })
           }
         });
       },
       handleUpdate(scope) {
         this.formData = scope.row;
-        this.formData.phone=Number(this.formData.phone);
+        this.formData.phone = Number(this.formData.phone);
         this.effectiveDuration = [scope.row.startDate, scope.row.endDate]
         this.dialogStatus = "update";
         this.dialogFormVisible = true;
@@ -346,7 +352,8 @@
               this.getTableData();
               this.$message.success('信息修改成功')
             }).catch(error => {
-              this.$message.error(error)
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
             })
           }
         })
@@ -362,7 +369,10 @@
             this.dialogFormVisible = false;
             this.$message.success('删除成功');
             this.getTableData();
-          });
+          }).catch(error => {
+            console.log(error)
+            this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+          })
         }).catch(() => {
           this.$message({
             type: 'info',

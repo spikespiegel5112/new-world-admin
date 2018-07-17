@@ -31,8 +31,8 @@
               <el-col :span="8">
                 <el-form-item label="类型：">
                   <el-select clearable v-model="queryModel.location" placeholder="请选择">
-                    <el-option v-for="item in calendarTypeOptions" :key="item.code" :label="item.name"
-                               :value="item.code">
+                    <el-option v-for="item in calendarTypeOptions" :key="item.location" :label="item.name"
+                               :value="item.location">
                     </el-option>
                   </el-select>
                 </el-form-item>
@@ -70,14 +70,21 @@
     </div>
 
     <el-table :key='tableKey' :data="tableList" v-loading="listLoading" element-loading-text="载入中" border fit
-              highlight-current-row :default-sort="{prop: 'id', order: 'descending'}" @sort-change="changeTableSort" :height="tableHeight">
+              highlight-current-row :default-sort="{prop: 'id', order: 'descending'}" @sort-change="changeTableSort"
+              :height="tableHeight">
       <el-table-column align="center" label="ID" width="65" prop="id" sortable="custom"></el-table-column>
       <el-table-column align="center" label="缩略图" width="300px">
         <template slot-scope="scope">
           <img :src="scope.row.image+'-style_100x100'">
         </template>
       </el-table-column>
-      <!--<el-table-column align="center" label="点击链接" prop="url"></el-table-column>-->
+      <el-table-column align="center" label="类型" prop="location">
+        <template slot-scope="scope">
+          <div v-if="calendarTypeOptions.length!==0">
+            {{calendarTypeOptions.filter(item=>item.location===scope.row.location)[0].name}}
+          </div>
+        </template>
+      </el-table-column>
       <!--<el-table-column align="center" label="视频链接" prop="video" width="200px"></el-table-column>-->
       <el-table-column align="center" label="Android可用性">
         <template slot-scope="scope">
@@ -146,7 +153,8 @@
             </el-form-item>
             <el-form-item label="类型" prop="location">
               <el-select v-model="formData.location" placeholder="请选择">
-                <el-option v-for="item in calendarTypeOptions" :key="item.location" :label="item.name" :value="item.location">
+                <el-option v-for="item in calendarTypeOptions" :key="item.location" :label="item.name"
+                           :value="item.location">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -185,7 +193,7 @@
                 :file-list="fileList"
                 :data="portraitParams">
                 <el-button v-waves size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过50MB</div>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
               </el-upload>
             </el-form-item>
             <el-form-item label="视频地址" prop="video">
@@ -290,10 +298,10 @@
           location: [{required: true, message: '此项为必填项', trigger: 'change'}],
           createDate: [{type: 'date', required: true, message: '请选择可用时间段', trigger: 'change'}],
           image: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          url: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          url: [{required: false, message: '此项为必填项', trigger: 'change'}],
           ios: [{required: true, message: '此项为必填项', trigger: 'change'}],
           android: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          video: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          video: [{required: false, message: '此项为必填项', trigger: 'change'}],
           status: [{required: true, message: '此项为必填项', trigger: 'change'}],
           endDate: [{required: true, message: '此项为必填项', trigger: 'change'}],
         },
@@ -303,7 +311,7 @@
         portraitParams: {
           bucketName: "funyvalley",
           folderName: "advertising",
-          fileMaxSize: 50
+          fileMaxSize: 2
         },
         effectiveDuration: [],
         pickerOptions2: {
@@ -340,7 +348,7 @@
         console.log(this.$store.state.app.layoutHeight)
         return this.$store.state.app.layoutHeight;
       },
-      tableHeight(){
+      tableHeight() {
         return this.$store.state.app.tableHeight
       }
     },
@@ -368,13 +376,19 @@
           this.pagination.total = response.total;
           this.tableList = response.list;
           this.listLoading = false;
-        });
+        }).catch(error => {
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+        })
       },
-      getAdvertisingLocation(){
+      getAdvertisingLocation() {
         this.$http.get(this.$baseUrl + this.location_listRequest).then(response => {
           console.log(response)
-          this.calendarTypeOptions=response;
-        });
+          this.calendarTypeOptions = response;
+        }).catch(error => {
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+        })
       },
       handleFilter() {
         this.pagination.page = 1;
@@ -395,6 +409,9 @@
             message: '操作成功',
             type: 'success'
           })
+        }).catch(error => {
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },
       resetTemp() {

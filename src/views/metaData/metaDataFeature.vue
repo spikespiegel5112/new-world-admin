@@ -265,7 +265,8 @@
           this.pagination.total = response.total;
           this.listLoading = false;
         }).catch(error => {
-          this.$message.error(error.data)
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },
       getControllableVersionList() {
@@ -275,7 +276,8 @@
           this.androidVersionListData = response.androidList;
           this.iosVersionListData = response.iosList;
         }).catch(error => {
-          this.$message.error(error.response.data)
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },
       handleFilter() {
@@ -310,9 +312,6 @@
       },
       createData() {
         const formData = this.formData;
-
-
-
         this.$refs['formData'].validate((valid) => {
           if (valid) {
             this.$http.post(this.$baseUrl + this.editFeatureMetadata, {
@@ -330,7 +329,8 @@
               this.$message.success('信息创建成功');
               this.getTableData();
             }).catch(error => {
-              this.$message.error(error.response.data)
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
             })
           }
         })
@@ -363,7 +363,8 @@
             this.$message.success('信息修改成功');
             this.getTableData();
           }).catch(error => {
-            this.$message.error(error.response.data)
+            console.log(error)
+            this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
           })
         });
       },
@@ -382,13 +383,16 @@
             this.dialogFormVisible = false;
             this.$message.success('删除成功');
             this.getTableData();
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消删除'
-            });
+          }).catch(error => {
+            console.log(error)
+            this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
           });
-        })
+        });
       },
       changeUpload(file) {
         console.log(file)
@@ -424,7 +428,8 @@
                 this.$message.warning('图片删除失败')
               }
             }).catch(error => {
-              this.$message.error(error.response.data)
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
             })
           })
         }
@@ -474,7 +479,8 @@
           console.log(response)
           this.$message.success(response.response.data)
         }).catch(error => {
-          this.$message.error(error.response.data)
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },
       handleDeleteIosList() {
@@ -485,6 +491,9 @@
           }
         }).then(response => {
           console.log(response)
+        }).catch(error => {
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },
       handleAndroidListChange(data) {

@@ -275,9 +275,11 @@
         this.listLoading = true;
         this.$http.get(this.$baseUrl + this.categoryListRequest).then(response => {
           console.log(response);
-
           this.tableData = response;
           this.listLoading = false;
+        }).catch(error => {
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },
       handleFilter() {
@@ -339,6 +341,9 @@
               this.$message.success('产品类型创建成功');
               this.dialogFormVisible = false;
               this.getTableData();
+            }).catch(error => {
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
             })
           }
         });
@@ -366,6 +371,9 @@
             }).then(response => {
               this.$message.success('修改成功')
               this.dialogFormVisible = false;
+            }).catch(error => {
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
             })
           }
         });
@@ -380,17 +388,12 @@
             this.$message.success('删除成功');
             this.getTableData();
           }).catch(error => {
-            this.$message({
-              type: 'info',
-              message: '已取消删除'
-            });
             console.log(error)
+            this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
           })
         }).catch(() => {
-
+          this.$message.info('已取消删除')
         });
-
-
       },
       changeUpload(file) {
         console.log(file)
@@ -469,7 +472,8 @@
                 this.$message.warning('图片删除失败')
               }
             }).catch(error => {
-              this.$message.error(error.response.data)
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
             })
           })
         }

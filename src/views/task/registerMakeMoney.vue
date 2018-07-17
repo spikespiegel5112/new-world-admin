@@ -374,6 +374,9 @@
           this.tableList = response.content;
           this.total = response.totalElements;
           this.listLoading = false
+        }).catch(error => {
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },
       handleFilter() {
@@ -412,9 +415,9 @@
         this.fileList = []
       },
       handleCreate() {
-        this.resetTemp()
-        this.dialogStatus = 'create'
-        this.dialogFormVisible = true
+        this.resetTemp();
+        this.dialogStatus = 'create';
+        this.dialogFormVisible = true;
         this.$nextTick(() => {
           this.$refs['formData'].clearValidate()
         })
@@ -436,7 +439,10 @@
               this.tableList.unshift(this.formData);
               this.dialogFormVisible = false;
               this.$message.success('创建成功');
-            });
+            }).catch(error => {
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+            })
           }
         });
       },
@@ -461,7 +467,10 @@
             this.dialogFormVisible = false;
             this.$message.success('删除成功');
             this.getTableData();
-          });
+          }).catch(error => {
+            console.log(error)
+            this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+          })
         }).catch(() => {
           this.$message({
             type: 'info',
@@ -548,7 +557,8 @@
               this.getTableData();
               this.$message.success('信息修改成功')
             }).catch(error => {
-              this.$message.error(error)
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
             })
           }
         })

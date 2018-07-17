@@ -459,7 +459,8 @@
                 this.$message.success('信息创建成功');
                 this.getTableData();
               }).catch(error => {
-                this.$message.error(error.response.data)
+                console.log(error)
+                this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
               })
             });
           }
@@ -499,7 +500,8 @@
             this.$message.success('信息修改成功');
             this.getTableData();
           }).catch(error => {
-            this.$message.error(error.response.data)
+            console.log(error)
+            this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
           })
         });
       },
@@ -518,7 +520,10 @@
             this.dialogFormVisible = false;
             this.$message.success('删除成功');
             this.getTableData();
-          });
+          }).catch(error => {
+            console.log(error)
+            this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+          })
         }).catch(() => {
           this.$message({
             type: 'info',
@@ -560,7 +565,8 @@
                 this.$message.warning('图片删除失败')
               }
             }).catch(error => {
-              this.$message.error(error.response.data)
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
             })
           })
         }
@@ -616,8 +622,11 @@
                 "actionParam": formData.actionParam,
                 "icon": formData.icon
               }
+            }).then(response=>{
+              console.log(response)
             }).catch(error => {
-              this.$message.error(error.response.data)
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
             })
           }
         });
@@ -636,7 +645,8 @@
             'Authorization': 'Bearer ' + this.$store.state.user.token
           }
         }).catch(error => {
-          this.$message.error(error.response.data)
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },
       handleDeleteIosList(data, index, type) {
@@ -645,7 +655,8 @@
             'Authorization': 'Bearer ' + this.$store.state.user.token
           }
         }).catch(error => {
-          this.$message.error(error.response.data)
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },
       handleAndroidListChange(data) {

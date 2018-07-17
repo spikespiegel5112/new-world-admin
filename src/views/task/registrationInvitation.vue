@@ -415,7 +415,8 @@
               this.getTableData();
               this.$message.success('信息修改成功')
             }).catch(error => {
-              this.$message.error(error)
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
             })
           }
         })

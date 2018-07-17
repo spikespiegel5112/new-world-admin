@@ -296,7 +296,10 @@
           this.tableList = response.content;
           this.total = response.totalElements;
           this.listLoading = false;
-        });
+        }).catch(error => {
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+        })
       },
       getAgentData() {
         let result = [];
@@ -315,6 +318,9 @@
         }).then(response => {
           console.log(response)
           this.productListData = response;
+        }).catch(error => {
+          console.log(error)
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },
       handleSizeChange(val) {
@@ -395,7 +401,8 @@
               this.getTableData();
               this.$message.success('信息修改成功')
             }).catch(error => {
-              this.$message.error(error)
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
             })
           }
         })
@@ -411,7 +418,10 @@
             this.dialogFormVisible = false;
             this.$message.success('删除成功');
             this.getTableData();
-          });
+          }).catch(error => {
+            console.log(error)
+            this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+          })
         }).catch(() => {
           this.$message({
             type: 'info',

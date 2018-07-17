@@ -518,13 +518,17 @@
           this.tableData = response.content;
           this.total = response.totalElements;
           this.listLoading = false
+        }).catch(error => {
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },
       getProductTypeList() {
         this.$http.get(this.$baseUrl + this.categoryListRequest).then(response => {
           console.log(response);
           this.productTypeData = response;
-        });
+        }).catch(error => {
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+        })
       },
       search() {
         if (this.queryModel.type !== null || this.queryModel.type !== '') {
