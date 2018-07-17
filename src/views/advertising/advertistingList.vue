@@ -70,7 +70,7 @@
     </div>
 
     <el-table :key='tableKey' :data="tableList" v-loading="listLoading" element-loading-text="载入中" border fit
-              highlight-current-row :default-sort="{prop: 'id', order: 'descending'}" @sort-change="changeTableSort" :height="$store.state.app.tableHeight">
+              highlight-current-row :default-sort="{prop: 'id', order: 'descending'}" @sort-change="changeTableSort" :height="tableHeight">
       <el-table-column align="center" label="ID" width="65" prop="id" sortable="custom"></el-table-column>
       <el-table-column align="center" label="缩略图" width="300px">
         <template slot-scope="scope">
@@ -146,7 +146,7 @@
             </el-form-item>
             <el-form-item label="类型" prop="location">
               <el-select v-model="formData.location" placeholder="请选择">
-                <el-option v-for="item in calendarTypeOptions" :key="item.code" :label="item.name" :value="item.code">
+                <el-option v-for="item in calendarTypeOptions" :key="item.location" :label="item.name" :value="item.location">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -240,12 +240,8 @@
         advertisingListRequest: 'advertising-service/1.0.0/advertising/list',
         advertisingCreateRequest: 'advertising-service/1.0.0/advertising',
         advertisingDeleteRequest: 'advertising-service/1.0.0/advertising',
-        calendarTypeOptions: [
-          {code: 'start_the', name: '启动页'},
-          {code: 'sign_in', name: '签到'},
-          {code: 'notice', name: '公告'},
-          {code: 'better_discount', name: '好折扣'}
-        ],
+        location_listRequest: 'advertising-service/1.0.0/advertising/location_list',
+        calendarTypeOptions: [],
         statusDictionary: [{
           code: 0,
           type: 'info',
@@ -339,16 +335,13 @@
       }
     },
     computed: {
-      calendarTypeKeyValue() {
-        this.calendarTypeOptions.reduce((acc, cur) => {
-          acc[cur.key] = cur.name
-          return acc
-        }, {})
-      },
       layoutHeight() {
         console.log(this.$store.state.app.layoutHeight)
         return this.$store.state.app.layoutHeight;
       },
+      tableHeight(){
+        return this.$store.state.app.tableHeight
+      }
     },
     watch: {
       effectiveDuration(value) {
@@ -360,26 +353,9 @@
         this.formData.endDate = value[1];
       }
     },
-    filters: {
-      statusFilter(status) {
-        const statusDictionary = {
-          0: {
-            type: 'info',
-            name: '草稿'
-          },
-          1: {
-            type: 'success',
-            name: '发布'
-          }
-        };
-        return statusDictionary[status]
-      },
-      typeFilter(type) {
-        return this.calendarTypeKeyValue[type]
-      }
-    },
     mounted() {
-      this.getTableData()
+      this.getTableData();
+      this.getAdvertisingLocation();
     },
     methods: {
       getTableData() {
@@ -391,6 +367,12 @@
           this.pagination.total = response.total;
           this.tableList = response.list;
           this.listLoading = false;
+        });
+      },
+      getAdvertisingLocation(){
+        this.$http.get(this.$baseUrl + this.location_listRequest).then(response => {
+          console.log(response)
+          this.calendarTypeOptions=response;
         });
       },
       handleFilter() {

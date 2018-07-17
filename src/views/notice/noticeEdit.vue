@@ -1,63 +1,52 @@
 <template xmlns="">
-  <el-container class="management-dashboard-container">
     <el-container class="common-maincontent-wrapper">
       <el-main class="common-notice-wrapper">
-        <el-card class="noticeedit" :body-style="{padding:'5px'}">
-          <div slot="header">
-            <el-row :gutter="20">
-              <el-col :span="24">
-                <el-form ref="editNoticeFromTitle" :model="formData"
-                         :rules="rules"
-                         label-width="100px"
-                         size="small">
-                  <el-form-item label="标题" prop="noticeTile">
-                    <el-input v-model="formData.noticeTile"></el-input>
-                  </el-form-item>
-                  <el-form-item label="副标题" prop="deviceType">
-                    <el-input type="textarea" v-model="formData.summary"></el-input>
-                  </el-form-item>
-                  <el-form-item label="设备类型" prop="deviceType">
-                    <el-select v-model="formData.deviceType">
-                      <el-option v-for="item in $store.state.app.deviceType"
-                                 :value="item.code"
-                                 :label="item.name"
-                                 :key="item.code"></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-form>
-              </el-col>
-            </el-row>
-          </div>
-          <div class="management-noticeedit-wrapper">
-            <el-form ref="editNoticeFromContent"
-                     :model="formData"
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form ref="editNoticeFromTitle" :model="formData"
                      :rules="rules"
-                     label-width="0"
+                     label-width="100px"
                      size="small">
-              <el-form-item label="" prop="content">
-                <!--<CommonTinyMCE :value="formData.noticeContent.content"-->
-                <!--v-model="formData.noticeContent.content"-->
-                <!--:config='editorConfig'-->
-                <!--/>-->
-
-                <CommonSimditor :config="simditorConfig"
-                                :editorContent.sync="formData.content"
-                                :changeEditorContent="changeEditorContent"
-                                :height='editorHeight'
-                />
+              <el-form-item label="标题" prop="noticeTile">
+                <el-input v-model="formData.noticeTile"></el-input>
+              </el-form-item>
+              <el-form-item label="副标题" prop="deviceType">
+                <el-input type="textarea" v-model="formData.summary"></el-input>
+              </el-form-item>
+              <el-form-item label="设备类型" prop="deviceType">
+                <el-select v-model="formData.deviceType">
+                  <el-option v-for="item in $store.state.app.deviceType"
+                             :value="item.code"
+                             :label="item.name"
+                             :key="item.code"></el-option>
+                </el-select>
               </el-form-item>
             </el-form>
-          </div>
-          <el-row class="footer">
-            <el-col class="operator-wrapper" :span="15">
-              <el-button class="" type="primary" size="small" @click="publish">发布</el-button>
-              <el-button class="" type="info" size="small" @click="cancelEdit">取消</el-button>
-            </el-col>
-          </el-row>
-        </el-card>
+          </el-col>
+        </el-row>
+        <div class="management-noticeedit-wrapper">
+          <el-form ref="editNoticeFromContent"
+                   :model="formData"
+                   :rules="rules"
+                   label-width="0"
+                   size="small">
+            <el-form-item label="" prop="content">
+              <CommonSimditor :config="simditorConfig"
+                              :editorContent.sync="formData.content"
+                              :changeEditorContent="changeEditorContent"
+                              :height='editorHeight'
+              />
+            </el-form-item>
+          </el-form>
+        </div>
+        <el-row class="footer">
+          <el-col class="operator-wrapper" :span="15">
+            <el-button class="" type="primary" size="small" @click="publish">发布</el-button>
+            <el-button class="" type="info" size="small" @click="cancelEdit">取消</el-button>
+          </el-col>
+        </el-row>
       </el-main>
     </el-container>
-  </el-container>
 </template>
 
 <script>
@@ -129,7 +118,7 @@
         return this.$store.state.app.layoutHeight;
       },
       editorHeight() {
-        return this.$store.state.app.layoutHeight - 280
+        return this.$store.state.app.layoutHeight - 290
       },
       currentUserType() {
         return this.$store.state.app.personalProfile.user.userType;
@@ -186,14 +175,6 @@
       }, 500)
     },
     methods: {
-      initTinyMCE() {
-        tinymce.init({
-          selector: 'textarea'
-          //or
-          // target: document.querySelector('textarea')
-        });
-
-      },
       getDetailData() {
         console.log(this.noticeId)
         this.$http.post(this.$baseUrl + this.queryNoticedetailRequest, {

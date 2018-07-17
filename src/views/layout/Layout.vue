@@ -1,5 +1,5 @@
 <template>
-  <div class="app-wrapper" :class="classObj">
+  <div class="common-main-container" :class="classObj">
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"></div>
     <sidebar class="sidebar-container"></sidebar>
     <div class="main-container">
@@ -8,73 +8,76 @@
     </div>
   </div>
 </template>
-
 <script>
-import { Navbar, Sidebar, AppMain } from './components'
-import ResizeMixin from './mixin/ResizeHandler'
+  import {Navbar, Sidebar, AppMain} from './components'
+  import ResizeMixin from './mixin/ResizeHandler'
 
-export default {
-  name: 'layout',
-  components: {
-    Navbar,
-    Sidebar,
-    AppMain
-  },
-  mixins: [ResizeMixin],
-  computed: {
-    sidebar() {
-      return this.$store.state.app.sidebar
+  export default {
+    name: 'layout',
+    components: {
+      Navbar,
+      Sidebar,
+      AppMain
     },
-    device() {
-      return this.$store.state.app.device
-    },
-    classObj() {
-      return {
-        hideSidebar: !this.sidebar.opened,
-        withoutAnimation: this.sidebar.withoutAnimation,
-        mobile: this.device === 'mobile'
+    mixins: [ResizeMixin],
+    computed: {
+      sidebar() {
+        return this.$store.state.app.sidebar
+      },
+      device() {
+        return this.$store.state.app.device
+      },
+      classObj() {
+        return {
+          hideSidebar: !this.sidebar.opened,
+          withoutAnimation: this.sidebar.withoutAnimation,
+          mobile: this.device === 'mobile'
+        }
+      },
+      layoutReady() {
+        return this.$store.state.app.layoutHeight > 0;
       }
     },
-    layoutReady(){
-      return this.$store.state.app.layoutHeight>0;
+    created() {
+      this.autoHeight();
+    },
+    mounted() {
+    },
+    methods: {
+      handleClickOutside() {
+        this.$store.dispatch('CloseSideBar', {withoutAnimation: false})
+      },
+      autoHeight() {
+        this.$autoHeight({
+          target: '.app-main',
+          offset: -50
+        });
+        let layoutHeight = this.$autoHeight({
+          target: '.app-main',
+          reference: '.main-container',
+          offset: -80,
+          returnValue: true
+        });
+        console.log(this.$store)
+        // layoutHeight = layoutHeight < 700 ? 700 : layoutHeight
+        this.$nextTick(() => {
+          this.$store.dispatch('updateLayoutHeight', layoutHeight);
+        })
+      },
     }
-  },
-  mounted(){
-    this.autoHeight();
-  },
-  methods: {
-    handleClickOutside() {
-      this.$store.dispatch('CloseSideBar', { withoutAnimation: false })
-    },
-    autoHeight() {
-      this.$autoHeight({
-        target: '.app-main',
-        offset: -50
-      });
-      let layoutHeight = this.$autoHeight({
-        target: '.app-main',
-        reference: '.main-container',
-        offset: -50,
-        returnValue: true
-      });
-      console.log(this.$store)
-      // layoutHeight = layoutHeight < 700 ? 700 : layoutHeight
-      this.$nextTick(()=>{
-        this.$store.dispatch('updateLayoutHeight', layoutHeight);
-      })
-    },
   }
-}
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
   @import "src/styles/mixin.scss";
-  .app-wrapper {
+
+  .common-main-contaner {
     @include clearfix;
     position: relative;
     height: 100%;
     width: 100%;
   }
+
   .drawer-bg {
     background: #000;
     opacity: 0.3;

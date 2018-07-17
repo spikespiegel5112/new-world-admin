@@ -4486,6 +4486,7 @@ ImageButton = (function(superClass) {
     this.editor.uploader.on('uploadsuccess', (function(_this) {
       return function(e, file, result) {
         var $img, img_path, msg;
+        debugger
         if (!file.inline) {
           return;
         }
@@ -4509,7 +4510,8 @@ ImageButton = (function(superClass) {
           img_path = _this.defaultImage;
         } else {
           console.log(result)
-          img_path = result.file_path;
+          // img_path = result.file_path;
+          img_path = result.url;
         }
         _this.loadImage($img, img_path, function() {
           var $mask;

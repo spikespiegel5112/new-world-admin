@@ -67,7 +67,7 @@
     </div>
 
     <el-table :data="tableList" v-loading.body="listLoading" element-loading-text="Loading" border fit
-              highlight-current-row :height="$store.state.app.tableHeight">
+              highlight-current-row :height="tableHeight">
       <el-table-column align="center" label='No' width="50">
         <template slot-scope="scope">
           {{scope.$index+1}}
@@ -333,6 +333,11 @@
         },
         fileList: [],
         effectiveDuration: []
+      }
+    },
+    computed:{
+      tableHeight(){
+        return this.$store.state.app.tableHeight
       }
     },
     watch: {

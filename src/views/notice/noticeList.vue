@@ -217,6 +217,7 @@
       return {
         queryNoticeListAllRequest: 'notice-service/1.0.0/queryNoticeListAll',
         queryNoticedetailRequest: 'notice-service/1.0.0/queryNoticedetail',
+        deleteNoticeRequest:'notice-service/1.0.0/deleteNotice',
         calendarTypeOptions: [
           {code: 'start_the', name: '启动页'},
           {code: 'sign_in', name: '签到'},
@@ -478,7 +479,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http.delete(this.$baseUrl + this.advertisingDeleteRequest + `/${scope.row.id}`, {}).then(response => {
+          this.$http.post(this.$baseUrl + this.deleteNoticeRequest + `/${scope.row.id}`, {}).then(response => {
             console.log(response)
             this.$message.success('删除成功');
             this.getTableData();

@@ -62,7 +62,7 @@
       </div>
     </div>
     <el-table :data="tableData" v-loading.body="listLoading" element-loading-text="Loading" border fit
-              highlight-current-row :height="$store.state.app.tableHeight">
+              highlight-current-row :height="tableHeight">
       <el-table-column align="center" label='ID' width="50">
         <template slot-scope="scope">
           {{scope.row.id}}
@@ -105,9 +105,9 @@
         </template>
       </el-table-column>
       <!--<el-table-column label="购买链接" width="150">-->
-        <!--<template slot-scope="scope">-->
-          <!--{{scope.row.buyUrl}}-->
-        <!--</template>-->
+      <!--<template slot-scope="scope">-->
+      <!--{{scope.row.buyUrl}}-->
+      <!--</template>-->
       <!--</el-table-column>-->
       <el-table-column label="是否上架" width="60">
         <template slot-scope="scope">
@@ -116,8 +116,10 @@
       </el-table-column>
       <el-table-column label="上架时间范围" width="120">
         <template slot-scope="scope">
-          {{$moment(scope.row.effectiveStartTime).format('YYYY-MM-DD HH:mm:ss')}} ~
-          <br/> {{$moment(scope.row.effectiveEndTime).format('YYYY-MM-DD HH:mm:ss')}}
+          <div v-if="scope.row.effectiveStartTime!==null">
+            {{scope.row.effectiveStartTime$moment(scope.row.effectiveStartTime).format('YYYY-MM-DD HH:mm:ss')}} ~
+            <br/> {{$moment(scope.row.effectiveEndTime).format('YYYY-MM-DD HH:mm:ss')}}
+          </div>
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作" width="170">
@@ -175,7 +177,6 @@
                            :data="portraitParams">
 
                   <el-button class="add" type="primary">上传</el-button>
-
                   <div slot="tip" class="el-upload__tip">
                     只能上传jpg/png文件，且不超过2MB
                   </div>
@@ -297,10 +298,10 @@
         }],
         importanceOptions: [1, 2, 3],
         sortOptions: [{
-         label: 'ID Ascending',
+          label: 'ID Ascending',
           key: '+id'
         }, {
-         label: 'ID Descending',
+          label: 'ID Descending',
           key: '-id'
         }],
         statusOptions: ['published', 'draft', 'deleted'],
@@ -471,6 +472,11 @@
 
       }
     },
+    computed:{
+      tableHeight(){
+        return this.$store.state.app.tableHeight
+      }
+    },
     watch: {
       effectiveDuration(value) {
         console.log(value)
@@ -574,7 +580,7 @@
       addGoods() {
         this.$refs.formData.validate(valid => {
           if (valid) {
-            this.$http.post(this.$baseUrl + this.addGoodsRequest, {
+            this.$http.post(this.$baseUrl + this.addGoodsRequest + `/${this.$store.state.user.login_id}`, {
               id: '',
               "goodsNumber": this.formData.goodsNumber,
               "name": this.formData.name,
@@ -651,7 +657,7 @@
         this.$refs.formData.validate(valid => {
           if (valid) {
             this.formData.image = this.formData.detailImage[this.defaultImageIndex];
-            this.$http.post(this.$baseUrl + this.updateGoodsContentRequest, {
+            this.$http.post(this.$baseUrl + this.updateGoodsContentRequest + `/${this.$store.state.user.login_id}`, {
               id: this.formData.id,
               goodsNumber: this.formData.goodsNumber,
               name: this.formData.name,
