@@ -114,7 +114,7 @@
           {{groundingStatusDictionary.filter(item=>item.code===scope.row.status)[0].name}}
         </template>
       </el-table-column>
-      <el-table-column label="上架时间范围" width="120">
+      <el-table-column label="上架时间范围" width="160">
         <template slot-scope="scope">
           <div v-if="scope.row.effectiveStartTime!==null">
             {{$moment(scope.row.effectiveStartTime).format('YYYY-MM-DD HH:mm:ss')}} ~
@@ -472,8 +472,8 @@
 
       }
     },
-    computed:{
-      tableHeight(){
+    computed: {
+      tableHeight() {
         return this.$store.state.app.tableHeight
       }
     },
@@ -567,7 +567,8 @@
           startDate: null,
           endDate: null,
           iconPath: ''
-        }
+        };
+        this.effectiveDuration = [];
       },
       handleCreate() {
         this.resetTemp();
@@ -755,6 +756,9 @@
         this.fileList.push(response);
         console.log(this.formData)
         this.formData.detailImage.push(response.url);
+        if (this.formData.image === '') {
+          this.formData.image = this.formData.detailImage[0];
+        }
         console.log(fileList)
         // this.formData.detailImage.forEach((item, index) => {
         //   if (item.url === this.formData.image) {
