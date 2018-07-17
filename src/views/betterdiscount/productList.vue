@@ -117,7 +117,7 @@
       <el-table-column label="上架时间范围" width="120">
         <template slot-scope="scope">
           <div v-if="scope.row.effectiveStartTime!==null">
-            {{scope.row.effectiveStartTime$moment(scope.row.effectiveStartTime).format('YYYY-MM-DD HH:mm:ss')}} ~
+            {{$moment(scope.row.effectiveStartTime).format('YYYY-MM-DD HH:mm:ss')}} ~
             <br/> {{$moment(scope.row.effectiveEndTime).format('YYYY-MM-DD HH:mm:ss')}}
           </div>
         </template>
