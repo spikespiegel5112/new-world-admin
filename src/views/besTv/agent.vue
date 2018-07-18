@@ -390,6 +390,10 @@
         this.getTableData();
       },
       reset() {
+        this.queryModel = Object.assign(this.queryModel, {
+          keyword: ''
+        });
+        this.getTableData();
       },
       handleBeforeUpload(file) {
         console.log(file);

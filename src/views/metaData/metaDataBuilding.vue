@@ -670,6 +670,7 @@
         this.getTableData();
       },
       reset() {
+        this.queryModel.available = true;
       },
       deleteImage(index) {
         this.formData.icon = '';

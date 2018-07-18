@@ -30,7 +30,7 @@
             <el-row>
               <el-col :span="8">
                 <el-form-item label="类型：">
-                  <el-select clearable v-model="queryModel.location" placeholder="请选择">
+                  <el-select v-if="calendarTypeOptions.length!==0" clearable v-model="queryModel.location" placeholder="请选择">
                     <el-option v-for="item in calendarTypeOptions" :key="item.code" :label="item.name"
                                :value="item.code">
                     </el-option>

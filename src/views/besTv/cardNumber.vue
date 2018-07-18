@@ -75,6 +75,7 @@
       <el-table-column label="adminId" align="center" prop="adminId" width="200"></el-table-column>
       <el-table-column label="代理商ID" align="center" prop="agentId" width="200"></el-table-column>
       <el-table-column label="创建时间" align="center" prop="createDate" width="150"></el-table-column>
+      <el-table-column label="数量" align="center" prop="num" width="150"></el-table-column>
       <el-table-column label="备注" align="center" prop="note"></el-table-column>
       <el-table-column label="是否可用" align="center" width="100" prop="isShow">
         <template slot-scope="scope">
@@ -282,6 +283,7 @@
       }
     },
     mounted() {
+      this.getProductListData();
       this.getTableData();
       this.getAgentData()
     },
@@ -439,6 +441,10 @@
         this.getTableData();
       },
       reset() {
+        this.queryModel = Object.assign(this.queryModel, {
+          keyword: ''
+        });
+        this.getTableData();
       },
       handleBeforeUpload(file) {
         console.log(file);
