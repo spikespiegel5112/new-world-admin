@@ -35,174 +35,138 @@ export const constantRouterMap = [{
     path: 'dashboard',
     component: () => import('@/views/dashboard/index')
   }]
-},
-
-  // {
-  //   path: '/example',
-  //   component: Layout,
-  //   redirect: '/example/table',
-  //   name: 'Example',
-  //   meta: { title: 'Example', icon: 'example' },
-  //   children: [
-  //     {
-  //       path: 'table',
-  //       name: 'Table',
-  //       component: () => import('@/views/table/index'),
-  //       meta: { title: 'Table', icon: 'table' }
-  //     },
-  //     {
-  //       path: 'tree',
-  //       name: 'Tree',
-  //       component: () => import('@/views/tree/index'),
-  //       meta: { title: 'Tree', icon: 'tree' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/form',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'Form',
-  //       component: () => import('@/views/form/index'),
-  //       meta: { title: 'Form', icon: 'form' }
-  //     }
-  //   ]
-  // },
-  {
-    path: '/task',
-    component: Layout,
-    redirect: '/task/tryplay',
-    name: '任务墙',
-    meta: {
-      title: '任务墙', icon: 'table'
-    },
-    children: [{
-      path: 'demogame',
-      name: 'demoGame',
-      component: () => import('@/views/task/demoGame'),
-      meta: {title: '下载试玩', icon: 'list'}
-    }, {
-      path: 'bankcard',
-      name: 'bankCard',
-      component: () => import('@/views/task/bankCard'),
-      meta: {title: '银行办卡', icon: 'list'}
-    }, {
-      path: 'registermakemoney',
-      name: 'registerMakeMoney',
-      component: () => import('@/views/task/registerMakeMoney'),
-      meta: {title: '注册赚钱', icon: 'list'}
-    }, {
-      path: 'homepageguide',
-      name: 'homepageGuide',
-      component: () => import('@/views/task/homepageGuide'),
-      meta: {title: '首页引导', icon: 'list'}
-    }, {
-      path: 'registrationinvitation',
-      name: 'registrationInvitation',
-      component: () => import('@/views/task/registrationInvitation'),
-      meta: {title: '注册邀请', icon: 'list'}
-    }]
+}, {
+  path: '/task',
+  component: Layout,
+  redirect: '/task/tryplay',
+  name: '任务墙',
+  meta: {
+    title: '任务墙', icon: 'table'
+  },
+  children: [{
+    path: 'demogame',
+    name: 'demoGame',
+    component: () => import('@/views/task/demoGame'),
+    meta: {title: '下载试玩', icon: 'list'}
   }, {
-    path: '/metadata',
-    name: 'metadata',
-    component: Layout,
-    meta: {title: '元数据', icon: 'list'},
-    redirect: {
-      name: 'metaDataBuilding',
-    },
-    children: [{
-      path: 'building',
-      name: 'metaDataBuilding',
-      component: () => import('@/views/metaData/metaDataBuilding'),
-      meta: {title: '建筑元数据', icon: 'list'},
-    }, {
-      path: 'feature',
-      name: 'metaDataFeature',
-      component: () => import('@/views/metaData/metaDataFeature'),
-      meta: {title: 'Feature元数据', icon: 'list'},
-    }]
+    path: 'bankcard',
+    name: 'bankCard',
+    component: () => import('@/views/task/bankCard'),
+    meta: {title: '银行办卡', icon: 'list'}
   }, {
-    path: '/advertising',
-    component: Layout,
-    redirect: '/advertising/advertistingList',
-    name: 'advertising',
-    meta: {
-      title: '广告',
-      icon: 'table'
-    },
-    children: [{
-      path: 'list',
-      name: 'advertisingList',
-      component: () => import('@/views/advertising/advertistingList'),
-      meta: {title: '广告列表', icon: 'list'}
-    }]
+    path: 'registermakemoney',
+    name: 'registerMakeMoney',
+    component: () => import('@/views/task/registerMakeMoney'),
+    meta: {title: '注册赚钱', icon: 'list'}
   }, {
-    path: '/notice',
-    component: Layout,
-    redirect: '/notice/list',
-    name: 'notice',
-    meta: {
-      title: '公告',
-      icon: 'table'
-    },
-    children: [{
-      hidden: true,
-      path: 'edit',
-      name: 'noticeEdit',
-      component: () => import('@/views/notice/noticeEdit'),
-      meta: {title: '编辑公告', icon: 'list'}
-    }, {
-      path: 'list',
-      name: 'noticeList',
-      component: () => import('@/views/notice/noticeList'),
-      meta: {title: '公告列表', icon: 'list'}
-    }]
+    path: 'homepageguide',
+    name: 'homepageGuide',
+    component: () => import('@/views/task/homepageGuide'),
+    meta: {title: '首页引导', icon: 'list'}
   }, {
-    path: '/betterDiscount',
-    component: Layout,
-    name: '好折扣',
-    meta: {title: '好折扣', icon: 'table'},
-    redirect: {
-      name: 'metaDataBuilding',
-    },
-    children: [{
-      path: 'categorylist',
-      name: 'categoryList',
-      component: () => import('@/views/betterDiscount/categoryList'),
-      meta: {title: '分类列表', icon: 'table'}
-    }, {
-      path: 'productList',
-      name: 'productList',
-      component: () => import('@/views/betterDiscount/productList'),
-      meta: {title: '商品列表', icon: 'table'}
-    }]
+    path: 'registrationinvitation',
+    name: 'registrationInvitation',
+    component: () => import('@/views/task/registrationInvitation'),
+    meta: {title: '注册邀请', icon: 'list'}
+  }]
+}, {
+  path: '/metadata',
+  name: 'metadata',
+  component: Layout,
+  meta: {title: '元数据', icon: 'list'},
+  redirect: {
+    name: 'metaDataBuilding',
+  },
+  children: [{
+    path: 'building',
+    name: 'metaDataBuilding',
+    component: () => import('@/views/metaData/metaDataBuilding'),
+    meta: {title: '建筑元数据', icon: 'list'},
   }, {
-    path: '/bestv',
-    component: Layout,
-    name: 'BesTV',
-    meta: {title: 'BesTV', icon: 'table'},
-    redirect: {
-      name: 'metaDataBuilding',
-    },
-    children: [{
-      path: 'agent',
-      name: 'agent',
-      component: () => import('@/views/besTv/agent'),
-      meta: {title: '代理商', icon: 'table'}
-    }, {
-      path: 'cardnumber',
-      name: 'cardNumber',
-      component: () => import('@/views/besTv/cardNumber'),
-      meta: {title: '自助生成卡号', icon: 'table'}
-    }]
+    path: 'feature',
+    name: 'metaDataFeature',
+    component: () => import('@/views/metaData/metaDataFeature'),
+    meta: {title: 'Feature元数据', icon: 'list'},
+  }]
+}, {
+  path: '/advertising',
+  component: Layout,
+  redirect: '/advertising/advertistingList',
+  name: 'advertising',
+  meta: {
+    title: '广告',
+    icon: 'table'
+  },
+  children: [{
+    path: 'list',
+    name: 'advertisingList',
+    component: () => import('@/views/advertising/advertistingList'),
+    meta: {title: '广告列表', icon: 'list'}
+  }]
+}, {
+  path: '/notice',
+  component: Layout,
+  redirect: '/notice/list',
+  name: 'notice',
+  meta: {
+    title: '公告',
+    icon: 'table'
+  },
+  children: [{
+    hidden: true,
+    path: 'edit',
+    name: 'noticeEdit',
+    component: () => import('@/views/notice/noticeEdit'),
+    meta: {title: '编辑公告', icon: 'list'}
   }, {
-    path: '*',
-    redirect: '/404',
-    hidden: true
-  }];
+    path: 'list',
+    name: 'noticeList',
+    component: () => import('@/views/notice/noticeList'),
+    meta: {title: '公告列表', icon: 'list'}
+  }]
+}, {
+  path: '/betterDiscount',
+  component: Layout,
+  name: '好折扣',
+  meta: {title: '好折扣', icon: 'table'},
+  redirect: {
+    name: 'metaDataBuilding',
+  },
+  children: [{
+    path: 'categorylist',
+    name: 'categoryList',
+    component: () => import('@/views/betterDiscount/categoryList'),
+    meta: {title: '分类列表', icon: 'table'}
+  }, {
+    path: 'productList',
+    name: 'productList',
+    component: () => import('@/views/betterDiscount/productList'),
+    meta: {title: '商品列表', icon: 'table'}
+  }]
+}, {
+  path: '/bestv',
+  component: Layout,
+  name: 'BesTV',
+  meta: {title: 'BesTV', icon: 'table'},
+  redirect: {
+    name: 'metaDataBuilding',
+  },
+  children: [{
+    path: 'agent',
+    name: 'agent',
+    component: () => import('@/views/besTv/agent'),
+    meta: {title: '代理商', icon: 'table'}
+  }, {
+    path: 'cardnumber',
+    name: 'cardNumber',
+    component: () => import('@/views/besTv/cardNumber'),
+    meta: {title: '自助生成卡号', icon: 'table'}
+  }]
+}, {
+  path: '*',
+  redirect: '/404',
+  hidden: true
+}];
 
 export default new Router({
   // mode: 'history', //后端支持可开
