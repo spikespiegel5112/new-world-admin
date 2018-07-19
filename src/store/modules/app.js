@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 import request from '@/utils/request'
-import {VueInstance} from "../../main";
+
 
 const app = {
   state: {

@@ -1,7 +1,6 @@
 import {login, logout, getInfo} from '@/api/login'
 import {getToken, setToken, removeToken, getLoginId, setLoginId, removeLoginId} from '@/utils/auth'
 import {Message} from 'element-ui'
-import {VueInstance} from "../../main";
 
 
 const user = {
@@ -54,9 +53,8 @@ const user = {
 
     // 获取用户信息
     GetInfo({commit, state}) {
-      console.log(getLoginId())
-      console.log(VueInstance)
-      console.log('http://gateway.zan-qian.com/' + 'profile-service/1.0.0/queryUserProfileById/' + getLoginId())
+      // console.log(getLoginId())
+      // console.log('http://gateway.zan-qian.com/' + 'profile-service/1.0.0/queryUserProfileById/' + getLoginId())
       return new Promise((resolve, reject) => {
         // this.$http.post('http://gateway.zan-qian.com/' + 'profile-service/1.0.0/queryUserProfileById/' + getLoginId(), {}).then(response => {
           getInfo(getLoginId()).then(response => {

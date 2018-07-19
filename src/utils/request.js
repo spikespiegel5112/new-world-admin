@@ -1,12 +1,14 @@
 import axios from 'axios'
 // import { MessageBox } from 'element-ui'
 import store from '../store/store'
-import { getToken } from '@/utils/auth'
-
+import {getToken} from '@/utils/auth'
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: process.env.NODE_ENV === 'production' ? 'http://gateway.zan-qian.com/' : 'http://testgate.zan-qian.com/', // api的base_url
+  baseURL: 'http://testgate.zan-qian.com/',
+  // baseURL: 'http://gateway.zan-qian.com/',
+  // baseURL: process.env.NODE_ENV === 'production' ? 'http://gateway.zan-qian.com/' : 'http://testgate.zan-qian.com/',
+  // api的base_url
   timeout: 5000, // 请求超时时间
   // transformRequest: [function(data) {
   //   // Do whatever you want to transform the data
@@ -48,15 +50,15 @@ service.interceptors.response.use(
       store.dispatch('FedLogOut').then(() => {
         location.reload()// 为了重新实例化vue-router对象 避免bug
       })
-      // MessageBox.confirm('你已被登出，可以取消继续留在该页面，或者重新登录', '确定登出', {
-      //   confirmButtonText: '重新登录',
-      //   cancelButtonText: '取消',
-      //   type: 'warning'
-      // }).then(() => {
-      //   store.dispatch('FedLogOut').then(() => {
-      //     location.reload()// 为了重新实例化vue-router对象 避免bug
-      //   })
-      // })
+      MessageBox.confirm('你已被登出，可以取消继续留在该页面，或者重新登录', '确定登出', {
+        confirmButtonText: '重新登录',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        store.dispatch('FedLogOut').then(() => {
+          location.reload()// 为了重新实例化vue-router对象 避免bug
+        })
+      })
     }
 
     console.log('err' + error)// for debug
