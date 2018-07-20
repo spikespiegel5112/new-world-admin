@@ -5,8 +5,8 @@ import {getToken} from '@/utils/auth'
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: 'http://testgate.zan-qian.com/',
-  // baseURL: 'http://gateway.zan-qian.com/',
+  // baseURL: 'http://testgate.zan-qian.com/',
+  baseURL: 'http://gateway.zan-qian.com/',
   // baseURL: process.env.NODE_ENV === 'production' ? 'http://gateway.zan-qian.com/' : 'http://testgate.zan-qian.com/',
   // api的base_url
   timeout: 5000, // 请求超时时间
