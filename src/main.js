@@ -3,6 +3,7 @@ import 'normalize.css/normalize.css'// A modern alternative to CSS resets
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import service from './utils/request'
+import {baseUrl} from "./utils/request";
 import moment from 'moment';
 
 
@@ -71,8 +72,8 @@ Vue.prototype.$moment = moment;
 Vue.prototype.$moment.locale('zh-cn');
 
 Vue.prototype.$prodBaseUrl = 'http://gateway.zan-qian.com/';
-// Vue.prototype.$baseUrl = 'http://testgate.zan-qian.com/';
-Vue.prototype.$baseUrl = process.env.NODE_ENV === 'production' ? 'http://gateway.zan-qian.com/' : 'http://testgate.zan-qian.com/';
+Vue.prototype.$baseUrl = baseUrl;
+console.log(baseUrl)
 // Vue.prototype.$baseUrl = 'http://testgate.zan-qian.com/';
 
 // Vue.prototype.$baseUrl = process.env.NODE_ENV === 'production' ? '/' : 'http://192.168.1.112:9002/';
@@ -81,7 +82,8 @@ import CommonUploadImage from './views/common/CommonUploadImage.vue'
 
 Vue.component('CommonUploadImage', CommonUploadImage);
 
-let VueInstance = new Vue({
+
+const VueInstance = new Vue({
   el: '#app',
   router,
   store,
@@ -89,4 +91,7 @@ let VueInstance = new Vue({
   template: '<App/>',
   components: {App}
 });
+
+
+export default VueInstance
 
