@@ -193,15 +193,16 @@
             <el-form-item label="优惠券链接" prop="coupons">
               <el-input v-model="formData.coupons"></el-input>
             </el-form-item>
+            <el-form-item label="购买链接" prop="buyUrl">
+              <el-input v-model="formData.buyUrl"></el-input>
+            </el-form-item>
             <el-form-item label="详情" prop="details" class="common-textareamedium-wrapper">
               <el-input type="textarea" v-model="formData.details"></el-input>
             </el-form-item>
             <el-form-item label="简介" prop="summary" class="common-textareamedium-wrapper">
               <el-input type="textarea" v-model="formData.summary"></el-input>
             </el-form-item>
-            <el-form-item label="购买链接" prop="buyUrl">
-              <el-input v-model="formData.buyUrl"></el-input>
-            </el-form-item>
+
             <el-form-item label="商品类型" prop="type">
               <el-select v-model="formData.type">
                 <el-option v-for="item in productTypeData" :label="item.title" :value="item.type"
