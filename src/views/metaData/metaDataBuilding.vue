@@ -1,5 +1,21 @@
 <template>
   <el-row class="app-container">
+    <!--<CommonQuery>-->
+      <!--<template slot="button1">-->
+        <!--<el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate" v-waves>-->
+          <!--新增-->
+        <!--</el-button>-->
+      <!--</template>-->
+      <!--<template slot="query1">-->
+        <!--<div class="common-search-wrapper" @keyup.enter="search">-->
+          <!--<input v-model="queryModel.name" type="text" placeholder="请输入元数据名称"/>-->
+          <!--<a>-->
+            <!--<span @click="search" class="el-icon-search"></span>-->
+          <!--</a>-->
+        <!--</div>-->
+      <!--</template>-->
+    <!--</CommonQuery>-->
+
     <div class="common-querytable-wrapper">
       <div class="queryform-wrapper">
         <div class="outside">
@@ -250,13 +266,13 @@
 </template>`
 
 <script>
-  import {getMetaDataBuildListRequest} from '@/api/metaData'
-  import {updateMetaDataBuildListRequest} from '@/api/metaData'
   import CommonTag from '@/views/common/CommonTag.vue'
+  import CommonQuery from '@/views/common/CommonQuery.vue'
 
   export default {
     components: {
-      CommonTag
+      CommonTag,
+      CommonQuery
     },
     data() {
       return {

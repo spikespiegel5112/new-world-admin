@@ -12,7 +12,7 @@ import axios from 'axios'
 // import locale from 'element-ui/lib/locale/lang/zh-CN' // lang i18n
 
 import '@/styles/index.scss' // global css
-import 'simditor/styles/simditor.scss';
+import './assets/simditor/styles/simditor.scss';
 
 import App from './App'
 import router from './router/router'

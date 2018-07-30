@@ -13,18 +13,18 @@
             </ul>
           </el-form>
           <ul class="operation-wrapper pull-right">
-            <li>
-              <div class="common-search-wrapper" @keyup.enter="onSearch">
-                <input v-model="searchTxt" type="text" placeholder="请输入名称"/>
-                <a>
-                  <span @click="search" class="el-icon-search"></span>
-                </a>
-              </div>
-            </li>
-            <li>
-              <el-button size="mini" class="expand" type="text" @click='expand'>高级搜索<i
-                class="el-icon-arrow-down"></i></el-button>
-            </li>
+            <!--<li>-->
+              <!--<div class="common-search-wrapper" @keyup.enter="onSearch">-->
+                <!--<input v-model="searchTxt" type="text" placeholder="请输入名称"/>-->
+                <!--<a>-->
+                  <!--<span @click="search" class="el-icon-search"></span>-->
+                <!--</a>-->
+              <!--</div>-->
+            <!--</li>-->
+            <!--<li>-->
+              <!--<el-button size="mini" class="expand" type="text" @click='expand'>高级搜索<i-->
+                <!--class="el-icon-arrow-down"></i></el-button>-->
+            <!--</li>-->
           </ul>
         </div>
         <div class="expandarea" :class="{active:expandQuery}">

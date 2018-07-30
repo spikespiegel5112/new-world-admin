@@ -153,8 +153,6 @@
 </template>
 
 <script>
-  import {getMetaDataBuildListRequest} from '@/api/metaData'
-  import {updateMetaDataBuildListRequest} from '@/api/metaData'
   import CommonTag from '@/views/common/CommonTag.vue'
 
   export default {

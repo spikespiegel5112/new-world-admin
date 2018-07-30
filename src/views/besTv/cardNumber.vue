@@ -72,23 +72,27 @@
           {{scope.$index+1}}
         </template>
       </el-table-column>
-      <el-table-column label="adminId" align="center" prop="adminId" width="200"></el-table-column>
-      <el-table-column label="代理商ID" align="center" prop="agentId" width="200"></el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createDate" width="150"></el-table-column>
-      <el-table-column label="数量" align="center" prop="num" width="150"></el-table-column>
-      <el-table-column label="备注" align="center" prop="note"></el-table-column>
-      <el-table-column label="是否可用" align="center" width="100" prop="isShow">
+      <el-table-column label="代理商ID" align="center" prop="agentId"></el-table-column>
+      <el-table-column label="产品类型" align="center" prop="productId">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.isShow" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                     inactive-color="#ff4949" disabled>
-          </el-switch>
+          {{productListData.filter(item=>item.productId===scope.row.productId).length>0?productListData.filter(item=>item.productId===scope.row.productId)[0].productDesc:''}}
+        </template>
+      </el-table-column>
+      <el-table-column label="数量" align="center" prop="num" width="150"></el-table-column>
+      <el-table-column label="创建人Id" align="center" prop="adminId" width="200"></el-table-column>
+      <el-table-column label="创建时间" align="center" prop="createDate" width="200"></el-table-column>
+      <el-table-column label="确认已发给代理商" align="center" prop="note" width="350">
+        <template slot-scope="scope">
+          <el-button :disabled="$store.state.user.login_id!==scope.row.adminId" size="mini" type="primary"
+                     @click="sendToAgent(scope)">发送
+          </el-button>
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作" width="350">
         <template slot-scope="scope">
-          <!--<el-button type="primary" size="mini" @click="handleUpdate(scope)" v-waves>编辑</el-button>-->
-          <el-button class="icon" type="primary" size="mini" @click="downloadExcel(scope)" v-waves>Excel 下载</el-button>
-          <!--<el-button size="mini" type="danger" @click="handleDelete(scope)" v-waves>删除</el-button>-->
+          <el-button :disabled="$store.state.user.login_id!==scope.row.adminId" class="icon" type="primary" size="mini"
+                     @click="downloadExcel(scope)" v-waves>Excel 下载
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -105,12 +109,12 @@
         <el-col :span="20">
           <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="150px">
             <!--<el-form-item label="设备类型" prop="deviceType">-->
-              <!--<el-select v-model="formData.deviceType" @change="getProductListData">-->
-                <!--<el-option v-for="item in $store.state.app.deviceTypeDictionary" :label="item.name"-->
-                           <!--:value="item.code" :key="item.code"></el-option>-->
-              <!--</el-select>-->
+            <!--<el-select v-model="formData.deviceType" @change="getProductListData">-->
+            <!--<el-option v-for="item in $store.state.app.deviceTypeDictionary" :label="item.name"-->
+            <!--:value="item.code" :key="item.code"></el-option>-->
+            <!--</el-select>-->
             <!--</el-form-item>-->
-            <el-form-item label="产品ID" prop="productId">
+            <el-form-item label="产品类型" prop="productId">
               <el-select v-model="formData.productId">
                 <el-option v-for="item in productListData" :label="item.productDesc" :value="item.productId"
                            :key="item.productId"></el-option>
@@ -257,8 +261,8 @@
         deviceType: '',
       };
     },
-    computed:{
-      tableHeight(){
+    computed: {
+      tableHeight() {
         return this.$store.state.app.tableHeight
       }
     },
@@ -494,6 +498,12 @@
       },
       downloadExcel(scope) {
         window.open(this.$baseUrl + this.downloadexcelRequest + `?filepath=${scope.row.downloadUrl}&access_token=${this.$store.state.user.token}`);
+      },
+      sendToAgent(scope) {
+        console.log(scope)
+        this.$confirm('请核实是否确实已给发送给代理商？此操作不可逆。', '提示', {
+          type: 'warning'
+        })
       }
     }
   }

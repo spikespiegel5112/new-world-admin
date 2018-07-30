@@ -109,7 +109,7 @@
       <!--{{scope.row.buyUrl}}-->
       <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column label="是否上架" width="60">
+      <el-table-column label="是否上架" width="90" align="center">
         <template slot-scope="scope">
           {{groundingStatusDictionary.filter(item=>item.code===scope.row.status)[0].name}}
         </template>

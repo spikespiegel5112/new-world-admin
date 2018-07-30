@@ -72,6 +72,7 @@
           {{scope.$index+1}}
         </template>
       </el-table-column>
+      <el-table-column label="代理商名称" align="center" prop="name" width="200"></el-table-column>
       <el-table-column label="代理商ID" align="center" prop="agentId" width="200"></el-table-column>
       <el-table-column label="创建时间" align="center" prop="createDate" width="150"></el-table-column>
       <el-table-column label="备注" align="center">
