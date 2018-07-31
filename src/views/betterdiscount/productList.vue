@@ -158,7 +158,7 @@
                 </div>
                 <div v-else v-for="(item, index) in formData.detailImage" class="image-item">
                   <span v-if="defaultImageIndex===index" class="check el-icon-circle-check"></span>
-                  <img :src="item+'-style_100x100'" class="avatar">
+                  <img :src="item+'-style_100x100'" class="avatar" />
                   <ul class="operator">
                     <li @click="setDefault(index)">
                       <a>设为默认</a>

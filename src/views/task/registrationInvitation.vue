@@ -148,7 +148,7 @@
                 <!--<div v-if="formData.iconPath===''||formData.iconPath===null">-->
                   <!--暂无图片-->
                 <!--</div>-->
-                <!--<img v-else :src="formData.iconPath+'-style_100x100'" class="avatar">-->
+                <!--<img v-else :src="formData.iconPath+'-style_100x100'" class="avatar" />-->
               <!--</div>-->
               <!-- ref="uploadAvatar"-->
                          <!--:action="$prodBaseUrl+'image-upload-service/1.0.0/file/upload'" :limit="1"-->

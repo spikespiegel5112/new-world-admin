@@ -6,9 +6,9 @@
     <!--</a>-->
     <!--<img v-if="fileList===''||fileList===[]||fileList===null"-->
     <!--src="../image/default/defaultavatar_60_60.png"-->
-    <!--class="avatar">-->
+    <!--class="avatar" />-->
     <!--<img v-else v-for="item in fileList" :src="item.url"-->
-    <!--class="avatar">-->
+    <!--class="avatar" />-->
     <!--</div>-->
     <el-upload
       ref="uploadAvatar"

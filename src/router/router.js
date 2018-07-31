@@ -163,6 +163,24 @@ export const constantRouterMap = [{
     meta: {title: '自助生成卡号', icon: 'table'}
   }]
 }, {
+  path: '/game',
+  component: Layout,
+  name: 'game',
+  meta: {
+    title: '游戏',
+    icon: 'table'
+  },
+  children: [{
+    path: 'game',
+    name: 'game',
+    component: () => import('@/views/game/game'),
+    meta: {title: '游戏', icon: 'table'}
+  }]
+
+
+
+
+}, {
   path: '*',
   redirect: '/404',
   hidden: true

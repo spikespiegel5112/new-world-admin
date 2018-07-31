@@ -116,7 +116,7 @@
                   暂无图片
                 </div>
                 <div v-else v-for="(item, index) in [formData.imageUrl]" class="image-item">
-                  <img :src="item+'-style_100x100'" class="avatar">
+                  <img :src="item+'-style_100x100'" class="avatar" />
                   <ul class="operator">
                     <li>
                       <a class="el-icon-delete" @click="deleteImage(index)"></a>
@@ -131,9 +131,9 @@
                 <!--</a>-->
                 <!--<img v-if="formData.imageUrl===''||formData.imageUrl===undefined||formData.imageUrl===null"-->
                      <!--src="../../../static/img/default/defaultavatar_60_60.png"-->
-                     <!--class="avatar">-->
+                     <!--class="avatar" />-->
                 <!--<img v-else :src="formData.imageUrl+'-style_100x100'"-->
-                     <!--class="avatar">-->
+                     <!--class="avatar" />-->
               </div>
               <el-upload
                 class="common-imguploadpreview-wrapper"
