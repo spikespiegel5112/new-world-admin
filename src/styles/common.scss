@@ -1,11 +1,11 @@
-.el-card{
+.el-card {
   margin: 10px;
-  .el-card__body{
+  .el-card__body {
     padding: 5px;
   }
 }
 
-.common-main-container{
+.common-main-container {
   background-color: #f0f2f5;
 }
 
@@ -463,5 +463,14 @@
   .el-dialog__title {
     font-weight: 600;
   }
+}
+
+.common-environmenthint-item {
+  display: inline-block;
+  color: red;
+  //line-height: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  vertical-align: middle;
 }
 

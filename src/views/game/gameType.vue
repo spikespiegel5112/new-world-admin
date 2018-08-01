@@ -22,26 +22,6 @@
               :height="tableHeight">
       <el-table-column label="No" type="index" width="50" align="center" fixed></el-table-column>
       <el-table-column label="名称" align="center" prop="name"></el-table-column>
-      <el-table-column label="Icon" align="center" width="150">
-        <template slot-scope="scope">
-          <img :src="$checkOSS(scope.row.iconUrl)" width="80">
-        </template>
-      </el-table-column>
-      <el-table-column label="大图" align="center" width="150">
-        <template slot-scope="scope">
-          <img :src="$checkOSS(scope.row.bigImageUrl)" width="80">
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="标题" prop="title" width="200"></el-table-column>
-      <el-table-column align="center" label="描述" prop="description" width="500"></el-table-column>
-      <el-table-column align="center" label="游戏种类">
-        <template slot-scope="scope">
-          <el-tag>
-            {{(scope.row.nature!==''&&scope.row.nature!==null)?natureDictionary.filter(item=>item.code===scope.row.nature)[0].name:''}}
-          </el-tag>
-        </template>
-      </el-table-column>
       <el-table-column align="center" label="游戏状态" prop="status">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status===0?'info':'success'">
@@ -52,7 +32,7 @@
       <el-table-column align="center" label="操作" width="200px">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
+          <!--<el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -77,107 +57,8 @@
             <el-form-item label="名称" prop="name">
               <el-input v-model="formData.name"></el-input>
             </el-form-item>
-            <el-form-item label="标题" prop="title">
-              <el-input v-model="formData.title"></el-input>
-            </el-form-item>
-            <el-form-item label="描述" prop="description">
-              <el-input type="textarea" v-model="formData.description"></el-input>
-            </el-form-item>
-            <el-form-item label="Icon" prop="iconUrl">
-              <div class="common-imguploadpreview-wrapper">
-                <a v-if="formData.iconUrl!==''" class="close">
-                  <span class="iconfont icon-crosswide"></span>
-                </a>
-                <div v-if="formData.iconUrl===''||formData.iconUrl===null">
-                  暂无图片
-                </div>
-                <div v-else v-for="(item, index) in [formData.iconUrl]" class="image-item">
-                  <img :src="$checkOSS(item, '-style_100x100')" class="avatar"/>
-                  <ul class="operator">
-                    <li>
-                      <a class="el-icon-delete" @click="deleteImage(index)"></a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <el-upload
-                class="common-imguploadpreview-wrapper"
-                ref="uploadAvatar"
-                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
-                :limit="1"
-                :show-file-list="true"
-                :before-upload="handleBeforeUpload"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :on-success="uploadSuccess1"
-                :on-exceed="uploadAvatarExceeded"
-                :file-list="fileList"
-                :data="portraitParams">
-                <el-button v-waves size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10MB</div>
-              </el-upload>
-            </el-form-item>
-            <el-form-item label="游戏大图" prop="bigImageUrl">
-              <div class="common-imguploadpreview-wrapper">
-                <a v-if="formData.icon!==''" class="close">
-                  <span class="iconfont icon-crosswide"></span>
-                </a>
-                <div v-if="formData.bigImageUrl===''||formData.bigImageUrl===null">
-                  暂无图片
-                </div>
-                <div v-else v-for="(item, index) in [formData.bigImageUrl]" class="image-item">
-                  <img :src="$checkOSS(item, '-style_100x100')" class="avatar"/>
-                  <ul class="operator">
-                    <li>
-                      <a class="el-icon-delete" @click="deleteImage(index)"></a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <el-upload
-                class="common-imguploadpreview-wrapper"
-                ref="uploadAvatar"
-                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
-                :limit="1"
-                :show-file-list="false"
-                :before-upload="handleBeforeUpload"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :on-success="uploadSuccess2"
-                :on-exceed="uploadAvatarExceeded"
-                :file-list="fileList"
-                :data="portraitParams">
-                <el-button v-waves size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10MB</div>
-              </el-upload>
-            </el-form-item>
 
-            <el-form-item label="iosDownloadUrl" prop="iosDownloadUrl">
-              <el-input v-model="formData.iosDownloadUrl"></el-input>
-            </el-form-item>
-            <el-form-item label="androidDownloadUrl" prop="androidDownloadUrl">
-              <el-input v-model="formData.androidDownloadUrl"></el-input>
-            </el-form-item>
-            <el-form-item label="webGameUrl" prop="webGameUrl">
-              <el-input v-model="formData.webGameUrl"></el-input>
-            </el-form-item>
 
-            <el-form-item label="nature" prop="nature">
-              <el-select v-model="formData.nature">
-                <el-option v-for="item in natureDictionary" :label="item.name" :value="item.code"
-                           :key="item.code"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="ios" prop="ios">
-              <el-switch v-model="formData.ios" :active-value="true" :inactive-value="false" active-color="#13ce66"
-                         inactive-color="#ff4949">
-              </el-switch>
-            </el-form-item>
-            <el-form-item label="android" prop="android">
-              <el-switch v-model="formData.android" :active-value="true" :inactive-value="false" active-color="#13ce66"
-                         inactive-color="#ff4949">
-              </el-switch>
-            </el-form-item>
             <el-form-item label="status" prop="status">
               <el-select v-model="formData.status">
                 <el-option v-for="item in statusDictionary" :label="item.name" :value="item.code"
@@ -207,9 +88,9 @@
     },
     data() {
       return {
-        game_infoListRequest: 'game-service/1.0.0/game_info/list',
-        game_infoAddOrUpdateRequest: 'game-service/1.0.0/game_info/addOrUpdate',
-        game_infoDeleteRequest: 'game-service/1.0.0/game_info/delete',
+        game_infoListRequest: 'game-service/1.0.0/game_type/list',
+        game_infoAddOrUpdateRequest: 'game-service/1.0.0/game_type/addOrUpdate',
+        game_infoDeleteRequest: 'game-service/1.0.0/game_type/delete',
 
         value2: '',
         value1: '',

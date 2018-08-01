@@ -2,12 +2,18 @@
   <div class="login-container">
     <el-form class="login-form" autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm"
             label-position="right">
-      <h3 class="title">趣谷</h3>
+      <h3 class="title">
+        趣谷
+        <div class="common-environmenthint-item" v-if="$prodEnv">
+          测试环境
+        </div>
+      </h3>
+
       <el-form-item prop="username">
         <span class="svg-container svg-container_login">
           <svg-icon icon-class="user"/>
         </span>
-        <el-input name="username" type="text" v-model="loginForm.username" autoComplete="on" placeholder="username"/>
+        <el-input name="username" type="text" v-model="loginForm.username" autoComplete="on" placeholder="username"></el-input>
       </el-form-item>
       <el-form-item prop="password">
         <span class="svg-container">

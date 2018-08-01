@@ -4,6 +4,9 @@
     <breadcrumb></breadcrumb>
 
     <div class="right-menu">
+      <div class="common-environmenthint-item" v-if="$prodEnv">
+        测试环境
+      </div>
       <!-- <error-log class="errLog-container right-menu-item"></error-log> -->
 
       <!-- <el-tooltip effect="dark" :content="$t('navbar.screenfull')" placement="bottom">
@@ -28,7 +31,7 @@
             </el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
-            <span @click="logout" style="display:block;">LogOut</span>
+            <span @click="logout">LogOut</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>

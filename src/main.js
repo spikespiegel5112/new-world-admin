@@ -72,6 +72,7 @@ Vue.prototype.$moment = moment;
 Vue.prototype.$moment.locale('zh-cn');
 
 Vue.prototype.$prodBaseUrl = 'http://gateway.zan-qian.com/';
+Vue.prototype.$prodEnv=process.env.NODE_ENV !== 'production';
 Vue.prototype.$baseUrl = baseUrl;
 console.log(baseUrl)
 // Vue.prototype.$baseUrl = 'http://testgate.zan-qian.com/';
