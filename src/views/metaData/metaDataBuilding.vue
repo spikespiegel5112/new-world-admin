@@ -567,7 +567,7 @@
       },
       uploadAvatarExceeded(files, fileList) {
         if (fileList.length > 0) {
-          this.$confirm('当前申报已有上传图片，需先删除已有头像，请确认是否删除？', '提示', {
+          this.$confirm('当前已有上传图片，需先删除已有图片，请确认是否删除？', '提示', {
             type: 'warning'
           }).then(resolve => {
             this.$refs['uploadAvatar'].clearFiles();

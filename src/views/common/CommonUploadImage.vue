@@ -1,19 +1,26 @@
 <template>
   <div class="common-imguploadpreview-wrapper">
-    <!--<div class="common-imguploadpreview-wrapper">-->
-    <!--<a v-if="fileList.length!==0" class="close">-->
-    <!--<span class="iconfont icon-crosswide"></span>-->
-    <!--</a>-->
-    <!--<img v-if="fileList===''||fileList===[]||fileList===null"-->
-    <!--src="../image/default/defaultavatar_60_60.png"-->
-    <!--class="avatar" />-->
-    <!--<img v-else v-for="item in fileList" :src="item.url"-->
-    <!--class="avatar" />-->
-    <!--</div>-->
+
+    <div class="common-imguploadpreview-wrapper" v-for="item in innerFileList">
+      <a v-if="innerFileList.length!==0" class="close">
+        <span class="iconfont icon-crosswide"></span>
+      </a>
+      <div v-if="innerFileList.length===0">
+        暂无图片
+      </div>
+      <div v-else v-for="(item, index) in innerFileList" class="image-item">
+        <img :src="$checkOSS(item.url, '-style_100x100')" class="avatar"/>
+        <ul class="operator">
+          <li>
+            <a class="el-icon-delete" @click="deleteImage(index)"></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
     <el-upload
       ref="uploadAvatar"
       :action="action"
-      :list-type="listType"
       :limit='limit'
       :show-file-list='showFileList'
       :before-upload="handleBeforeUpload"
@@ -23,9 +30,9 @@
       :on-success="uploadSuccess"
       :on-exceed="uploadAvatarExceeded"
       :file-list="fileListInner"
-      :data="data">
+      :data="params">
 
-      <i class="el-icon-plus"></i>
+      <el-button v-waves size="small" type="primary">点击上传</el-button>
       <div slot="tip" class="el-upload__tip">
         只能上传jpg/png文件，且不超过10MB
       </div>
@@ -38,11 +45,14 @@
   export default {
     name: "CommonUploadImage",
     props: {
-      data:{
-        type:Object,
+      params: {
+        type: Object,
         required: false,
         default: function () {
-          return {}
+          return {
+            bucketName: 'funyvalley',
+            folderName: 'icon'
+          }
         }
       },
       action: {
@@ -53,27 +63,42 @@
       listType: {
         type: String,
         required: false,
-        default: 'picture-card'
+        default: 'text'
       },
       limit: {
         type: Number,
         required: false,
         default: 1
       },
-      showFileList: {
-        type: Boolean,
-        required: false,
-        default: true
-      },
-      fileList: {
-        type: Array,
-        required: false,
-        default: []
-      },
+      // showFileList: {
+      //   type: Boolean,
+      //   required: false,
+      //   default: false
+      // },
+      // fileList: {
+      //   type: Array,
+      //   required: false,
+      //   default: []
+      // },
+      // pushFile: {
+      //   type: Array,
+      //   required: false,
+      //   default: []
+      // },
       imageUrlSubfix: {
         type: String,
         required: false,
         default: '-style_100x100'
+      },
+      previewUrl: {
+        type: String,
+        required: false,
+        default: ''
+      },
+      newFile: {
+        type: String,
+        required: false,
+        default: ''
       }
     },
     data() {
@@ -82,7 +107,9 @@
           bucketName: 'funyvalley',
           folderName: 'icon'
         },
-        // fileList: []
+        fileList: [],
+        innerFileList: [],
+        showFileList: false
       }
     },
     computed: {
@@ -112,6 +139,22 @@
         // console.log(this.fileListInner)
         // debugger
 
+      },
+      newFile(value) {
+        console.log(value)
+        let valueArr = [];
+        if (typeof value ==='string') {
+          valueArr.push(value)
+        }
+        console.log(valueArr)
+        valueArr.forEach((item, index) => {
+          this.$set(this.innerFileList, index, {
+            name: this.innerFileList.length,
+            url: item
+          })
+        });
+        this.$emit('return-file-list', this.innerFileList);
+        console.log(this.innerFileList)
       }
     },
     mounted() {
@@ -138,7 +181,8 @@
           });
           return false;
         }
-        this.loading = true;
+        // this.loading = true;
+        this.showFileList = true;
         this.$emit('before-upload', '');
 
       },
@@ -152,16 +196,22 @@
         this.$emit('on-remove', '');
       },
       uploadSuccess(response) {
-        this.$emit('uploadSuccess', response);
+        this.showFileList = false;
+        // this.$emit('upload-success', response);
+        this.$emit('push-file', response);
       },
       uploadAvatarExceeded(files, fileList) {
         this.$emit('on-exceed', '');
 
 
       },
-      onChange(file, fileList){
+      onChange(file, fileList) {
         console.log(fileList)
-      }
+      },
+      deleteImage(index) {
+        this.fileList.splice(index, 1);
+        this.$emit('on-delete', '');
+      },
 
     }
 

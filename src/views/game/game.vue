@@ -95,7 +95,7 @@
                   <img :src="$checkOSS(item, '-style_100x100')" class="avatar"/>
                   <ul class="operator">
                     <li>
-                      <a class="el-icon-delete" @click="deleteImage(index)"></a>
+                      <a class="el-icon-delete" @click="deleteImage1(index)"></a>
                     </li>
                   </ul>
                 </div>
@@ -105,7 +105,7 @@
                 ref="uploadAvatar"
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 :limit="1"
-                :show-file-list="true"
+                :show-file-list="showFileListFlag"
                 :before-upload="handleBeforeUpload"
                 :on-preview="handlePreview"
                 :on-remove="handleRemove"
@@ -129,7 +129,7 @@
                   <img :src="$checkOSS(item, '-style_100x100')" class="avatar"/>
                   <ul class="operator">
                     <li>
-                      <a class="el-icon-delete" @click="deleteImage(index)"></a>
+                      <a class="el-icon-delete" @click="deleteImage2(index)"></a>
                     </li>
                   </ul>
                 </div>
@@ -139,7 +139,7 @@
                 ref="uploadAvatar"
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 :limit="1"
-                :show-file-list="false"
+                :show-file-list="showFileListFlag"
                 :before-upload="handleBeforeUpload"
                 :on-preview="handlePreview"
                 :on-remove="handleRemove"
@@ -151,7 +151,16 @@
                 <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10MB</div>
               </el-upload>
             </el-form-item>
+            <el-form-item label="游戏大图2" prop="bigImageUrl">
+              <CommonUploadImage
+                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
+                :previewUrl="formData.iconUrl"
+                @push-file="uploadSuccess1"
+                :new-file="newFile"
+                @return-file-list="getFileList1"
+              />
 
+            </el-form-item>
             <el-form-item label="iosDownloadUrl" prop="iosDownloadUrl">
               <el-input v-model="formData.iosDownloadUrl"></el-input>
             </el-form-item>
@@ -199,11 +208,13 @@
 <script>
   import CommonTag from '@/views/common/CommonTag.vue'
   import CommonQuery from '@/views/common/CommonQuery.vue'
+  import CommonUploadImage from '@/views/common/CommonUploadImage.vue'
 
   export default {
     components: {
       CommonTag,
-      CommonQuery
+      CommonQuery,
+      CommonUploadImage
     },
     data() {
       return {
@@ -313,7 +324,8 @@
         androidVersionListData: [],
         searchTxt: '',
         expandQuery: '',
-
+        showFileListFlag: false,
+        newFile: ''
       }
     },
     computed: {
@@ -439,7 +451,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http.delete(this.$baseUrl + this.game_infoDeleteRequest+`/${scope.row.id}`).then((response) => {
+          this.$http.delete(this.$baseUrl + this.game_infoDeleteRequest + `/${scope.row.id}`).then((response) => {
             console.log(response)
             this.dialogFormVisible = false;
             this.$message.success('删除成功');
@@ -463,20 +475,26 @@
         this.fileList.push(file);
       },
       uploadSuccess1(response) {
-        this.loading = false;
         console.log(response)
-        this.formData.iconUrl = response.url;
-        this.loading = false;
-        this.$message({
-          message: '图片上传成功',
-          type: 'success'
-        });
+
+        // this.loading = false;
+        // this.formData.iconUrl = response.url;
+        // this.showFileListFlag = false;
+        // this.$message({
+        //   message: '图片上传成功',
+        //   type: 'success'
+        // });
+
+        this.newFile = response.url;
+      },
+      getFileList1(value){
+        console.log(value)
       },
       uploadSuccess2(response) {
         this.loading = false;
         console.log(response)
         this.formData.bigImageUrl = response.url;
-        this.loading = false;
+        this.showFileListFlag = false;
         this.$message({
           message: '图片上传成功',
           type: 'success'
@@ -484,24 +502,11 @@
       },
       uploadAvatarExceeded(files, fileList) {
         if (fileList.length > 0) {
-          this.$confirm('当前申报已有上传图片，需先删除已有头像，请确认是否删除？', '提示', {
+          this.$confirm('当前已有上传图片，需先删除已有图片，请确认是否删除？', '提示', {
             type: 'warning'
           }).then(resolve => {
             this.$refs['uploadAvatar'].clearFiles();
-            this.$http.get(this.$baseUrl + 'attachment/deleteAttachment/' + this.fileList[0].id).then(response => {
-              if (response.data.code === '200') {
-                this.fileList.splice(this.fileList.indexOf(response.id), 1);
-                this.componentModelData.uploaded = '';
-                this.$message.success('图片删除成功')
-              } else {
-                this.fileList.splice(this.fileList.indexOf(response.id), 1);
-                this.componentModelData.uploaded = '';
-                this.$message.warning('图片删除失败')
-              }
-            }).catch(error => {
-              console.log(error)
-              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
-            })
+            this.fileList.splice(fileList.length - 1, 1)
           })
         }
       },
@@ -510,6 +515,7 @@
       },
       handleBeforeUpload(file) {
         console.log(file)
+        this.showFileListFlag = true;
         let suffixDictionary = ['jpg', 'jpeg', 'png'];
         let index1 = file.name.lastIndexOf('.') + 1;
         let index2 = file.name.length;
@@ -553,8 +559,12 @@
       reset() {
         this.queryModel.available = true;
       },
-      deleteImage(index) {
-        this.formData.icon = '';
+      deleteImage1(index) {
+        this.formData.iconUrl = '';
+        this.fileList.splice(index, 1);
+      },
+      deleteImage2(index) {
+        this.formData.bigImageUrl = '';
         this.fileList.splice(index, 1);
       }
     }
