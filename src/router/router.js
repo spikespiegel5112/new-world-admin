@@ -179,7 +179,7 @@ export const constantRouterMap = [{
     path: 'type',
     name: 'gameType',
     component: () => import('@/views/game/gameType'),
-    meta: {title: '游戏类型', icon: 'table'}
+    meta: {title: '游戏版块', icon: 'table'}
   }]
 
 

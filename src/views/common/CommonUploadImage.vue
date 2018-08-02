@@ -1,7 +1,6 @@
 <template>
-  <div class="common-imguploadpreview-wrapper">
-
-    <div class="common-imguploadpreview-wrapper" v-for="item in innerFileList">
+  <div class="">
+    <div class="common-imguploadpreview-wrapper">
       <a v-if="innerFileList.length!==0" class="close">
         <span class="iconfont icon-crosswide"></span>
       </a>
@@ -29,7 +28,7 @@
       :on-remove="handleRemove"
       :on-success="uploadSuccess"
       :on-exceed="uploadAvatarExceeded"
-      :file-list="fileListInner"
+      :file-list="innerFileList"
       :data="params">
 
       <el-button v-waves size="small" type="primary">点击上传</el-button>
@@ -70,21 +69,6 @@
         required: false,
         default: 1
       },
-      // showFileList: {
-      //   type: Boolean,
-      //   required: false,
-      //   default: false
-      // },
-      // fileList: {
-      //   type: Array,
-      //   required: false,
-      //   default: []
-      // },
-      // pushFile: {
-      //   type: Array,
-      //   required: false,
-      //   default: []
-      // },
       imageUrlSubfix: {
         type: String,
         required: false,
@@ -96,6 +80,16 @@
         default: ''
       },
       newFile: {
+        type: String,
+        required: false,
+        default: ''
+      },
+      multiple: {
+        type: Boolean,
+        required: false,
+        default: false
+      },
+      returnUrlList:{
         type: String,
         required: false,
         default: ''
@@ -130,22 +124,28 @@
     watch: {
       fileList(value) {
 
-        // this.fileListInner=value.map((item, index) => {
-        //   return {
-        //     name: index,
-        //     url: item + this.imageUrlSubfix
-        //   }
-        // });
-        // console.log(this.fileListInner)
-        // debugger
-
       },
       newFile(value) {
+      },
+      returnUrlList (value) {
+        console.log(value)
+        this.updateFile(value)
+
+      }
+    },
+
+    mounted() {
+      this.updateFile(this.returnUrlList)
+
+    },
+    methods: {
+      updateFile(value) {
         console.log(value)
         let valueArr = [];
-        if (typeof value ==='string') {
+        if (typeof value === 'string' && value !== '') {
           valueArr.push(value)
         }
+        this.innerFileList = [];
         console.log(valueArr)
         valueArr.forEach((item, index) => {
           this.$set(this.innerFileList, index, {
@@ -153,14 +153,29 @@
             url: item
           })
         });
-        this.$emit('return-file-list', this.innerFileList);
+        this.$emit('update:return-file-list', this.innerFileList);
+        this.updateUrlList();
         console.log(this.innerFileList)
-      }
-    },
-    mounted() {
+      },
+      updateUrlList() {
+        if (this.multiple) {
+          this.$emit('update:returnUrlList', this.innerFileList.map(item => {
+            return item.url;
+          }))
+        } else {
+          if (this.innerFileList.length === 0) {
+            this.$emit('update:returnUrlList', '')
+          } else {
+            this.$emit('update:returnUrlList', this.innerFileList.map(item => {
+              return item.url;
+            })[0])
+          }
 
-    },
-    methods: {
+        }
+        console.log(this.innerFileList.map(item => {
+          return item.url;
+        })[0])
+      },
       handleBeforeUpload(file) {
         console.log(file)
         let suffixDictionary = ['jpg', 'jpeg', 'png'];
@@ -181,7 +196,6 @@
           });
           return false;
         }
-        // this.loading = true;
         this.showFileList = true;
         this.$emit('before-upload', '');
 
@@ -197,20 +211,24 @@
       },
       uploadSuccess(response) {
         this.showFileList = false;
-        // this.$emit('upload-success', response);
-        this.$emit('push-file', response);
+        this.$emit('on-success', response);
       },
       uploadAvatarExceeded(files, fileList) {
         this.$emit('on-exceed', '');
-
-
+        this.$message({
+          message: `当前上传模块最多接受${this.limit}个文件，请删除已上传文件重新上传`,
+          type: 'error'
+        });
       },
       onChange(file, fileList) {
         console.log(fileList)
       },
       deleteImage(index) {
-        this.fileList.splice(index, 1);
-        this.$emit('on-delete', '');
+        this.innerFileList.splice(index, 1);
+        console.log(this.innerFileList)
+        console.log(this.innerFileList.length)
+        this.updateUrlList();
+        this.$emit('update:return-file-list', this.innerFileList);
       },
 
     }

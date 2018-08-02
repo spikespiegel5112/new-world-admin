@@ -83,83 +83,22 @@
             <el-form-item label="描述" prop="description">
               <el-input type="textarea" v-model="formData.description"></el-input>
             </el-form-item>
+
             <el-form-item label="Icon" prop="iconUrl">
-              <div class="common-imguploadpreview-wrapper">
-                <a v-if="formData.iconUrl!==''" class="close">
-                  <span class="iconfont icon-crosswide"></span>
-                </a>
-                <div v-if="formData.iconUrl===''||formData.iconUrl===null">
-                  暂无图片
-                </div>
-                <div v-else v-for="(item, index) in [formData.iconUrl]" class="image-item">
-                  <img :src="$checkOSS(item, '-style_100x100')" class="avatar"/>
-                  <ul class="operator">
-                    <li>
-                      <a class="el-icon-delete" @click="deleteImage1(index)"></a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <el-upload
-                class="common-imguploadpreview-wrapper"
-                ref="uploadAvatar"
+              <CommonUploadImage
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
-                :limit="1"
-                :show-file-list="showFileListFlag"
-                :before-upload="handleBeforeUpload"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :on-success="uploadSuccess1"
-                :on-exceed="uploadAvatarExceeded"
-                :file-list="fileList"
-                :data="portraitParams">
-                <el-button v-waves size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10MB</div>
-              </el-upload>
-            </el-form-item>
-            <el-form-item label="游戏大图" prop="bigImageUrl">
-              <div class="common-imguploadpreview-wrapper">
-                <a v-if="formData.icon!==''" class="close">
-                  <span class="iconfont icon-crosswide"></span>
-                </a>
-                <div v-if="formData.bigImageUrl===''||formData.bigImageUrl===null">
-                  暂无图片
-                </div>
-                <div v-else v-for="(item, index) in [formData.bigImageUrl]" class="image-item">
-                  <img :src="$checkOSS(item, '-style_100x100')" class="avatar"/>
-                  <ul class="operator">
-                    <li>
-                      <a class="el-icon-delete" @click="deleteImage2(index)"></a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <el-upload
-                class="common-imguploadpreview-wrapper"
-                ref="uploadAvatar"
-                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
-                :limit="1"
-                :show-file-list="showFileListFlag"
-                :before-upload="handleBeforeUpload"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :on-success="uploadSuccess2"
-                :on-exceed="uploadAvatarExceeded"
-                :file-list="fileList"
-                :data="portraitParams">
-                <el-button v-waves size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10MB</div>
-              </el-upload>
+                @on-success="uploadSuccess1"
+                :returnUrlList.sync="formData.iconUrl"
+              />
+              <el-input v-show="false" v-model="formData.iconUrl"></el-input>
             </el-form-item>
             <el-form-item label="游戏大图2" prop="bigImageUrl">
               <CommonUploadImage
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
-                :previewUrl="formData.iconUrl"
-                @push-file="uploadSuccess1"
-                :new-file="newFile"
-                @return-file-list="getFileList1"
+                @on-success="uploadSuccess2"
+                :returnUrlList.sync="formData.bigImageUrl"
               />
-
+              <el-input v-show="false" v-model="formData.bigImageUrl"></el-input>
             </el-form-item>
             <el-form-item label="iosDownloadUrl" prop="iosDownloadUrl">
               <el-input v-model="formData.iosDownloadUrl"></el-input>
@@ -208,13 +147,11 @@
 <script>
   import CommonTag from '@/views/common/CommonTag.vue'
   import CommonQuery from '@/views/common/CommonQuery.vue'
-  import CommonUploadImage from '@/views/common/CommonUploadImage.vue'
 
   export default {
     components: {
       CommonTag,
       CommonQuery,
-      CommonUploadImage
     },
     data() {
       return {
@@ -341,6 +278,9 @@
         }
         this.formData.startDate = value[0];
         this.formData.endDate = value[1];
+      },
+      'formData.bigImageUrl': function (value) {
+        console.warn(value)
       }
     },
     mounted() {
@@ -476,29 +416,10 @@
       },
       uploadSuccess1(response) {
         console.log(response)
-
-        // this.loading = false;
-        // this.formData.iconUrl = response.url;
-        // this.showFileListFlag = false;
-        // this.$message({
-        //   message: '图片上传成功',
-        //   type: 'success'
-        // });
-
-        this.newFile = response.url;
-      },
-      getFileList1(value){
-        console.log(value)
+        this.formData.iconUrl = response.url;
       },
       uploadSuccess2(response) {
-        this.loading = false;
-        console.log(response)
         this.formData.bigImageUrl = response.url;
-        this.showFileListFlag = false;
-        this.$message({
-          message: '图片上传成功',
-          type: 'success'
-        });
       },
       uploadAvatarExceeded(files, fileList) {
         if (fileList.length > 0) {
