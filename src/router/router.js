@@ -39,7 +39,7 @@ export const constantRouterMap = [{
   path: '/task',
   component: Layout,
   redirect: '/task/tryplay',
-  name: '任务墙',
+  name: 'task',
   meta: {
     title: '任务墙', icon: 'table'
   },
@@ -127,7 +127,7 @@ export const constantRouterMap = [{
 }, {
   path: '/betterDiscount',
   component: Layout,
-  name: '好折扣',
+  name: 'betterDiscount',
   meta: {title: '好折扣', icon: 'table'},
   redirect: {
     name: 'metaDataBuilding',
@@ -171,20 +171,21 @@ export const constantRouterMap = [{
     icon: 'table'
   },
   children: [{
-    path: 'game',
-    name: 'game',
-    component: () => import('@/views/game/game'),
+    path: 'list',
+    name: 'gameList',
+    component: () => import('@/views/game/gameList'),
     meta: {title: '游戏列表', icon: 'table'}
-  },{
+  }, {
+    path: 'sort',
+    name: 'gameSort',
+    component: () => import('@/views/game/gameSort'),
+    meta: {title: '游戏排序', icon: 'table'}
+  }, {
     path: 'type',
     name: 'gameType',
     component: () => import('@/views/game/gameType'),
     meta: {title: '游戏版块', icon: 'table'}
   }]
-
-
-
-
 }, {
   path: '*',
   redirect: '/404',

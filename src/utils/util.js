@@ -5,10 +5,12 @@ let util = {};
 util.install = function (Vue) {
 
   Vue.prototype.$checkOSS = (url, subFix) => {
-    if(subFix===undefined){
-      subFix='-style_100x100';
+    if (url !== null) {
+      if (subFix === undefined && subFix !== null) {
+        subFix = '-style_100x100';
+      }
+      return url.indexOf('resource') > 0 ? url + subFix : url;
     }
-    return url.indexOf('resource') > 0 ? url + subFix : url;
   }
 
 

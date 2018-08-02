@@ -136,14 +136,14 @@
 
     mounted() {
       this.updateFile(this.returnUrlList)
-
     },
     methods: {
       updateFile(value) {
         console.log(value)
         let valueArr = [];
-        if (typeof value === 'string' && value !== '') {
+        if (typeof value === 'string' && value !== ''&& value !== null) {
           valueArr.push(value)
+          // debugger
         }
         this.innerFileList = [];
         console.log(valueArr)

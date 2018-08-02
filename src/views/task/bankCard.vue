@@ -91,13 +91,6 @@
           {{scope.row.completedNum}}
         </template>
       </el-table-column>
-      <!--<el-table-column align="center" prop="submitPath" label="注册链接">-->
-        <!--<template slot-scope="scope">-->
-          <!--<div style="text-align: left">-->
-            <!--{{scope.row.submitPath}}-->
-          <!--</div>-->
-        <!--</template>-->
-      <!--</el-table-column>-->
       <el-table-column align="center" label="开始/结束时间">
         <template slot-scope="scope">
           {{scope.row.startDate}}
@@ -145,30 +138,16 @@
             <el-form-item label="任务名称" prop="name">
               <el-input v-model="formData.name"></el-input>
             </el-form-item>
+
             <el-form-item label="任务图片" prop="iconPath">
-              <div class="common-imguploadpreview-wrapper">
-                <div v-if="formData.iconPath===''||formData.iconPath===null">
-                  暂无图片
-                </div>
-                <div v-else v-for="(item, index) in [formData.iconPath]" class="image-item">
-                  <img :src="item+'-style_100x100'" class="avatar" />
-                  <ul class="operator">
-                    <li>
-                      <a class="el-icon-delete" @click="deleteImage(index)"></a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <el-upload ref="uploadAvatar"
-                         :action="$prodBaseUrl+'image-upload-service/1.0.0/file/upload'" :limit="1"
-                         :show-file-list="false"
-                         :before-upload="handleBeforeUpload" :on-preview="handlePreview" :on-remove="handleRemove"
-                         :on-success="uploadSuccess" :on-exceed="uploadAvatarExceeded" :file-list="fileList"
-                         :data="portraitParams">
-                <el-button v-waves size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10MB</div>
-              </el-upload>
+              <CommonUploadImage
+                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
+                @on-success="uploadSuccess"
+                :returnUrlList.sync="formData.iconPath"
+              />
+              <el-input v-show="false" v-model="formData.iconPath"></el-input>
             </el-form-item>
+
             <el-form-item label="赏金" prop="bounty">
               <el-input v-model.number="formData.bounty"></el-input>
             </el-form-item>

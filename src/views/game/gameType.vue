@@ -88,9 +88,9 @@
     },
     data() {
       return {
-        game_infoListRequest: 'game-service/1.0.0/game_type/list',
-        game_infoAddOrUpdateRequest: 'game-service/1.0.0/game_type/addOrUpdate',
-        game_infoDeleteRequest: 'game-service/1.0.0/game_type/delete',
+        game_typeListRequest: 'game-service/1.0.0/game_type/list',
+        game_typeAddOrUpdateRequest: 'game-service/1.0.0/game_type/addOrUpdate',
+        game_typeDeleteRequest: 'game-service/1.0.0/game_type/delete',
 
         value2: '',
         value1: '',
@@ -219,7 +219,7 @@
       getTableData() {
         this.listLoading = true;
         this.queryModel = Object.assign(this.queryModel, this.pagination);
-        this.$http.get(this.$baseUrl + this.game_infoListRequest, {
+        this.$http.get(this.$baseUrl + this.game_typeListRequest, {
           params: this.queryModel
         }).then(response => {
           console.log(response)
@@ -288,7 +288,7 @@
       updateData() {
         this.$refs['formData'].validate((valid) => {
           if (valid) {
-            this.$http.post(this.$baseUrl + this.game_infoAddOrUpdateRequest, {
+            this.$http.post(this.$baseUrl + this.game_typeAddOrUpdateRequest, {
               id: this.formData.id,
               name: this.formData.name,
               "title": this.formData.title,
@@ -320,7 +320,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http.delete(this.$baseUrl + this.game_infoDeleteRequest+`/${scope.row.id}`).then((response) => {
+          this.$http.delete(this.$baseUrl + this.game_typeDeleteRequest+`/${scope.row.id}`).then((response) => {
             console.log(response)
             this.dialogFormVisible = false;
             this.$message.success('删除成功');

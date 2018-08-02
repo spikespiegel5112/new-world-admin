@@ -1,5 +1,8 @@
 import Cookies from 'js-cookie'
 import request from '@/utils/request'
+import {baseUrl} from "@/utils/request";
+import VueInstance from "@/main";
+
 
 
 const app = {
@@ -103,7 +106,7 @@ const app = {
       let updateShelfStatusRequest = 'task-service/1.0.0/task/bk/changeStatus/ ' + options.id + '/' + options.isShow + '';
 
       return new Promise((resolve, reject) => {
-        request.post(VueInstance.$baseUrl + updateShelfStatusRequest).then(response => {
+        request.post(baseUrl + updateShelfStatusRequest).then(response => {
           VueInstance.$message({
             message: "操作成功",
             type: "success"

@@ -474,3 +474,15 @@
   vertical-align: middle;
 }
 
+.common-sortlist-wrapper{
+  ul{
+    width: 80%;
+    li{
+      width: 100%;
+      height: 60px;
+      &:hover{
+        background-color: #ccc;
+      }
+    }
+  }
+}
