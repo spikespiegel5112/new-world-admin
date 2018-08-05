@@ -65,6 +65,10 @@
                            :key="item.code"></el-option>
               </el-select>
             </el-form-item>
+            <el-form-item label="置顶数" prop="topNumber">
+              <el-input-number v-model="formData.topNumber" :min="0" label="描述文字"></el-input-number>
+            </el-form-item>
+
           </el-form>
         </el-col>
       </el-row>
@@ -291,17 +295,8 @@
             this.$http.post(this.$baseUrl + this.game_typeAddOrUpdateRequest, {
               id: this.formData.id,
               name: this.formData.name,
-              "title": this.formData.title,
-              "description": this.formData.description,
-              "iconUrl": this.formData.iconUrl,
-              "bigImageUrl": this.formData.bigImageUrl,
-              "iosDownloadUrl": this.formData.iosDownloadUrl,
-              androidDownloadUrl: this.formData.androidDownloadUrl,
-              webGameUrl: this.formData.webGameUrl,
-              nature: this.formData.nature,
-              ios: this.formData.ios,
-              android: this.formData.android,
-              status: this.formData.status
+              status: this.formData.status,
+              topNumber: this.formData.topNumber
             }).then((response) => {
               console.log(response)
               this.dialogFormVisible = false;

@@ -4,7 +4,7 @@
     <breadcrumb></breadcrumb>
 
     <div class="right-menu">
-      <div class="common-environmenthint-item" v-if="$prodEnv">
+      <div class="common_environmenthint_item" v-if="$prodEnv">
         测试环境
       </div>
       <!-- <error-log class="errLog-container right-menu-item"></error-log> -->
