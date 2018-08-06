@@ -7,7 +7,6 @@ import {baseUrl} from "./utils/request";
 import moment from 'moment';
 
 
-import axios from 'axios'
 
 // import locale from 'element-ui/lib/locale/lang/zh-CN' // lang i18n
 
@@ -29,7 +28,8 @@ import {
   select,
   icon,
   datePicker,
-  morePanel
+  morePanel,
+  autoComplete
 } from 'vue-beauty'
 import 'vue-beauty/package/style/vue-beauty.min.css'
 
@@ -53,13 +53,14 @@ Vue.use(row);
 // Vue.use(form);
 // Vue.use(form.item);
 // Vue.use(input);
-// Vue.use(select);
+Vue.use(select);
 // Vue.use(content);
 // Vue.use(header);
-Vue.use(sider);
-Vue.use(icon);
-Vue.use(datePicker);
-Vue.use(morePanel);
+// Vue.use(sider);
+// Vue.use(icon);
+// Vue.use(datePicker);
+// Vue.use(morePanel);
+Vue.use(autoComplete)
 
 Vue.use(util);
 
@@ -80,8 +81,11 @@ console.log(baseUrl)
 // Vue.prototype.$baseUrl = process.env.NODE_ENV === 'production' ? '/' : 'http://192.168.1.112:9002/';
 
 import CommonUploadImage from './views/common/CommonUploadImage.vue'
+import CommonLoading from './views/common/CommonLoading.vue'
 
 Vue.component('CommonUploadImage', CommonUploadImage);
+Vue.component('CommonLoading', CommonLoading);
+
 
 
 const VueInstance = new Vue({

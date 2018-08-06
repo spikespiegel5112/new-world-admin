@@ -4,7 +4,7 @@
             label-position="right">
       <h3 class="title">
         趣谷
-        <div class="common-environmenthint-item" v-if="$prodEnv">
+        <div class="common_environmenthint_item" v-if="$prodEnv">
           测试环境
         </div>
       </h3>

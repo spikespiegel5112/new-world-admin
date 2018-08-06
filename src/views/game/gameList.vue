@@ -109,23 +109,23 @@
               <el-input v-model="formData.webGameUrl"></el-input>
             </el-form-item>
 
-            <el-form-item label="nature" prop="nature">
+            <el-form-item label="游戏种类" prop="nature">
               <el-select v-model="formData.nature">
                 <el-option v-for="item in natureDictionary" :label="item.name" :value="item.code"
                            :key="item.code"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="ios" prop="ios">
+            <el-form-item label="iOS可用性" prop="ios">
               <el-switch v-model="formData.ios" :active-value="true" :inactive-value="false" active-color="#13ce66"
                          inactive-color="#ff4949">
               </el-switch>
             </el-form-item>
-            <el-form-item label="android" prop="android">
+            <el-form-item label="Android可用性" prop="android">
               <el-switch v-model="formData.android" :active-value="true" :inactive-value="false" active-color="#13ce66"
                          inactive-color="#ff4949">
               </el-switch>
             </el-form-item>
-            <el-form-item label="status" prop="status">
+            <el-form-item label="游戏状态" prop="status">
               <el-select v-model="formData.status">
                 <el-option v-for="item in statusDictionary" :label="item.name" :value="item.code"
                            :key="item.code"></el-option>
@@ -230,9 +230,9 @@
           description: [{required: true, message: '请输入游戏描述', trigger: 'change'}],
           iconUrl: [{required: true, message: '请上传图片', trigger: 'change'}],
           bigImageUrl: [{required: true, message: '请上传图片', trigger: 'change'}],
-          iosDownloadUrl: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          androidDownloadUrl: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          webGameUrl: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          iosDownloadUrl: [{required: false, message: '此项为必填项', trigger: 'change'}],
+          androidDownloadUrl: [{required: false, message: '此项为必填项', trigger: 'change'}],
+          webGameUrl: [{required: false, message: '此项为必填项', trigger: 'change'}],
           nature: [{required: true, message: '此项为必填项', trigger: 'change'}],
           ios: [{required: true, message: '此项为必填项', trigger: 'change'}],
           android: [{required: true, message: '此项为必填项', trigger: 'change'}],
