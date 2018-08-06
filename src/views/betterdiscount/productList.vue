@@ -114,7 +114,7 @@
           {{groundingStatusDictionary.filter(item=>item.code===scope.row.status)[0].name}}
         </template>
       </el-table-column>
-      <el-table-column label="上架时间范围" width="160">
+      <el-table-column label="折扣有效时间范围" width="160">
         <template slot-scope="scope">
           <div v-if="scope.row.effectiveStartTime!==null">
             {{$moment(scope.row.effectiveStartTime).format('YYYY-MM-DD HH:mm:ss')}} ~
@@ -226,7 +226,7 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
         <el-button v-if="dialogStatus==='create'" type="primary" @click="addGoods">{{$t('table.confirm')}}</el-button>
-        <el-button v-else type="primary" @click="updatedGoods">{{$t('table.confirm')}}</el-button>
+        <el-button v-else type="primary" @click="updateGoods">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
     <!--  -->
@@ -658,7 +658,7 @@
           this.$refs['formData'].clearValidate()
         })
       },
-      updatedGoods() {
+      updateGoods() {
         console.log(this.formData)
         this.$refs.formData.validate(valid => {
           if (valid) {

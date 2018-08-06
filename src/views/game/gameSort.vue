@@ -7,7 +7,7 @@
       <el-tab-pane v-for="item in $store.state.app.deviceTypeDictionary" :key="item.code" :label="item.name"
                    :style="{height:layoutHeight-5+'px'}">
         <el-tabs tab-position="left" @tab-click="chooseGameType">
-          <el-tab-pane v-for="(item, index) in gameTypeInfo.list" :key="item.id" :label="item.name">
+          <el-tab-pane v-for="(item, index) in gameTypeInfo.list" :key="item.id" :label="item.name+`(${item.topNumber})`">
             <el-row type="flex" justify='center'>
               <el-col :span="24" style="text-align: center">
                 <div class="common_sortlist_wrapper">
@@ -23,7 +23,7 @@
                       <!--</transition-group>-->
                     </Draggable>
                   </ul>
-                  <ul class="addgame">
+                  <ul class="addgame" v-if="currentSortData.length<currentTopNumber">
                     <li>
                       <a class="plus" @click="handleAddGame">
                         <span class="add el-icon-circle-plus-outline"></span>
@@ -35,7 +35,7 @@
             </el-row>
             <el-row class="footer" type="flex" justify="center">
               <el-col :span="6" style="text-align: center">
-                <el-button type="primary" @click="saveSort" :disabled="!compareIsSortDataChangeed()">保存排序</el-button>
+                <el-button type="primary" @click="saveSort" :disabled="!compareIsSortDataChanged()">保存排序</el-button>
               </el-col>
             </el-row>
           </el-tab-pane>
@@ -94,6 +94,7 @@
         findHomePageGameInfoRequest: 'game-service/1.0.0/game_info/findHomePageGameInfo',
 
         operationGameTypeMappingRequest: 'game-service/1.0.0/game_type_mapping/operationGameTypeMapping',
+        rankListRequest: 'game-service/1.0.0/game_info/rank/list',
 
 
         value2: '',
@@ -170,12 +171,16 @@
         }
         this.formData.startDate = value[0];
         this.formData.endDate = value[1];
+        ue
       },
       'formData.bigImageUrl': function (value) {
         console.warn(value)
       },
       chosenGameName(value) {
         this.queryModel.name = value
+      },
+      initSortData(value) {
+        console.log(value)
       }
     },
     mounted() {
@@ -198,12 +203,12 @@
 
 
           this.queryModel = Object.assign(this.queryModel, {
-            page: 1,
-            limit: this.gameTypeInfo.list[0].topNumber,
-            name: '',
-            status: 1,
-            title: '',
-            description: '',
+            // page: 1,
+            // limit: this.gameTypeInfo.list[0].topNumber,
+            // name: '',
+            // status: 1,
+            // title: '',
+            // description: '',
             deviceType: this.currentDeviceType,
             gameTypeId: this.currentGameTypeId
 
@@ -227,26 +232,28 @@
         });
         console.log(this.queryModel)
         console.log(result)
-        this.$http.get(this.$baseUrl + this.game_infoListRequest, {
+        this.$http.get(this.$baseUrl + this.rankListRequest, {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-          params: this.queryModel
+          params: {
+            gameTypeId: this.currentGameTypeId,
+            deviceType: this.queryModel.deviceType
+          }
         }).then(response => {
           console.log(response)
-          this.initSortData = response.list;
-          this.currentSortData = response.list;
+          this.initSortData = [];
+          this.currentSortData = [];
+          response.list.forEach((item, index) => {
+            this.$set(this.initSortData, index, item)
+          });
+
+          response.list.forEach((item, index) => {
+            this.$set(this.currentSortData, index, item)
+          });
           this.loading = false;
-          // this.$nextTick(()=>{
-          //   this.initSortable();
-          // })
 
         })
-      },
-      initSortable() {
-        let el = document.getElementById('sortlist');
-        console.log(el)
-        let sortable = Sortable.create(el, {});
       },
       handleUpdate(scope) {
         console.log(scope)
@@ -299,24 +306,28 @@
           result.push(this.chosenGameInfo)
           this.currentSortData = result;
           console.log(this.currentSortData)
+          console.log(this.initSortData)
+          this.dialogFormVisible = false;
+          // this.compareIsSortDataChanged();
 
-          this.$http.post(this.$baseUrl + this.operationGameTypeMappingRequest, [{
-            gameId: this.chosenGameInfo.id.toString(),
-            gameTypeId: this.currentGameTypeId.toString(),
-            operation: true
-          }], {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }).then(response => {
-            console.log(response)
-            this.queryModel.name = '';
-            this.queryModel.gameTypeId = this.currentGameTypeId;
-            this.getSortList();
-            this.dialogFormVisible = false;
-          }).catch(error => {
-            console.log(error)
-          })
+
+          // this.$http.post(this.$baseUrl + this.operationGameTypeMappingRequest, [{
+          //   gameId: this.chosenGameInfo.id.toString(),
+          //   gameTypeId: this.currentGameTypeId.toString(),
+          //   operation: true
+          // }], {
+          //   headers: {
+          //     'Content-Type': 'application/json',
+          //   },
+          // }).then(response => {
+          //   console.log(response)
+          //   this.queryModel.name = '';
+          //   this.queryModel.gameTypeId = this.currentGameTypeId;
+          //   this.getSortList();
+          //   this.dialogFormVisible = false;
+          // }).catch(error => {
+          //   console.log(error)
+          // })
         } else {
           this.$message.warning('无游戏可添加')
         }
@@ -324,29 +335,29 @@
 
       },
       minusGame(index) {
-        // let result = this.currentSortData;
-        // result.splice(index, 1);
-        // this.currentSortData = result;
+        let result = this.currentSortData;
+        result.splice(index, 1);
+        this.currentSortData = result;
         console.log(this.currentSortData)
-        this.$confirm('确认删除?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$http.post(this.$baseUrl + this.operationGameTypeMappingRequest, [{
-            gameId: this.currentSortData[index].id.toString(),
-            gameTypeId: this.currentGameTypeId.toString(),
-            operation: false
-          }], {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }).then(response => {
-            console.log(response)
-            this.queryModel.gameTypeId = this.currentGameTypeId;
-            this.getSortList();
-          })
-        })
+        // this.$confirm('确认删除?', '提示', {
+        //   confirmButtonText: '确定',
+        //   cancelButtonText: '取消',
+        //   type: 'warning'
+        // }).then(() => {
+        //   this.$http.post(this.$baseUrl + this.operationGameTypeMappingRequest, [{
+        //     gameId: this.currentSortData[index].id.toString(),
+        //     gameTypeId: this.currentGameTypeId.toString(),
+        //     operation: false
+        //   }], {
+        //     headers: {
+        //       'Content-Type': 'application/json',
+        //     },
+        //   }).then(response => {
+        //     console.log(response)
+        //     this.queryModel.gameTypeId = this.currentGameTypeId;
+        //     this.getSortList();
+        //   })
+        // })
       },
 
       saveSort() {
@@ -372,7 +383,6 @@
         this.loading = true;
 
         this.queryModel = Object.assign(this.queryModel, {
-          name: '',
           limit: 999,
           page: 1,
           status: 1,
@@ -417,7 +427,7 @@
         this.queryModel.name = data.value;
 
       },
-      compareIsSortDataChangeed() {
+      compareIsSortDataChanged() {
         let result = false;
         if (this.initSortData.length !== this.currentSortData.length) {
           result = true;
