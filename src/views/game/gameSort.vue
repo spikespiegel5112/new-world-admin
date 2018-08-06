@@ -235,7 +235,6 @@
         }).then(response => {
           console.log(response)
           this.initSortData = response.list;
-          ;
           this.currentSortData = response.list;
           this.loading = false;
           // this.$nextTick(()=>{
@@ -294,26 +293,27 @@
         this.chosenGameName = '';
       },
       addGame() {
-        alert('dsds')
         if (Object.keys(this.chosenGameInfo).length > 0) {
           let result = [];
           result = this.currentSortData;
           result.push(this.chosenGameInfo)
           this.currentSortData = result;
-          this.dialogFormVisible = false;
           console.log(this.currentSortData)
 
-          this.$http.post(this.$baseUrl + this.operationGameTypeMappingRequest, {
+          this.$http.post(this.$baseUrl + this.operationGameTypeMappingRequest, [{
             gameId: this.chosenGameInfo.id.toString(),
             gameTypeId: this.currentGameTypeId.toString(),
             operation: true
-          }, {
+          }], {
             headers: {
               'Content-Type': 'application/json',
             },
           }).then(response => {
             console.log(response)
+            this.queryModel.name = '';
+            this.queryModel.gameTypeId = this.currentGameTypeId;
             this.getSortList();
+            this.dialogFormVisible = false;
           }).catch(error => {
             console.log(error)
           })
@@ -333,17 +333,17 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http.post(this.$baseUrl + this.operationGameTypeMappingRequest, {
+          this.$http.post(this.$baseUrl + this.operationGameTypeMappingRequest, [{
             gameId: this.currentSortData[index].id.toString(),
             gameTypeId: this.currentGameTypeId.toString(),
-            deviceType: this.currentDeviceType.toString(),
             operation: false
-          }, {
+          }], {
             headers: {
               'Content-Type': 'application/json',
             },
           }).then(response => {
             console.log(response)
+            this.queryModel.gameTypeId = this.currentGameTypeId;
             this.getSortList();
           })
         })
