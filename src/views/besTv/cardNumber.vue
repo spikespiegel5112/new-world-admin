@@ -506,7 +506,7 @@
           type: 'warning'
         }).then(() => {
           this.$http.post(this.$baseUrl + this.changIsSendRequest+`/${scope.row.id}`, {}).then(response => {
-            onsole.log(response)
+            console.log(response)
             this.$message.success('已确认发送');
             this.getTableData()
           }).catch(error => {

@@ -1,26 +1,25 @@
 <template>
   <div class="app-container">
-    <CommonLoading :loading="loading" :relative="false"></CommonLoading>
+    <CommonLoading :loading="loading" :relative="false"/>
 
     <el-tabs tab-position="left" @tab-click="chooseDeviceType">
 
       <el-tab-pane v-for="item in $store.state.app.deviceTypeDictionary" :key="item.code" :label="item.name"
                    :style="{height:layoutHeight-5+'px'}">
         <el-tabs tab-position="left" @tab-click="chooseGameType">
-          <el-tab-pane v-for="(item, index) in gameTypeInfo.list" :key="item.id" :label="item.name+`(${item.topNumber})`">
+          <el-tab-pane v-for="(item, index) in gameTypeInfo.list" :key="item.id"
+                       :label="item.name+`(槽位容量${item.topNumber})`">
             <el-row type="flex" justify='center'>
               <el-col :span="24" style="text-align: center">
                 <div class="common_sortlist_wrapper">
                   <ul class="sortlist">
                     <Draggable v-model="currentSortData" :options="{}" @start="drag=true" @end="drag=false">
-                      <!--<transition-group>-->
                       <li v-for="(item, index) in currentSortData" :key="item.id">
                         <label>{{item.name}}</label>
                         <a @click="minusGame(index)" class="minus">
                           <span class="add el-icon-remove-outline"></span>
                         </a>
                       </li>
-                      <!--</transition-group>-->
                     </Draggable>
                   </ul>
                   <ul class="addgame" v-if="currentSortData.length<currentTopNumber">
@@ -362,6 +361,10 @@
 
       saveSort() {
         let requestBody = {};
+        if (this.currentSortData.length === 0) {
+          this.$message.warning('排序列表不能为空')
+          return;
+        }
         if (this.currentDeviceType === 'ios') {
           requestBody = {
             iosGameIdList: this.currentSortData.map(item => item.id)
