@@ -187,6 +187,25 @@ export const constantRouterMap = [{
     meta: {title: '游戏版块', icon: 'table'}
   }]
 }, {
+  path: '/edifice',
+  component: Layout,
+  name: 'edifice',
+  meta: {
+    title: '趣谷大厦',
+    icon: 'table'
+  },
+  children: [{
+    path: 'advertise',
+    name: 'advertise',
+    component: () => import('@/views/edifice/advertiseList'),
+    meta: {title: '楼层管理', icon: 'table'}
+  }, {
+    path: 'management',
+    name: 'edificeManagement',
+    component: () => import('@/views/edifice/edificeManagement'),
+    meta: {title: '大厦管理', icon: 'table'}
+  }]
+}, {
   path: '*',
   redirect: '/404',
   hidden: true

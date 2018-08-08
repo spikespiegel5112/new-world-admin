@@ -48,7 +48,6 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="来源" prop="source"></el-table-column>
       <el-table-column align="center" label="操作" width="200px">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
@@ -116,9 +115,6 @@
                            :key="item.code"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="iOS App ID" prop="iosAppId">
-              <el-input v-model="formData.iosAppId"></el-input>
-            </el-form-item>
             <el-form-item label="iOS可用性" prop="ios">
               <el-switch v-model="formData.ios" :active-value="true" :inactive-value="false" active-color="#13ce66"
                          inactive-color="#ff4949">
@@ -134,9 +130,6 @@
                 <el-option v-for="item in statusDictionary" :label="item.name" :value="item.code"
                            :key="item.code"></el-option>
               </el-select>
-            </el-form-item>
-            <el-form-item label="来源" prop="source">
-              <el-input v-model="formData.source"></el-input>
             </el-form-item>
           </el-form>
         </el-col>
@@ -215,9 +208,7 @@
           nature: "",
           ios: false,
           android: false,
-          status: null,
-          iosAppId: '',
-          source: ''
+          status: null
         },
         dialogFormVisible: false,
         dialogStatus: '',
@@ -246,8 +237,6 @@
           ios: [{required: true, message: '此项为必填项', trigger: 'change'}],
           android: [{required: true, message: '此项为必填项', trigger: 'change'}],
           status: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          iosAppId: [{required: false, message: '此项为必填项', trigger: 'change'}],
-          source: [{required: true, message: '此项为必填项', trigger: 'change'}],
         },
         downloadLoading: false,
         pickerOptions0: {
@@ -333,9 +322,7 @@
           nature: "",
           ios: false,
           android: false,
-          status: null,
-          iosAppId: '',
-          source: ''
+          status: null
         };
         this.fileList = []
       },
@@ -381,9 +368,7 @@
               nature: this.formData.nature,
               ios: this.formData.ios,
               android: this.formData.android,
-              status: this.formData.status,
-              iosAppId: this.formData.iosAppId,
-              source: this.formData.source
+              status: this.formData.status
             }).then((response) => {
               console.log(response)
               this.dialogFormVisible = false;
