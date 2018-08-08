@@ -1,3 +1,32 @@
-.edifice_main_container{
+.edifice_main_container {
+  .sortlist {
+    > li {
+      margin: 0 auto 20px;
+      //width: 80%;
+      height: 200px;
+      .maincontent {
 
+      }
+    }
+  }
+  .buildingname {
+    margin: 10px 0;
+    font-size: 20px;
+  }
+  .floordesc {
+    > li {
+      display: inline-block;
+    }
+    .brandmeta {
+      label {
+        font-size: 16px;
+      }
+      span {
+        font-size: 16px;
+      }
+    }
+  }
+  .operation {
+    float: right;
+  }
 }

@@ -11,11 +11,11 @@
                        :label="item.name+`(槽位容量${item.topNumber})`">
             <el-row type="flex" justify='center'>
               <el-col :span="24" style="text-align: center">
-                <div class="common_sortlist_wrapper">
+                <div class="common_sortlist_wrapper game_sortlist_container">
                   <ul class="sortlist">
                     <Draggable v-model="currentSortData" :options="{}" @start="drag=true" @end="drag=false">
                       <li v-for="(item, index) in currentSortData" :key="item.id">
-                        <label>{{item.name}}</label>
+                        <label class="gamename">{{item.name}}</label>
                         <a @click="minusGame(index)" class="minus">
                           <span class="add el-icon-remove-outline"></span>
                         </a>
@@ -95,13 +95,6 @@
         operationGameTypeMappingRequest: 'game-service/1.0.0/game_type_mapping/operationGameTypeMapping',
         rankListRequest: 'game-service/1.0.0/game_info/rank/list',
 
-
-        value2: '',
-        value1: '',
-        tableKey: 0,
-        total: null,
-        availabilityFlag: false,
-        dynamicTags: ['标签一', '标签二', '标签三'],
         queryModel: {
           deviceType: this.currentDeviceType,
           gameTypeId: this.currentGameTypeId,
@@ -163,15 +156,6 @@
       }
     },
     watch: {
-      effectiveDuration(value) {
-        console.log(value)
-        if (value === null) {
-          value = [];
-        }
-        this.formData.startDate = value[0];
-        this.formData.endDate = value[1];
-        ue
-      },
       'formData.bigImageUrl': function (value) {
         console.warn(value)
       },
@@ -252,17 +236,6 @@
           });
           this.loading = false;
 
-        })
-      },
-      handleUpdate(scope) {
-        console.log(scope)
-        this.formData = Object.assign({}, scope.row);
-        this.effectiveDuration = [scope.row.startDate, scope.row.endDate]
-
-        this.dialogStatus = 'update';
-        this.dialogFormVisible = true;
-        this.$nextTick(() => {
-          this.$refs['formData'].clearValidate()
         })
       },
 
@@ -447,3 +420,6 @@
     }
   }
 </script>
+<style lang='scss'>
+  @import "../../styles/game.scss";
+</style>

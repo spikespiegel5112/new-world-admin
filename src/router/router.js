@@ -198,12 +198,12 @@ export const constantRouterMap = [{
     path: 'advertise',
     name: 'advertise',
     component: () => import('@/views/edifice/advertiseList'),
-    meta: {title: '楼层管理', icon: 'table'}
+    meta: {title: '品牌管理', icon: 'table'}
   }, {
     path: 'management',
     name: 'edificeManagement',
     component: () => import('@/views/edifice/edificeManagement'),
-    meta: {title: '大厦管理', icon: 'table'}
+    meta: {title: '楼层管理', icon: 'table'}
   }]
 }, {
   path: '*',

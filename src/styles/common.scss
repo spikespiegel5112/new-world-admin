@@ -478,74 +478,82 @@
   overflow: auto;
   ul {
     margin: 0 auto;
-    width: 100%;
+    width: 99%;
+    &.addgame{
+      text-align: center;
+    }
     li {
       margin: 5px 0;
-      width: 100%;
-      height: 60px;
-      text-align: center;
-      border: 1px solid #ccc;
-      border-radius: 3px;
       position: relative;
-      &:hover {
-        border-color: #999;
-        cursor: move;
-      }
-      label {
-        display: inline-block;
-        width: 80%;
-        height: 60px;
-        line-height: 60px;
-        vertical-align: middle;
-        font-size: 20px;
-      }
       a {
         display: inline-block;
         vertical-align: middle;
         font-size: 30px;
         margin: 0 10px;
-        span{
+        span {
+          display: inline-block;
           color: red;
+          vertical-align: middle;
         }
-        &.minus{
+        &.minus {
           position: absolute;
           right: 0;
-          top: 13px;
+          //top: 13px;
+          height: 100%;
+          &:before{
+            content: '';
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+          }
         }
       }
 
     }
   }
-  .sortlist{
-    li{
+  .sortlist {
+    >li, div >li {
+      width: 100%;
+      height: 60px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
       &:hover {
         border-color: #999;
         cursor: move;
+        box-shadow: -1px 1px 5px #ccc;
       }
-      label{
+      label {
         &:hover {
           border-color: #999;
           cursor: move;
         }
       }
-      a{
+      a {
         &:hover {
           border-color: #999;
           cursor: pointer;
         }
       }
+      &:hover {
+        border-color: #999;
+        cursor: move;
+      }
     }
   }
-  .addgame{
-    li{
-      border: 1px solid #ddd;
-      color: #999;
-      a{
+  .addgame {
+    li {
+      //border: 1px solid #ddd;
+      a {
+        color: #999;
         line-height: 60px;
-        span{
+        span {
           color: lightgreen;
         }
+        &:hover span{
+          color: mediumseagreen;
+        }
       }
+
     }
   }
 }
