@@ -1,17 +1,44 @@
 .edifice_main_container {
   .sortlist {
+    overflow: auto;
+    box-shadow: 0 0 15px inset #ccc;
     > li {
-      margin: 0 auto 20px;
-      //width: 80%;
+      margin: 20px auto;
+      width: 98%;
       height: 200px;
+      .floornumber{
+        margin: 10px;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        span{
+          display: inline-block;
+          width: 40px;
+          height: 40px;
+          line-height: 40px;
+          text-align: center;
+          border: 1px solid #ccc;
+          font-size: 25px;
+          border-radius: 50%;
+          vertical-align: middle;
+        }
+        label{
+          display: inline-block;
+          vertical-align: bottom;
+          font-size: 15px;
+        }
+
+      }
       .maincontent {
 
       }
     }
   }
   .buildingname {
-    margin: 10px 0;
+    margin: 10px 15px;
     font-size: 20px;
+    position: absolute;
+    top: 0;
   }
   .floordesc {
     > li {

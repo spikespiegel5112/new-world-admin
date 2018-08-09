@@ -94,7 +94,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
-      simpleUploader: 'uploader_modified',
+      // simpleUploader: 'uploader_modified',
       // simpleHotkeys: 'simpleHotkeys'
 
     })

@@ -14,7 +14,20 @@
     props: {
       config: {
         type: Object,
-        default: {},
+        default: {
+          textarea: $('#editor'),
+          placeholder: '',
+          defaultImage: 'images/image.png',
+          params: {},
+          upload: false,
+          tabIndent: true,
+          toolbar: true,
+          toolbarFloat: true,
+          toolbarFloatOffset: 0,
+          toolbarHidden: false,
+          pasteImage: false,
+          cleanPaste: false
+        },
         required: false
       },
       editorContent: {
@@ -96,11 +109,12 @@
     watch: {
       editorContent(value) {
         console.log(value)
+
         this.editorContentInner = value;
-        // this.editorInstance.setValue(value);
+        this.editorInstance.setValue(value);
       },
       editorContentInner(value) {
-        console.log(value)
+        // console.log(value)
       },
       config(value) {
         let params = Object.assign(this.defaultConfig, {
@@ -136,9 +150,9 @@
       }
     },
     mounted() {
-      // this.editorInstance = new Simditor({
-      //   textarea: $('#editor'),
-      // });
+      this.editorInstance = new Simditor(Object.assign(this.defaultConfig, {
+        textarea: $('#editor'),
+      }));
 
 
       this.getHeight();
