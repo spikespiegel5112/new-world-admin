@@ -19,37 +19,65 @@
                 <el-col :span="23">
                   <el-form ref="form" label-width="150px" class="maincontent">
                     <el-row class="floordesc">
-                      <el-col class="brandmeta" :span="7">
+                      <el-col class="brandmeta" :span="4">
                         <el-form-item label="品牌名称：">
-                          <span>{{item.brandName}}</span>
+                          <span>{{item.brand.brandName}}</span>
                         </el-form-item>
                       </el-col>
-                      <el-col class="brandmeta" :span="7">
-                        <el-form-item label="地点：">
-                          <span>{{item.location}}</span>
+                      <el-col class="brandmeta" :span="3">
+                        <el-form-item label="key总数量：">
+                          <span>{{item.brand.keyTotal}}</span>
                         </el-form-item>
                       </el-col>
-                      <el-col class="brandmeta" :span="7">
-                        <el-form-item label="地点：">
-                          <span>{{item.location}}</span>
+                      <el-col class="brandmeta" :span="3">
+                        <el-form-item label="key已领取数：">
+                          <span>{{item.brand.keyReceived}}</span>
+                        </el-form-item>
+                      </el-col>
+                      <el-col class="brandmeta" :span="3">
+                        <el-form-item label="key可用数：">
+                          <span>{{item.brand.keyEnable}}</span>
+                        </el-form-item>
+                      </el-col>
+                      <el-col class="brandmeta" :span="3">
+                        <el-form-item label="每用户可领取key数：">
+                          <span>{{item.brand.keyNumPerUser}}</span>
                         </el-form-item>
                       </el-col>
                       <el-col class="operation" :span="3">
-                        <el-button type="primary" size="mini" @click="handleAddBrand" :disable="item!=={}">添加品牌</el-button>
-                        <el-button type="primary" size="mini" @click="handleAddBrand" :disable="item==={}">移除品牌</el-button>
+                        <el-button type="primary" size="mini" @click="handleAddBrand" :disable="item!=={}">添加品牌
+                        </el-button>
+                        <el-button type="primary" size="mini" @click="handleAddBrand" :disable="item==={}">移除品牌
+                        </el-button>
                       </el-col>
                     </el-row>
-
-
-                    <el-row>
-                      <el-col :span="6">
-                        <el-form-item label="Android可用性：">
-                          <span>{{item.androidEnable}}</span>
+                    <el-row class="advertisedesc">
+                      <el-col class="brandmeta" :span="3">
+                        <el-form-item label="品牌icon：">
+                          <img :src="item.brand.icon+'-style_100x100'"/>
                         </el-form-item>
                       </el-col>
-                      <el-col :span="6">
-                        <el-form-item label="iOS可用性：">
-                          <span>{{item.iosEnable}}</span>
+
+                      <el-col class="brandmeta" :span="21">
+                        <el-form-item label="广告：">
+                          <ul class="advertiselist">
+                            <li v-for="item2 in item.brand.advertisements">
+                              <img :src="item2.url+'-style_100x100'"/>
+                              <el-form ref="form" label-width="130px" class="advertisemeta">
+                                <el-form-item label="Android可用性：">
+                                  <el-tag v-if="item2.androidEnable===true" type="success">可用</el-tag>
+                                  <el-tag v-if="item2.androidEnable===false" type="error">不可用</el-tag>
+                                </el-form-item>
+                                <el-form-item label="iOS可用性：">
+                                  <el-tag v-if="item2.iosEnable===true" type="success">可用</el-tag>
+                                  <el-tag v-if="item2.iosEnable===false" type="error">不可用</el-tag>
+                                </el-form-item>
+                                <el-form-item label="链接：">
+                                  <el-button class="location" type="text" @click="openAdvertiseUrl(item2.location)">{{item2.url}}</el-button>
+                                </el-form-item>
+                              </el-form>
+                            </li>
+                          </ul>
                         </el-form-item>
                       </el-col>
                     </el-row>
@@ -198,14 +226,14 @@
       getSortList() {
         let deviceTypeList = ["android", "ios"];
 
-        this.$http.get(this.$baseUrl + this.findFloorsRequest+`/${this.deviceType}`, {
-        // this.$http.get('http://api-doc.zan-qian.com/mock/190/building-show-service/1.0.0/buildingShow/findFloors' + `/ios}`, {
+        this.$http.get(this.$baseUrl + this.findFloorsRequest + `/${this.deviceType}`, {
+          // this.$http.get('http://api-doc.zan-qian.com/mock/190/building-show-service/1.0.0/buildingShow/findFloors' + `/ios}`, {
           params: this.queryModel
         }).then(response => {
           console.log(response);
           response = response.data;
           this.floorList = response;
-          this.buildingName = response.buildingName;
+          this.buildingName = response[0].buildingName;
           this.loading = false;
         });
       },
@@ -319,6 +347,9 @@
         this.chosenGameInfo = data;
         this.queryModel.name = data.value;
       },
+      openAdvertiseUrl(data){
+        window.open('//'+data)
+      }
     }
   };
 </script>

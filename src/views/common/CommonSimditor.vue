@@ -157,6 +157,7 @@
 <style lang="css">
   .simditor{
     height: 100%;
+    overflow: hidden;
   }
 </style>
 <style lang="scss">

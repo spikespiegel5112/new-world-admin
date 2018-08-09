@@ -363,6 +363,7 @@
           this.tableList = response.content;
           this.listLoading = false;
         }).catch(error => {
+          console.log(error)
           this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },

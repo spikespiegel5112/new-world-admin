@@ -37,7 +37,7 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       'simditor_modified$': resolve('/static/assets/js/simditor/simditor_modified.js'),
-      // 'simpleUploader$': resolve('/static/assets/js/simditor/uploader.js'),
+      'uploader_modified$': resolve('/static/assets/js/simditor/uploader_modified.js'),
       // 'simpleHotkeys$': resolve('/static/assets/js/simditor/hotkeys.js'),
       '@': resolve('src'),
     }
@@ -94,7 +94,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
-      // simpleUploader: 'simpleUploader',
+      simpleUploader: 'uploader_modified',
       // simpleHotkeys: 'simpleHotkeys'
 
     })

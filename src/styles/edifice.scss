@@ -19,10 +19,32 @@
     }
     .brandmeta {
       label {
-        font-size: 16px;
+        //font-size: 16px;
       }
       span {
-        font-size: 16px;
+        //font-size: 16px;
+      }
+    }
+
+  }
+  .advertisedesc{
+    .advertiselist{
+      li{
+        display: inline-block;
+        margin: 0 10px 0 0;
+        img{
+          display: inline-block;
+        }
+        .advertisemeta{
+          display: inline-block;
+          vertical-align: top;
+          .location{
+            width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
       }
     }
   }

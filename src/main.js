@@ -53,7 +53,7 @@ Vue.use(row);
 // Vue.use(form);
 // Vue.use(form.item);
 // Vue.use(input);
-Vue.use(select);
+// Vue.use(select);
 // Vue.use(content);
 // Vue.use(header);
 // Vue.use(sider);
