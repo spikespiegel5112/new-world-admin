@@ -209,7 +209,7 @@
     },
     computed: {
       layoutHeight() {
-        return this.$store.state.app.layoutHeight - 180;
+        return this.$store.state.app.layoutHeight - 125;
       }
     },
     watch: {
