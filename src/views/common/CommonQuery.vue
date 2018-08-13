@@ -29,7 +29,7 @@
           </li>
         </ul>
       </div>
-      <div class="handleExpand" :class="{active:expandFlag}">
+      <div class="expandarea" :class="{active:expandFlag}">
         <el-form ref="form" :model="queryModel" size="mini" label-width="100px">
           <el-row>
             <el-col :span="8">
@@ -121,7 +121,8 @@
 
       },
       handleExpand() {
-
+        this.expandFlag=!this.expandFlag;
+        console.log(this.expandFlag)
       }
     }
   }

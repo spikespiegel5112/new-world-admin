@@ -195,9 +195,9 @@ export const constantRouterMap = [{
     icon: 'table'
   },
   children: [{
-    path: 'advertise',
-    name: 'advertise',
-    component: () => import('@/views/edifice/advertiseList'),
+    path: 'brand',
+    name: 'brandManagement',
+    component: () => import('@/views/edifice/brandManagement'),
     meta: {title: '品牌管理', icon: 'table'}
   }, {
     path: 'management',

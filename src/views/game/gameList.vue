@@ -296,7 +296,15 @@
     methods: {
       getTableData() {
         this.listLoading = true;
-        this.queryModel = Object.assign(this.queryModel, this.pagination);
+        let queryModel={};
+        Object.values(this.queryModel).forEach((item, index)=>{
+          if(item!==''){
+            queryModel[Object.keys(this.queryModel)[index]]=item;
+          }
+        });
+        console.log(this.queryModel)
+        console.log(queryModel)
+        this.queryModel = Object.assign(queryModel, this.pagination);
         this.$http.get(this.$baseUrl + this.game_infoListRequest, {
           params: this.queryModel
         }).then(response => {

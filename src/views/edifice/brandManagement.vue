@@ -21,35 +21,27 @@
               highlight-current-row
               :height="tableHeight">
       <el-table-column label="No" type="index" width="50" align="center" fixed></el-table-column>
-      <el-table-column label="名称" align="center" prop="name"></el-table-column>
+      <el-table-column label="名称" align="center" prop="brandName"></el-table-column>
       <el-table-column label="Icon" align="center" width="150">
         <template slot-scope="scope">
-          <img :src="$checkOSS(scope.row.iconUrl)" width="80">
+          <img :src="scope.row.icon+'-style_100x100'" width="80">
         </template>
       </el-table-column>
-      <el-table-column label="大图" align="center" width="150">
+      <el-table-column align="center" label="类型">
         <template slot-scope="scope">
-          <img :src="$checkOSS(scope.row.bigImageUrl)" width="80">
+          {{(scope.row.type!==''&&scope.row.type!==null)?brandTypeDictionary.filter(item=>item.code===scope.row.type)[0].name:''}}
         </template>
       </el-table-column>
-
-      <el-table-column align="center" label="标题" prop="title" width="200"></el-table-column>
-      <el-table-column align="center" label="游戏种类">
+      <el-table-column align="center" label="是否有钥匙" prop="status">
         <template slot-scope="scope">
-          <el-tag>
-            {{(scope.row.nature!==''&&scope.row.nature!==null)?natureDictionary.filter(item=>item.code===scope.row.nature)[0].name:''}}
+          <el-tag :type="scope.row.keyEnable===1?'success':'info'">
+            {{scope.row.keyEnable===1?'有':'无'}}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="游戏状态" prop="status">
+      <el-table-column align="center" label="操作" width="260px">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status===0?'info':'success'">
-            {{(scope.row.status!==''&&scope.row.status!==null)?statusDictionary.filter(item=>item.code===scope.row.status)[0].name:''}}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="操作" width="200px">
-        <template slot-scope="scope">
+          <el-button type="primary" size="mini" @click="handleUpdateAdvertisement(scope)">编辑广告</el-button>
           <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
         </template>
@@ -61,7 +53,7 @@
                      @current-change="handleCurrentChange"
                      :current-page.sync="pagination.page"
                      :page-sizes="[10,20,30,50]"
-                     :page-size="pagination.limit"
+                     :page-size="pagination.size"
                      :total="total"
                      layout="total, sizes, prev, pager, next, jumper"
       >
@@ -72,65 +64,49 @@
       <el-row type="flex" justify="center">
         <el-col :span="20">
 
-          <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="140px">
-            <el-form-item label="名称" prop="name">
-              <el-input v-model="formData.name"></el-input>
+          <el-form :rules="rules" ref="brandFormData" :model="brandFormData" label-position="right" label-width="140px">
+            <el-form-item label="品牌名称" prop="brandName">
+              <el-input v-model="brandFormData.brandName"></el-input>
             </el-form-item>
-            <el-form-item label="标题" prop="title">
-              <el-input v-model="formData.title"></el-input>
-            </el-form-item>
-            <el-form-item label="描述" prop="description">
-              <el-input type="textarea" :autosize="{ minRows: 4}" v-model="formData.description"></el-input>
-            </el-form-item>
-
-            <el-form-item label="Icon" prop="iconUrl">
-              <CommonUploadImage
-                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
-                @on-success="uploadSuccess1"
-                :returnUrlList.sync="formData.iconUrl"
-              />
-              <el-input v-show="false" v-model="formData.iconUrl"></el-input>
-            </el-form-item>
-            <el-form-item label="游戏大图" prop="bigImageUrl">
-              <CommonUploadImage
-                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
-                @on-success="uploadSuccess2"
-                :returnUrlList.sync="formData.bigImageUrl"
-              />
-              <el-input v-show="false" v-model="formData.bigImageUrl"></el-input>
-            </el-form-item>
-            <el-form-item label="iOS游戏下载链接" prop="iosDownloadUrl">
-              <el-input v-model="formData.iosDownloadUrl"></el-input>
-            </el-form-item>
-            <el-form-item label="Android游戏下载链接" prop="androidDownloadUrl">
-              <el-input v-model="formData.androidDownloadUrl"></el-input>
-            </el-form-item>
-            <el-form-item label="Web游戏下载链接" prop="webGameUrl">
-              <el-input v-model="formData.webGameUrl"></el-input>
-            </el-form-item>
-
-            <el-form-item label="游戏种类" prop="nature">
-              <el-select v-model="formData.nature">
+            <el-form-item label="类型" prop="type">
+              <el-select v-model="brandFormData.nature">
                 <el-option v-for="item in natureDictionary" :label="item.name" :value="item.code"
                            :key="item.code"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="iOS可用性" prop="ios">
-              <el-switch v-model="formData.ios" :active-value="true" :inactive-value="false" active-color="#13ce66"
+            <el-form-item label="Icon" prop="icon">
+              <CommonUploadImage
+                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
+                @on-success="uploadSuccess1"
+                :returnUrlList.sync="brandFormData.icon"
+              />
+              <el-input v-show="false" v-model="brandFormData.icon"></el-input>
+            </el-form-item>
+            <el-form-item label="是否上线" prop="status">
+              <el-switch v-model="brandFormData.status" :active-value="1" :inactive-value="0" active-color="#13ce66"
                          inactive-color="#ff4949">
               </el-switch>
             </el-form-item>
-            <el-form-item label="Android可用性" prop="android">
-              <el-switch v-model="formData.android" :active-value="true" :inactive-value="false" active-color="#13ce66"
+            <el-form-item label="是否有钥匙" prop="keyEnable">
+              <el-switch v-model="brandFormData.keyEnable" :active-value="1" :inactive-value="0" active-color="#13ce66"
                          inactive-color="#ff4949">
               </el-switch>
             </el-form-item>
-            <el-form-item label="游戏状态" prop="status">
-              <el-select v-model="formData.status">
-                <el-option v-for="item in statusDictionary" :label="item.name" :value="item.code"
-                           :key="item.code"></el-option>
-              </el-select>
+            <el-form-item label="钥匙每次发放数" prop="keyNumPerUser">
+              <el-input-number v-model="brandFormData.keyNumPerUser"></el-input-number>
             </el-form-item>
+            <el-form-item label="总钥匙数" prop="keyTotal">
+              <el-input-number v-model="brandFormData.keyTotal"></el-input-number>
+            </el-form-item>
+            <el-form-item label="钥匙被领取数" prop="keyReceived">
+              <el-input-number v-model="brandFormData.keyReceived"></el-input-number>
+            </el-form-item>
+
+
+            <el-form-item label="品牌过期时间" prop="endDate">
+              <el-date-picker v-model="brandFormData.endDate"></el-date-picker>
+            </el-form-item>
+
           </el-form>
         </el-col>
       </el-row>
@@ -138,6 +114,64 @@
         <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
         <el-button v-if="dialogStatus==='create'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
         <el-button v-else type="primary" @click="updateData" v-waves>{{$t('table.confirm')}}</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 弹框 -->
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="advertisementDialogFlag" width="850px">
+      <el-row type="flex" justify="center">
+        <el-col :span="20">
+
+          <el-tabs v-model="currentAdvertisementTabIndex" @tab-click="switchAdvertisementData"
+                   @edit="editAdvertisementCount" editable>
+            <el-tab-pane v-for="(item, index) in advertisementFormDataList" :key="item.id"
+                         :label="item.orderNum!==null?'广告位'+(item.orderNum+1):'未确定顺序广告位'"
+                         :name="item.name">
+              <el-form :rules="rules" ref="advertisementFormData" :model="advertisementFormData" label-position="right"
+                       label-width="140px">
+                <el-form-item label="Icon" prop="icon">
+                  <CommonUploadImage
+                    :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
+                    @on-success="uploadSuccess1"
+                    :returnUrlList.sync="advertisementFormData.url"
+                  />
+                  <el-input v-show="false" v-model="advertisementFormData.url"></el-input>
+                </el-form-item>
+                <el-form-item label="广告链接" prop="location">
+                  <el-input v-model="advertisementFormData.location"></el-input>
+                </el-form-item>
+                <el-form-item label="iOS可用性" prop="iosEnable">
+                  <el-switch v-model="advertisementFormData.iosEnable" active-color="#13ce66" inactive-color="#ff4949">
+                  </el-switch>
+                </el-form-item>
+                <el-form-item label="Android可用性" prop="androidEnable">
+                  <el-switch v-model="advertisementFormData.androidEnable" active-color="#13ce66"
+                             inactive-color="#ff4949">
+                  </el-switch>
+                </el-form-item>
+                <el-form-item label="是否上线" prop="status">
+                  <el-switch v-model="advertisementFormData.status" :active-value="1" :inactive-value="0"
+                             active-color="#13ce66" inactive-color="#ff4949">
+                  </el-switch>
+                </el-form-item>
+                <el-form-item label="广告顺序" prop="orderNum">
+                  <el-input-number v-model="advertisementFormData.orderNum" :min="1" :max="3"></el-input-number>
+                </el-form-item>
+              </el-form>
+            </el-tab-pane>
+
+          </el-tabs>
+
+        </el-col>
+      </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
+        <el-button v-if="dialogStatus==='create'" type="primary" @click="createAdvertisementData">
+          创建第{{Number(currentAdvertisementTabIndex)+1}}位广告
+        </el-button>
+        <el-button v-else type="primary" @click="updateAdvertisementData" v-waves>
+          更新第{{Number(currentAdvertisementTabIndex)+1}}位广告
+        </el-button>
       </div>
     </el-dialog>
   </el-row>
@@ -154,9 +188,12 @@
     },
     data() {
       return {
-        game_infoListRequest: 'game-service/1.0.0/game_info/list',
-        game_infoAddOrUpdateRequest: 'game-service/1.0.0/game_info/addOrUpdate',
-        game_infoDeleteRequest: 'game-service/1.0.0/game_info/delete',
+        brandListRequest: 'building-show-service/1.0.0/bk/brand/list',
+        brandAddOrUpdateRequest: 'building-show-service/1.0.0/bk/brand/addOrUpdate',
+        brandAdvertisementAddOrUpdateRequest: 'building-show-service/1.0.0/bk/brandAdvertisement/addOrUpdate',
+
+
+        brandDeleteRequest: 'building-show-service/1.0.0/brand/delete',
 
         value2: '',
         value1: '',
@@ -166,13 +203,17 @@
         listLoading: true,
         availabilityFlag: false,
         dynamicTags: ['标签一', '标签二', '标签三'],
-        queryModel: {
-          "title": '',
-          "status": '',
-          "name": '',
-          "gender": '',
-          "birthday": '',
-        },
+        brandTypeDictionary: [{
+          name: '16:9',
+          code: 1
+        }, {
+          name: '9:16（一条）',
+          code: 2
+        }, {
+          name: '9:16（三条）',
+          code: 3
+        }],
+        queryModel: {},
         natureDictionary: [{
           code: 1,
           name: 'app'
@@ -189,14 +230,14 @@
         }],
         pagination: {
           page: 1,
-          limit: 20,
+          size: 20,
         },
         importanceOptions: [1, 2, 3],
         sortOptions: [{label: 'ID Ascending', key: '+id'}, {label: 'ID Descending', key: '-id'}],
         statusOptions: ['published', 'draft', 'deleted'],
         showReviewer: false,
-        formData: {
-          id: 0,
+        brandFormData: {
+          id: '',
           name: '',
           "title": "",
           "description": '',
@@ -210,6 +251,16 @@
           android: false,
           status: null
         },
+        advertisementFormDataList: [],
+        advertisementFormData: {
+          id: '',
+          url: '',
+          "location": "",
+          "iosEnable": false,
+          "androidEnable": false,
+          "status": 0,
+          orderNum: false
+        },
         dialogFormVisible: false,
         dialogStatus: '',
         textMap: {
@@ -217,13 +268,6 @@
           create: 'Create'
         },
         dialogPvVisible: false,
-        availabilityFormData: {
-          moduleId: '',
-          type: '',
-          iosEnable: '',
-          androidEnable: '',
-          version: ''
-        },
         rules: {
           title: [{required: true, message: '请输入显示名称', trigger: 'change'}],
           name: [{required: true, message: '请输入唯一表示名称', trigger: 'change'}],
@@ -261,7 +305,9 @@
         searchTxt: '',
         expandQuery: '',
         showFileListFlag: false,
-        newFile: ''
+        newFile: '',
+        advertisementDialogFlag: false,
+        currentAdvertisementTabIndex: '0'
       }
     },
     computed: {
@@ -269,16 +315,7 @@
         return this.$store.state.app.tableHeight;
       }
     },
-    watch: {
-      effectiveDuration(value) {
-        console.log(value)
-        if (value === null) {
-          value = [];
-        }
-        this.formData.startDate = value[0];
-        this.formData.endDate = value[1];
-      },
-    },
+    watch: {},
     mounted() {
       this.getTableData()
     },
@@ -286,7 +323,7 @@
       getTableData() {
         this.listLoading = true;
         this.queryModel = Object.assign(this.queryModel, this.pagination);
-        this.$http.get(this.$baseUrl + this.game_infoListRequest, {
+        this.$http.get(this.$baseUrl + this.brandListRequest, {
           params: this.queryModel
         }).then(response => {
           console.log(response)
@@ -301,7 +338,7 @@
         this.getTableData()
       },
       handleSizeChange(val) {
-        this.pagination.limit = val;
+        this.pagination.size = val;
         this.getTableData()
       },
       handleCurrentChange(val) {
@@ -309,7 +346,7 @@
         this.getTableData()
       },
       resetTemp() {
-        this.formData = {
+        this.brandFormData = {
           id: 0,
           name: '',
           "title": "",
@@ -330,45 +367,90 @@
         this.resetTemp();
         this.dialogStatus = 'create';
         this.dialogFormVisible = true;
-        if (this.$refs.formData !== undefined) {
-          this.$refs.formData.resetFields();
+        if (this.$refs.brandFormData !== undefined) {
+          this.$refs.brandFormData.resetFields();
           this.$nextTick(() => {
-            this.$refs['formData'].clearValidate()
+            this.$refs['brandFormData'].clearValidate()
           })
         }
       },
       createData() {
-        this.formData.id = 0;
+        this.brandFormData.id = 0;
         this.updateData();
+      },
+      createAdvertisementData() {
+        this.brandFormData.id = 0;
+        this.updateAdvertisementData();
       },
       handleUpdate(scope) {
         console.log(scope)
-        this.formData = Object.assign({}, scope.row);
-        this.effectiveDuration = [scope.row.startDate, scope.row.endDate]
+        this.brandFormData = Object.assign({}, scope.row);
 
         this.dialogStatus = 'update';
         this.dialogFormVisible = true;
         this.$nextTick(() => {
-          this.$refs['formData'].clearValidate()
+          this.$refs['brandFormData'].clearValidate()
         })
       },
+      handleUpdateAdvertisement(scope) {
+        console.log(scope)
+        if (scope.row.advertisements.length > 0) {
+          scope.row.advertisements.forEach((item, index) => {
+            this.$set(this.advertisementFormDataList, index, item)
+          });
+          this.advertisementFormData = this.advertisementFormDataList[0];
+        }
+        this.currentAdvertisementTabIndex = '0';
+        this.brandFormData.id=scope.row.id;
+
+        this.dialogStatus = 'update';
+        this.advertisementDialogFlag = true;
+        // this.$nextTick(() => {
+        //   this.$refs['advertisementFormData'].clearValidate()-
+        // })
+      },
       updateData() {
-        this.$refs['formData'].validate((valid) => {
+        this.$refs['brandFormData'].validate((valid) => {
           if (valid) {
-            this.$http.post(this.$baseUrl + this.game_infoAddOrUpdateRequest, {
-              id: this.formData.id,
-              name: this.formData.name,
-              "title": this.formData.title,
-              "description": this.formData.description,
-              "iconUrl": this.formData.iconUrl,
-              "bigImageUrl": this.formData.bigImageUrl,
-              "iosDownloadUrl": this.formData.iosDownloadUrl,
-              androidDownloadUrl: this.formData.androidDownloadUrl,
-              webGameUrl: this.formData.webGameUrl,
-              nature: this.formData.nature,
-              ios: this.formData.ios,
-              android: this.formData.android,
-              status: this.formData.status
+            this.$http.post(this.$baseUrl + this.brandAddOrUpdateRequest, {
+              id: this.brandFormData.id,
+              name: this.brandFormData.name,
+              "title": this.brandFormData.title,
+              "description": this.brandFormData.description,
+              "iconUrl": this.brandFormData.iconUrl,
+              "bigImageUrl": this.brandFormData.bigImageUrl,
+              "iosDownloadUrl": this.brandFormData.iosDownloadUrl,
+              androidDownloadUrl: this.brandFormData.androidDownloadUrl,
+              webGameUrl: this.brandFormData.webGameUrl,
+              nature: this.brandFormData.nature,
+              ios: this.brandFormData.ios,
+              android: this.brandFormData.android,
+              status: this.brandFormData.status
+            }).then((response) => {
+              console.log(response)
+              this.dialogFormVisible = false;
+              this.$message.success('信息修改成功');
+              this.getTableData();
+            }).catch(error => {
+              console.log(error)
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+            })
+          }
+        });
+      },
+      updateAdvertisementData() {
+        console.log(this.$refs.advertisementFormData)
+        this.$refs['advertisementFormData'][this.currentAdvertisementTabIndex].validate((valid) => {
+          let url=this.$baseUrl + this.brandAdvertisementAddOrUpdateRequest + `/${this.brandFormData.id}`
+          if (valid) {
+            this.$http.post(url, {
+              id: this.advertisementFormData.id,
+              url: this.advertisementFormData.url,
+              "location": this.advertisementFormData.location,
+              "iosEnable": this.advertisementFormData.iosEnable,
+              "androidEnable": this.advertisementFormData.androidEnable,
+              "status": this.advertisementFormData.status,
+              "orderNum": this.advertisementFormData.orderNum,
             }).then((response) => {
               console.log(response)
               this.dialogFormVisible = false;
@@ -387,7 +469,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http.delete(this.$baseUrl + this.game_infoDeleteRequest + `/${scope.row.id}`).then((response) => {
+          this.$http.delete(this.$baseUrl + this.brandDeleteRequest + `/${scope.row.id}`).then((response) => {
             console.log(response)
             this.dialogFormVisible = false;
             this.$message.success('删除成功');
@@ -412,10 +494,10 @@
       },
       uploadSuccess1(response) {
         console.log(response)
-        this.formData.iconUrl = response.url;
+        this.brandFormData.iconUrl = response.url;
       },
       uploadSuccess2(response) {
-        this.formData.bigImageUrl = response.url;
+        this.brandFormData.bigImageUrl = response.url;
       },
       uploadAvatarExceeded(files, fileList) {
         if (fileList.length > 0) {
@@ -453,20 +535,6 @@
         }
         this.loading = true;
       },
-      editAvailability(scope) {
-        console.log(scope.row)
-
-        this.availabilityFormData = Object.assign({}, {
-          "moduleId": scope.row.id,
-          "type": scope.row.type,
-          "iosEnable": scope.row.iosEnable,
-          "androidEnable": scope.row.androidEnable,
-          "version": scope.row.version,
-        })
-        console.log(this.availabilityFormData)
-        this.availabilityFlag = true;
-
-      },
       expand() {
         this.expandQuery = !this.expandQuery;
       },
@@ -476,13 +544,16 @@
       reset() {
         this.queryModel.available = true;
       },
-      deleteImage1(index) {
-        this.formData.iconUrl = '';
-        this.fileList.splice(index, 1);
+      switchAdvertisementData(data) {
+        console.log(data)
+        if (this.advertisementFormDataList.length > 0) {
+          this.advertisementFormData = this.advertisementFormDataList[Number(data.index)];
+          this.currentAdvertisementTabIndex = data.index;
+        }
+
       },
-      deleteImage2(index) {
-        this.formData.bigImageUrl = '';
-        this.fileList.splice(index, 1);
+      editAdvertisementCount(data, index) {
+
       }
     }
   }
