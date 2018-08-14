@@ -96,7 +96,7 @@
 
                     </el-col>
                     <el-col :span="1">
-                      <a @click="minusGame(index)" class="minus">
+                      <a v-if="item.floorsRank===pagination.total" @click="minusGame(index)" class="minus">
                         <span class="add el-icon-remove-outline"></span>
                       </a>
                     </el-col>
@@ -121,24 +121,43 @@
 
 
     <!-- 弹框 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="600px">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="addFloorFormVisible" width="600px">
       <el-row type="flex" justify="center">
         <el-col :span="20">
           <el-form :rules="rules" ref="queryModel" :model="queryModel" label-position="right" label-width="150px">
-            <el-form-item label="品牌名称" prop="name">
-              <el-autocomplete
-                v-model="chosenGameName"
-                :fetch-suggestions="focusSortList"
-                placeholder="请输入内容"
-                @select="chooseGame"
-              ></el-autocomplete>
+            <el-form-item label="Icon" prop="icon">
+              <CommonUploadImage
+                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
+                @on-success="uploadSuccess"
+                :returnUrlList.sync="floorFormData.url"
+              />
+              <el-input v-show="false" v-model="floorFormData.url"></el-input>
+            </el-form-item>
+            <el-form-item label="广告链接" prop="location">
+              <el-input v-model="floorFormData.location"></el-input>
+            </el-form-item>
+            <el-form-item label="iOS可用性" prop="iosEnable">
+              <el-switch v-model="floorFormData.iosEnable" active-color="#13ce66"
+                         inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="Android可用性" prop="androidEnable">
+              <el-switch v-model="floorFormData.androidEnable" active-color="#13ce66"
+                         inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="是否上线" prop="status">
+              <el-switch v-model="floorFormData.status" :active-value="1" :inactive-value="0" active-color="#13ce66"
+                         inactive-color="#ff4949">
+              </el-switch>
+
             </el-form-item>
           </el-form>
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
-        <el-button type="primary" @click="addGame" v-waves>{{$t('table.confirm')}}</el-button>
+        <el-button type="primary" @click="addFloor" v-waves>{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -160,11 +179,13 @@
         // findFloorsRequest: 'building-show-service/1.0.0/buildingShow/findFloors',
         floorsListRequest: 'building-show-service/1.0.0/bk/floors/list',
 
+        floorsAddOrUpdateRequest: 'building-show-service/1.0.0/bk/floors/addOrUpdate',
+
 
         floorList: [],
         queryModel: {
           brandName: '',
-          sort: 'asc',
+          sort: 'desc',
         },
         pagination: {
           page: 1,
@@ -186,6 +207,15 @@
           android: false,
           status: null
         },
+        floorFormData: {
+          "url": '',
+          "location": '',
+          "orderNum": null,
+          "iosEnable": false,
+          "androidEnable": false,
+          "status": 0,
+          "id": '',
+        },
         dialogFormVisible: false,
         dialogStatus: "",
         textMap: {
@@ -203,7 +233,8 @@
         loading: false,
         deviceType: 'ios',
         chosenGameName: '',
-        buildingName: ''
+        buildingName: '',
+        addFloorFormVisible: false
 
       };
     },
@@ -239,8 +270,16 @@
       getSortList() {
         let deviceTypeList = ["android", "ios"];
 
+        // let queryModel={};
+        // Object.keys(this.queryModel).forEach(item=>{
+        //   if(item!=='brandName'){
+        //     queryModel[item]=this.queryModel[item]
+        //   }
+        // });
+        let queryModel=this.queryModel;
+
         this.$http.get(this.$baseUrl + this.floorsListRequest, {
-          params: Object.assign(this.queryModel, this.pagination)
+          params: Object.assign(queryModel, this.pagination)
         }).then(response => {
           console.log(response);
           this.loading = false;
@@ -261,12 +300,22 @@
         });
       },
 
-
       handleAddFloor() {
-        this.dialogFormVisible = true;
-        this.queryModel.name = "";
-        this.chosenGameName = "";
+        this.addFloorFormVisible = true;
+
       },
+      addFloor() {
+        this.$http.post(this.$baseUrl + this.floorsAddOrUpdateRequest, Object.assign(this.floorFormData, {
+          orderNum: this.pagination.total + 1
+        })).then(response => {
+          console.log(response)
+          this.getSortList();
+          this.$message.success('已添加一层楼')
+        }).catch(error => {
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+        })
+      },
+
       addGame() {
         if (Object.keys(this.chosenGameInfo).length > 0) {
           let result = [];
@@ -289,6 +338,9 @@
       },
 
       handleAddBrand() {
+        this.dialogFormVisible = true;
+        this.queryModel.name = "";
+        this.chosenGameName = "";
         let requestBody = {};
         if (this.currentSortData.length === 0) {
           this.$message.warning("排序列表不能为空");
@@ -369,6 +421,10 @@
       handleCurrentChange(val) {
         this.pagination.page = val;
         this.getSortList();
+      },
+      uploadSuccess(response) {
+        console.log(response)
+        this.brandFormData.icon = response.url;
       },
     }
   };

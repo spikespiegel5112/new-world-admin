@@ -69,8 +69,8 @@
               <el-input v-model="brandFormData.brandName"></el-input>
             </el-form-item>
             <el-form-item label="类型" prop="type">
-              <el-select v-model="brandFormData.nature">
-                <el-option v-for="item in natureDictionary" :label="item.name" :value="item.code"
+              <el-select v-model="brandFormData.type">
+                <el-option v-for="item in brandTypeDictionary" :label="item.name" :value="item.code"
                            :key="item.code"></el-option>
               </el-select>
             </el-form-item>
@@ -121,11 +121,21 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="advertisementDialogFlag" width="850px">
       <el-row type="flex" justify="center">
         <el-col :span="20">
+          <div class="edifice_addminusadvertise_wrapper">
+            <el-tooltip class="item" effect="dark" content="添加广告" placement="right">
+              <el-button type="primary" icon="el-icon-plus" circle @click="addAdvertise"></el-button>
+            </el-tooltip>
+          </div>
           <el-collapse accordion @change="switchAdvertisementData">
             <el-collapse-item :title="'广告位'+(index+1)" v-for="(item, index) in advertisementFormDataList" :key="index"
                               label="广告位" :name="index">
-              <el-form :rules="rules" ref="advertisementFormData" :model="advertisementFormData"
-                       label-position="right"
+              <div class="edifice_addminusadvertise_wrapper">
+                <el-tooltip class="item" effect="dark" content="删除广告" placement="right">
+                  <el-button type="danger" icon="el-icon-delete" circle @click="deleteAdvertise(item, index)">
+                  </el-button>
+                </el-tooltip>
+              </div>
+              <el-form :rules="rules" ref="advertisementFormData" :model="advertisementFormData" label-position="right"
                        label-width="140px">
                 <el-form-item label="Icon" prop="icon">
                   <CommonUploadImage
@@ -259,19 +269,17 @@
         statusOptions: ['published', 'draft', 'deleted'],
         showReviewer: false,
         brandFormData: {
-          id: '',
-          name: '',
-          "title": "",
-          "description": '',
-          "iconUrl": "",
-          "bigImageUrl": "",
-          "iosDownloadUrl": "",
-          androidDownloadUrl: '',
-          webGameUrl: '',
-          nature: "",
-          ios: false,
-          android: false,
-          status: null
+          "brandName": '',
+          "type": '',
+          "icon": '',
+          "status": '',
+          "endDate": '',
+          "keyNumPerUser": '',
+          "keyTotal": '',
+          "keyReceived": '',
+          "keyEnable": '',
+          "id": '',
+          "floorID": ''
         },
         advertisementFormDataList: [],
         advertisementFormData: {
@@ -346,9 +354,9 @@
       currentSortData(value) {
         console.log(value)
         value.forEach((item1, index1) => {
-          this.advertisementFormDataList.forEach((item2, index2)=>{
-            if(item1.id===item2.id){
-              this.advertisementFormDataList[index2].orderNum=index1;
+          this.advertisementFormDataList.forEach((item2, index2) => {
+            if (item1.id === item2.id) {
+              this.advertisementFormDataList[index2].orderNum = index1;
             }
           })
         });
@@ -402,6 +410,15 @@
           android: false,
           status: null
         };
+        this.advertisementFormData = {
+          id: '',
+          url: '',
+          "location": "",
+          "iosEnable": false,
+          "androidEnable": false,
+          "status": 0,
+          orderNum: null
+        };
         this.fileList = []
       },
       handleCreate() {
@@ -434,11 +451,23 @@
         })
       },
       handleUpdateAdvertisement(scope) {
-        console.log(scope)
+        let rawData = scope.row.advertisements;
+        this.brandFormData.id = scope.row.id;
+
+        this.refreshData(rawData)
+
+        this.dialogStatus = 'update';
+        this.advertisementDialogFlag = true;
+
+        // this.$nextTick(() => {
+        //   this.$refs['advertisementFormData'].clearValidate()-
+        // })
+      },
+      refreshData(rawData) {
         let sortListResult = [];
         this.advertisementFormDataList = [];
-        if (scope.row.advertisements.length > 0) {
-          scope.row.advertisements.forEach((item, index) => {
+        if (rawData.length > 0) {
+          rawData.forEach((item, index) => {
             this.$set(this.advertisementFormDataList, index, item)
           });
           console.log(this.advertisementFormDataList)
@@ -447,48 +476,38 @@
         }
         console.log(111, this.advertisementFormDataList)
         this.currentAdvertisementTabIndex = 0;
-        this.brandFormData.id = scope.row.id;
 
-        for (let i = 0; i < scope.row.advertisements.length; i++) {
-          console.log(444,scope.row.advertisements[i])
+        for (let i = 0; i < rawData.length; i++) {
+          console.log(444, rawData[i])
 
-          if (typeof scope.row.advertisements[i].orderNum === 'number' && scope.row.advertisements[i].orderNum < this.advertisementFormDataList.length) {
-            sortListResult[scope.row.advertisements[i].orderNum] = scope.row.advertisements[i];
+          if (typeof rawData[i].orderNum === 'number' && rawData[i].orderNum < this.advertisementFormDataList.length) {
+            sortListResult[rawData[i].orderNum] = rawData[i];
             // debugger
           } else {
             // alert('dsds')
             let flag = true;
             for (let j = 0; j < 3; j++) {
               if (typeof sortListResult[j] !== 'object' && flag === true) {
-                sortListResult[j] = scope.row.advertisements[i];
+                sortListResult[j] = rawData[i];
                 flag = false;
               }
             }
           }
         }
-        console.log(444,sortListResult)
+        console.log(444, sortListResult)
 
 
         for (let i = 0; i < sortListResult.length; i++) {
           console.log(222, sortListResult.length)
           if (typeof sortListResult[i] === 'undefined') {
-            sortListResult[i] = scope.row.advertisements[0];
+            sortListResult[i] = rawData[0];
           }
           sortListResult[i].isCurrent = false;
           sortListResult[i].orderNum = i;
         }
-        console.log(333,sortListResult)
+        console.log(333, sortListResult)
 
         this.currentSortData = sortListResult;
-        // this.currentSortData = this.advertisementFormData;
-
-        this.dialogStatus = 'update';
-        this.advertisementDialogFlag = true;
-
-
-        // this.$nextTick(() => {
-        //   this.$refs['advertisementFormData'].clearValidate()-
-        // })
       },
       switchAdvertisementData(index) {
         console.log(index)
@@ -515,19 +534,17 @@
         this.$refs['brandFormData'].validate((valid) => {
           if (valid) {
             this.$http.post(this.$baseUrl + this.brandAddOrUpdateRequest, {
-              id: this.brandFormData.id,
-              name: this.brandFormData.name,
-              "title": this.brandFormData.title,
-              "description": this.brandFormData.description,
-              "iconUrl": this.brandFormData.iconUrl,
-              "bigImageUrl": this.brandFormData.bigImageUrl,
-              "iosDownloadUrl": this.brandFormData.iosDownloadUrl,
-              androidDownloadUrl: this.brandFormData.androidDownloadUrl,
-              webGameUrl: this.brandFormData.webGameUrl,
-              nature: this.brandFormData.nature,
-              ios: this.brandFormData.ios,
-              android: this.brandFormData.android,
-              status: this.brandFormData.status
+              "brandName": this.brandFormData.brandName,
+              "type": this.brandFormData.type,
+              "icon": this.brandFormData.icon,
+              "status": this.brandFormData.status,
+              "endDate": this.brandFormData.endDate,
+              "keyNumPerUser": this.brandFormData.keyNumPerUser,
+              "keyTotal": this.brandFormData.keyTotal,
+              "keyReceived": this.brandFormData.keyReceived,
+              "keyEnable": this.brandFormData.keyEnable,
+              "id": this.brandFormData.id,
+              "floorID": this.brandFormData.floorID
             }).then((response) => {
               console.log(response)
               this.dialogFormVisible = false;
@@ -543,23 +560,12 @@
       updateAdvertisementData() {
         console.log(this.$refs.advertisementFormData)
         this.$refs['advertisementFormData'][this.currentAdvertisementTabIndex].validate((valid) => {
-          let url = '';
-          let submitData = []
-          let template = {
-            id: this.advertisementFormData.id,
-            url: this.advertisementFormData.url,
-            "location": this.advertisementFormData.location,
-            "iosEnable": this.advertisementFormData.iosEnable,
-            "androidEnable": this.advertisementFormData.androidEnable,
-            "status": this.advertisementFormData.status,
-            "orderNum": this.advertisementFormData.orderNum,
-          };
           if (valid) {
             this.advertisementFormDataList[this.currentAdvertisementTabIndex] = this.advertisementFormData;
 
             this.$http.post(this.$baseUrl + this.brandAdvertisementAddOrUpdateRequest + `/${this.brandFormData.id}`, this.advertisementFormDataList).then((response) => {
               console.log(response)
-              this.dialogFormVisible = false;
+              this.advertisementDialogFlag = false;
               this.$message.success('信息修改成功');
               this.getTableData();
             }).catch(error => {
@@ -603,7 +609,7 @@
       },
       uploadSuccess1(response) {
         console.log(response)
-        this.brandFormData.iconUrl = response.url;
+        this.brandFormData.icon = response.url;
       },
       uploadSuccess2(response) {
         this.advertisementFormDataList[this.currentAdvertisementTabIndex].url = response.url;
@@ -653,6 +659,28 @@
       reset() {
         this.queryModel.available = true;
       },
+      deleteAdvertise(data, index) {
+        this.$confirm('确认删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(repsonse => {
+          this.advertisementFormDataList.splice(index, 1);
+          this.currentAdvertisementTabIndex=0;
+        });
+      },
+      addAdvertise() {
+        this.advertisementFormDataList.push({
+          id: '',
+          url: '',
+          "location": "",
+          "iosEnable": false,
+          "androidEnable": false,
+          "status": 0,
+          orderNum: null
+        });
+        this.refreshData(this.advertisementFormDataList);
+      }
 
     }
   }
