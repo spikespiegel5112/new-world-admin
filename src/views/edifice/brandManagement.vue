@@ -345,10 +345,15 @@
       },
       currentSortData(value) {
         console.log(value)
-        let result = []
-        value.forEach((item, index) => {
-          this.advertisementFormDataList[index].orderNum = index;
-        })
+        value.forEach((item1, index1) => {
+          this.advertisementFormDataList.forEach((item2, index2)=>{
+            if(item1.id===item2.id){
+              this.advertisementFormDataList[index2].orderNum=index1;
+            }
+          })
+        });
+        console.log(this.advertisementFormDataList)
+
 
       }
     },
