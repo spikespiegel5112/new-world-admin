@@ -139,14 +139,14 @@
     },
     methods: {
       updateFile(value) {
-        console.log(value)
+        // console.log(value)
         let valueArr = [];
         if (typeof value === 'string' && value !== ''&& value !== null) {
           valueArr.push(value)
           // debugger
         }
         this.innerFileList = [];
-        console.log(valueArr)
+        // console.log(valueArr)
         valueArr.forEach((item, index) => {
           this.$set(this.innerFileList, index, {
             name: this.innerFileList.length,
@@ -155,7 +155,7 @@
         });
         this.$emit('update:return-file-list', this.innerFileList);
         this.updateUrlList();
-        console.log(this.innerFileList)
+        // console.log(this.innerFileList)
       },
       updateUrlList() {
         if (this.multiple) {
@@ -172,9 +172,9 @@
           }
 
         }
-        console.log(this.innerFileList.map(item => {
-          return item.url;
-        })[0])
+        // console.log(this.innerFileList.map(item => {
+        //   return item.url;
+        // })[0])
       },
       handleBeforeUpload(file) {
         console.log(file)

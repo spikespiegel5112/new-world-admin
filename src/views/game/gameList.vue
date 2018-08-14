@@ -296,10 +296,10 @@
     methods: {
       getTableData() {
         this.listLoading = true;
-        let queryModel={};
-        Object.values(this.queryModel).forEach((item, index)=>{
-          if(item!==''){
-            queryModel[Object.keys(this.queryModel)[index]]=item;
+        let queryModel = {};
+        Object.values(this.queryModel).forEach((item, index) => {
+          if (item !== '') {
+            queryModel[Object.keys(this.queryModel)[index]] = item;
           }
         });
         console.log(this.queryModel)

@@ -79,3 +79,18 @@
     float: right;
   }
 }
+.edifice_sortadvertise_wrapper{
+  li{
+    display: inline-block;
+    margin: 10px;
+    width: 135px;
+    height: 135px;
+    text-align: center;
+    border:1px solid #ccc;
+    border-radius: 5px;
+    vertical-align: middle;
+    &:hover{
+      cursor: move;
+    }
+  }
+}

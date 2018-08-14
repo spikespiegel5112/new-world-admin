@@ -121,18 +121,16 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="advertisementDialogFlag" width="850px">
       <el-row type="flex" justify="center">
         <el-col :span="20">
-
-          <el-tabs v-model="currentAdvertisementTabIndex" @tab-click="switchAdvertisementData"
-                   @edit="editAdvertisementCount" editable>
-            <el-tab-pane v-for="(item, index) in advertisementFormDataList" :key="item.id"
-                         :label="item.orderNum!==null?'广告位'+(item.orderNum+1):'未确定顺序广告位'"
-                         :name="item.name">
-              <el-form :rules="rules" ref="advertisementFormData" :model="advertisementFormData" label-position="right"
+          <el-collapse accordion @change="switchAdvertisementData">
+            <el-collapse-item :title="'广告位'+(index+1)" v-for="(item, index) in advertisementFormDataList" :key="index"
+                              label="广告位" :name="index">
+              <el-form :rules="rules" ref="advertisementFormData" :model="advertisementFormData"
+                       label-position="right"
                        label-width="140px">
                 <el-form-item label="Icon" prop="icon">
                   <CommonUploadImage
                     :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
-                    @on-success="uploadSuccess1"
+                    @on-success="uploadSuccess2"
                     :returnUrlList.sync="advertisementFormData.url"
                   />
                   <el-input v-show="false" v-model="advertisementFormData.url"></el-input>
@@ -141,7 +139,8 @@
                   <el-input v-model="advertisementFormData.location"></el-input>
                 </el-form-item>
                 <el-form-item label="iOS可用性" prop="iosEnable">
-                  <el-switch v-model="advertisementFormData.iosEnable" active-color="#13ce66" inactive-color="#ff4949">
+                  <el-switch v-model="advertisementFormData.iosEnable" active-color="#13ce66"
+                             inactive-color="#ff4949">
                   </el-switch>
                 </el-form-item>
                 <el-form-item label="Android可用性" prop="androidEnable">
@@ -155,22 +154,42 @@
                   </el-switch>
                 </el-form-item>
                 <el-form-item label="广告顺序" prop="orderNum">
-                  <el-input-number v-model="advertisementFormData.orderNum" :min="1" :max="3"></el-input-number>
+                  <ul class="edifice_sortadvertise_wrapper">
+                    <Draggable v-model="currentSortData" :options="{}" @start="drag=true" @end="handleDragEnd">
+                      <li v-for="(item2, index2) in currentSortData">
+                        <img :src="item2.url!==''?item2.url+'-style_100x100':item2.url"/>
+                        <!--<img :src="item2.url"/>-->
+
+                        <a>{{item.isCurrent?'当前广告位':''}}{{item2.name}}</a>
+                      </li>
+                    </Draggable>
+                  </ul>
+
+                  <!--<el-input-number v-model="advertisementFormData.orderNum" :min="1" :max="3"></el-input-number>-->
                 </el-form-item>
               </el-form>
-            </el-tab-pane>
 
-          </el-tabs>
+            </el-collapse-item>
+          </el-collapse>
+
+
+          <!--<el-tabs v-model="currentAdvertisementTabIndex" @tab-click="switchAdvertisementData"-->
+          <!--@edit="editAdvertisementCount" editable>-->
+
+          <!--<el-tab-pane>-->
+          <!--</el-tab-pane>-->
+
+          <!--</el-tabs>-->
 
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
         <el-button v-if="dialogStatus==='create'" type="primary" @click="createAdvertisementData">
-          创建第{{Number(currentAdvertisementTabIndex)+1}}位广告
+          创建广告
         </el-button>
         <el-button v-else type="primary" @click="updateAdvertisementData" v-waves>
-          更新第{{Number(currentAdvertisementTabIndex)+1}}位广告
+          更新广告
         </el-button>
       </div>
     </el-dialog>
@@ -180,11 +199,14 @@
 <script>
   import CommonTag from '@/views/common/CommonTag.vue'
   import CommonQuery from '@/views/common/CommonQuery.vue'
+  import Draggable from 'vuedraggable'
 
   export default {
     components: {
       CommonTag,
       CommonQuery,
+      Draggable,
+
     },
     data() {
       return {
@@ -259,7 +281,7 @@
           "iosEnable": false,
           "androidEnable": false,
           "status": 0,
-          orderNum: false
+          orderNum: null
         },
         dialogFormVisible: false,
         dialogStatus: '',
@@ -307,7 +329,9 @@
         showFileListFlag: false,
         newFile: '',
         advertisementDialogFlag: false,
-        currentAdvertisementTabIndex: '0'
+        currentAdvertisementTabIndex: 0,
+        currentSortData: [],
+
       }
     },
     computed: {
@@ -315,7 +339,19 @@
         return this.$store.state.app.tableHeight;
       }
     },
-    watch: {},
+    watch: {
+      currentAdvertisementTabIndex(value) {
+        console.log(value)
+      },
+      currentSortData(value) {
+        console.log(value)
+        let result = []
+        value.forEach((item, index) => {
+          this.advertisementFormDataList[index].orderNum = index;
+        })
+
+      }
+    },
     mounted() {
       this.getTableData()
     },
@@ -394,20 +430,81 @@
       },
       handleUpdateAdvertisement(scope) {
         console.log(scope)
+        let sortListResult = [];
+        this.advertisementFormDataList = [];
         if (scope.row.advertisements.length > 0) {
           scope.row.advertisements.forEach((item, index) => {
             this.$set(this.advertisementFormDataList, index, item)
           });
+          console.log(this.advertisementFormDataList)
+          // debugger
           this.advertisementFormData = this.advertisementFormDataList[0];
         }
-        this.currentAdvertisementTabIndex = '0';
-        this.brandFormData.id=scope.row.id;
+        console.log(111, this.advertisementFormDataList)
+        this.currentAdvertisementTabIndex = 0;
+        this.brandFormData.id = scope.row.id;
+
+        for (let i = 0; i < scope.row.advertisements.length; i++) {
+          console.log(444,scope.row.advertisements[i])
+
+          if (typeof scope.row.advertisements[i].orderNum === 'number' && scope.row.advertisements[i].orderNum < this.advertisementFormDataList.length) {
+            sortListResult[scope.row.advertisements[i].orderNum] = scope.row.advertisements[i];
+            // debugger
+          } else {
+            // alert('dsds')
+            let flag = true;
+            for (let j = 0; j < 3; j++) {
+              if (typeof sortListResult[j] !== 'object' && flag === true) {
+                sortListResult[j] = scope.row.advertisements[i];
+                flag = false;
+              }
+            }
+          }
+        }
+        console.log(444,sortListResult)
+
+
+        for (let i = 0; i < sortListResult.length; i++) {
+          console.log(222, sortListResult.length)
+          if (typeof sortListResult[i] === 'undefined') {
+            sortListResult[i] = scope.row.advertisements[0];
+          }
+          sortListResult[i].isCurrent = false;
+          sortListResult[i].orderNum = i;
+        }
+        console.log(333,sortListResult)
+
+        this.currentSortData = sortListResult;
+        // this.currentSortData = this.advertisementFormData;
 
         this.dialogStatus = 'update';
         this.advertisementDialogFlag = true;
+
+
         // this.$nextTick(() => {
         //   this.$refs['advertisementFormData'].clearValidate()-
         // })
+      },
+      switchAdvertisementData(index) {
+        console.log(index)
+        console.log(this.currentAdvertisementTabIndex)
+        if (index !== '') {
+          this.advertisementFormDataList[this.currentAdvertisementTabIndex] = this.advertisementFormData;
+          this.advertisementFormData = this.advertisementFormDataList[index];
+          this.currentAdvertisementTabIndex = index;
+        }
+
+
+        // if (this.advertisementFormDataList.length > 0) {
+        //   this.advertisementFormData = this.advertisementFormDataList[Number(data.index)];
+        //   this.currentAdvertisementTabIndex = data.index;
+        // }
+        // this.currentSortData[Number(data.index)].isCurrent = true;
+        console.log(this.advertisementFormDataList)
+        console.log(this.advertisementFormData)
+      },
+      editAdvertisementCount(data, index) {
+
       },
       updateData() {
         this.$refs['brandFormData'].validate((valid) => {
@@ -441,17 +538,21 @@
       updateAdvertisementData() {
         console.log(this.$refs.advertisementFormData)
         this.$refs['advertisementFormData'][this.currentAdvertisementTabIndex].validate((valid) => {
-          let url=this.$baseUrl + this.brandAdvertisementAddOrUpdateRequest + `/${this.brandFormData.id}`
+          let url = '';
+          let submitData = []
+          let template = {
+            id: this.advertisementFormData.id,
+            url: this.advertisementFormData.url,
+            "location": this.advertisementFormData.location,
+            "iosEnable": this.advertisementFormData.iosEnable,
+            "androidEnable": this.advertisementFormData.androidEnable,
+            "status": this.advertisementFormData.status,
+            "orderNum": this.advertisementFormData.orderNum,
+          };
           if (valid) {
-            this.$http.post(url, {
-              id: this.advertisementFormData.id,
-              url: this.advertisementFormData.url,
-              "location": this.advertisementFormData.location,
-              "iosEnable": this.advertisementFormData.iosEnable,
-              "androidEnable": this.advertisementFormData.androidEnable,
-              "status": this.advertisementFormData.status,
-              "orderNum": this.advertisementFormData.orderNum,
-            }).then((response) => {
+            this.advertisementFormDataList[this.currentAdvertisementTabIndex] = this.advertisementFormData;
+
+            this.$http.post(this.$baseUrl + this.brandAdvertisementAddOrUpdateRequest + `/${this.brandFormData.id}`, this.advertisementFormDataList).then((response) => {
               console.log(response)
               this.dialogFormVisible = false;
               this.$message.success('信息修改成功');
@@ -462,6 +563,9 @@
             })
           }
         });
+      },
+      handleDragEnd(event) {
+        console.log(event)
       },
       handleDelete(scope) {
         this.$confirm('确认删除?', '提示', {
@@ -497,7 +601,7 @@
         this.brandFormData.iconUrl = response.url;
       },
       uploadSuccess2(response) {
-        this.brandFormData.bigImageUrl = response.url;
+        this.advertisementFormDataList[this.currentAdvertisementTabIndex].url = response.url;
       },
       uploadAvatarExceeded(files, fileList) {
         if (fileList.length > 0) {
@@ -544,17 +648,11 @@
       reset() {
         this.queryModel.available = true;
       },
-      switchAdvertisementData(data) {
-        console.log(data)
-        if (this.advertisementFormDataList.length > 0) {
-          this.advertisementFormData = this.advertisementFormDataList[Number(data.index)];
-          this.currentAdvertisementTabIndex = data.index;
-        }
 
-      },
-      editAdvertisementCount(data, index) {
-
-      }
     }
   }
 </script>
+<style lang="scss">
+  @import '../../styles/edifice.scss';
+
+</style>
