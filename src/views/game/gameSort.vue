@@ -22,7 +22,7 @@
                       </li>
                     </Draggable>
                   </ul>
-                  <ul class="addgame" v-if="currentSortData.length<currentTopNumber">
+                  <ul class="add" v-if="currentSortData.length<currentTopNumber">
                     <li>
                       <a class="plus" @click="handleAddGame">
                         <span class="add el-icon-circle-plus-outline"></span>

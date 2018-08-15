@@ -63,7 +63,6 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="850px">
       <el-row type="flex" justify="center">
         <el-col :span="20">
-
           <el-form :rules="rules" ref="brandFormData" :model="brandFormData" label-position="right" label-width="140px">
             <el-form-item label="品牌名称" prop="brandName">
               <el-input v-model="brandFormData.brandName"></el-input>
@@ -101,8 +100,6 @@
             <el-form-item label="钥匙被领取数" prop="keyReceived">
               <el-input-number v-model="brandFormData.keyReceived"></el-input-number>
             </el-form-item>
-
-
             <el-form-item label="品牌过期时间" prop="endDate">
               <el-date-picker v-model="brandFormData.endDate"></el-date-picker>
             </el-form-item>
@@ -168,33 +165,20 @@
                     <Draggable v-model="currentSortData" :options="{}" @start="drag=true" @end="handleDragEnd">
                       <li v-for="(item2, index2) in currentSortData">
                         <img :src="item2.url!==''?item2.url+'-style_100x100':item2.url"/>
-                        <!--<img :src="item2.url"/>-->
-
                         <a>{{item.isCurrent?'当前广告位':''}}{{item2.name}}</a>
                       </li>
                     </Draggable>
                   </ul>
-
-                  <!--<el-input-number v-model="advertisementFormData.orderNum" :min="1" :max="3"></el-input-number>-->
                 </el-form-item>
               </el-form>
 
             </el-collapse-item>
           </el-collapse>
 
-
-          <!--<el-tabs v-model="currentAdvertisementTabIndex" @tab-click="switchAdvertisementData"-->
-          <!--@edit="editAdvertisementCount" editable>-->
-
-          <!--<el-tab-pane>-->
-          <!--</el-tab-pane>-->
-
-          <!--</el-tabs>-->
-
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
+        <el-button @click="advertisementDialogFlag = false" v-waves>{{$t('table.cancel')}}</el-button>
         <el-button v-if="dialogStatus==='create'" type="primary" @click="createAdvertisementData">
           创建广告
         </el-button>
@@ -245,7 +229,9 @@
           name: '9:16（三条）',
           code: 3
         }],
-        queryModel: {},
+        queryModel: {
+          sort: 'desc'
+        },
         natureDictionary: [{
           code: 1,
           name: 'app'
@@ -518,12 +504,6 @@
           this.currentAdvertisementTabIndex = index;
         }
 
-
-        // if (this.advertisementFormDataList.length > 0) {
-        //   this.advertisementFormData = this.advertisementFormDataList[Number(data.index)];
-        //   this.currentAdvertisementTabIndex = data.index;
-        // }
-        // this.currentSortData[Number(data.index)].isCurrent = true;
         console.log(this.advertisementFormDataList)
         console.log(this.advertisementFormData)
       },
@@ -566,8 +546,27 @@
             this.$http.post(this.$baseUrl + this.brandAdvertisementAddOrUpdateRequest + `/${this.brandFormData.id}`, this.advertisementFormDataList).then((response) => {
               console.log(response)
               this.advertisementDialogFlag = false;
-              this.$message.success('信息修改成功');
-              this.getTableData();
+
+              switch (response.code) {
+                case 10000:
+                  this.$message.success('信息修改成功');
+                  this.getTableData();
+                  // this.refreshData();
+                  break;
+                case 30002:
+                  this.$message.error(response.message);
+                  break;
+                case 30003:
+                  this.$message.success('信息修改成功');
+                  setTimeout(() => {
+                    this.$message.warning(response.message);
+                  }, 1000);
+                  break;
+                default:
+                  this.$message.success(response.message);
+                  this.getTableData();
+                // this.refreshData();
+              }
             }).catch(error => {
               console.log(error)
               this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
@@ -666,12 +665,11 @@
           type: 'warning'
         }).then(repsonse => {
           this.advertisementFormDataList.splice(index, 1);
-          this.currentAdvertisementTabIndex=0;
+          this.currentAdvertisementTabIndex = 0;
         });
       },
       addAdvertise() {
         this.advertisementFormDataList.push({
-          id: '',
           url: '',
           "location": "",
           "iosEnable": false,

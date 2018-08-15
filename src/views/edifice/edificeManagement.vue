@@ -5,8 +5,8 @@
     <el-row type="flex" justify='center'>
       <el-col :span="24">
         <div class="edifice_main_container common_sortlist_wrapper">
-          <div class="buildingname">大楼名称：{{buildingName}}</div>
-          <ul class="addgame">
+          <div class="buildingname">大楼名称：{{floorFormData.buildingName}}</div>
+          <ul class="add">
             <li>
               <a class="plus" @click="handleAddFloor">
                 <span class="add el-icon-circle-plus-outline"></span>
@@ -25,9 +25,9 @@
                 </el-col>
                 <el-col :span="23">
                   <el-row>
-                    <el-col :span="23">
+                    <el-col :span="23" :style="{minHeight:'10px'}">
                       <el-form ref="form" label-width="150px" class="maincontent">
-                        <el-row class="floordesc">
+                        <el-row v-if="item.brand!==null" class="floordesc">
                           <el-col class="brandmeta" :span="4">
                             <el-form-item label="品牌名称：">
                               <span>{{item.brand.brandName}}</span>
@@ -53,25 +53,21 @@
                               <span>{{item.brand.keyNumPerUser}}</span>
                             </el-form-item>
                           </el-col>
-                          <el-col class="operation" :span="3">
-                            <el-button type="primary" size="mini" @click="handleAddBrand" :disable="item!=={}">添加品牌
-                            </el-button>
-                            <el-button type="primary" size="mini" @click="handleAddBrand" :disable="item==={}">移除品牌
-                            </el-button>
-                          </el-col>
+
                         </el-row>
                         <el-row class="advertisedesc">
-                          <el-col class="brandmeta" :span="3">
+                          <el-col v-if="item.brand!==null" class="brandmeta" :span="3">
                             <el-form-item label="品牌icon：">
                               <img :src="item.brand.icon+'-style_100x100'"/>
                             </el-form-item>
                           </el-col>
 
-                          <el-col class="brandmeta" :span="21">
+                          <el-col v-if="item.brand!==null" class="brandmeta" :span="21">
                             <el-form-item label="广告：">
                               <ul class="advertiselist">
                                 <li v-for="item2 in item.brand.advertisements">
-                                  <img :src="item2.url+'-style_100x100'"/>
+                                  <img
+                                    :src="item2.url!==''?item2.url+'-style_100x100':'/static/img/default/empty_700_700.jpg'"/>
                                   <el-form ref="form" label-width="130px" class="advertisemeta">
                                     <el-form-item label="Android可用性：">
                                       <el-tag v-if="item2.androidEnable===true" type="success">可用</el-tag>
@@ -91,23 +87,49 @@
                               </ul>
                             </el-form-item>
                           </el-col>
+                          <el-col class="operation" :span="3">
+                          </el-col>
                         </el-row>
                       </el-form>
-
                     </el-col>
                     <el-col :span="1">
-                      <a v-if="item.floorsRank===pagination.total" @click="minusGame(index)" class="minus">
-                        <span class="add el-icon-remove-outline"></span>
-                      </a>
+                      <el-form>
+                        <el-row>
+                          <el-form-item>
+                            <a v-if="item.floorsRank===pagination.total-1" @click="removeFloor(item)" class="minus">
+                              <span class="add el-icon-remove-outline"></span>
+                            </a>
+                          </el-form-item>
+                        </el-row>
+                        <el-row>
+                          <ul class="">
+                            <li>
+                              <el-button type="primary" size="mini" @click="handleAddBrand(item)" :disable="item!=={}">
+                                添加品牌
+                              </el-button>
+                            </li>
+                            <li>
+                              <el-button type="primary" size="mini" @click="removeBrand(item)" :disable="item==={}">
+                                移除品牌
+                              </el-button>
+                            </li>
+                            <li>
+                              <el-button type="primary" size="mini" @click="handleUpdateFloor(item)"
+                                         :disable="item!=={}">
+                                编辑楼层
+                              </el-button>
+                            </li>
+                          </ul>
+
+                        </el-row>
+                      </el-form>
                     </el-col>
                   </el-row>
                 </el-col>
               </el-row>
 
-
             </li>
           </ul>
-
         </div>
       </el-col>
     </el-row>
@@ -121,43 +143,44 @@
 
 
     <!-- 弹框 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="addFloorFormVisible" width="600px">
+    <el-dialog :title="editFloorTextMap[dialogStatus]" :visible.sync="editFloorDialogFlag" width="600px">
       <el-row type="flex" justify="center">
         <el-col :span="20">
           <el-form :rules="rules" ref="queryModel" :model="queryModel" label-position="right" label-width="150px">
-            <el-form-item label="Icon" prop="icon">
-              <CommonUploadImage
-                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
-                @on-success="uploadSuccess"
-                :returnUrlList.sync="floorFormData.url"
-              />
-              <el-input v-show="false" v-model="floorFormData.url"></el-input>
-            </el-form-item>
-            <el-form-item label="广告链接" prop="location">
-              <el-input v-model="floorFormData.location"></el-input>
-            </el-form-item>
-            <el-form-item label="iOS可用性" prop="iosEnable">
-              <el-switch v-model="floorFormData.iosEnable" active-color="#13ce66"
-                         inactive-color="#ff4949">
-              </el-switch>
-            </el-form-item>
-            <el-form-item label="Android可用性" prop="androidEnable">
-              <el-switch v-model="floorFormData.androidEnable" active-color="#13ce66"
-                         inactive-color="#ff4949">
-              </el-switch>
-            </el-form-item>
-            <el-form-item label="是否上线" prop="status">
+            <el-form-item label="是否上架" prop="status">
               <el-switch v-model="floorFormData.status" :active-value="1" :inactive-value="0" active-color="#13ce66"
                          inactive-color="#ff4949">
               </el-switch>
-
             </el-form-item>
           </el-form>
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
-        <el-button type="primary" @click="addFloor" v-waves>{{$t('table.confirm')}}</el-button>
+        <el-button @click="editFloorDialogFlag = false" v-waves>{{$t('table.cancel')}}</el-button>
+        <el-button type="primary" @click="updateFloor" v-waves>{{$t('table.confirm')}}</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 弹框 -->
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="addBrandDialogFlag" width="600px">
+      <el-row type="flex" justify="center">
+        <el-col :span="20">
+          <el-form :rules="rules" ref="currentFloorData" :model="currentFloorData" label-position="right"
+                   label-width="150px">
+            <el-form-item label="品牌名称" prop="chosenBrandName">
+              <el-autocomplete
+                v-model="currentFloorData.chosenBrandName"
+                :fetch-suggestions="focusSortList"
+                placeholder="请输入内容"
+                @select="chooseBrand"
+              ></el-autocomplete>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addBrandDialogFlag = false" v-waves>{{$t('table.cancel')}}</el-button>
+        <el-button type="primary" @click="addBrand" v-waves>{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -176,10 +199,15 @@
     },
     data() {
       return {
-        // findFloorsRequest: 'building-show-service/1.0.0/buildingShow/findFloors',
         floorsListRequest: 'building-show-service/1.0.0/bk/floors/list',
 
-        floorsAddOrUpdateRequest: 'building-show-service/1.0.0/bk/floors/addOrUpdate',
+        addOrUpdateFloorsRequest: 'building-show-service/1.0.0/bk/floors/addOrUpdate',
+
+        deleteFloorsRequest: 'building-show-service/1.0.0/bk/floors/delete',
+
+        brandListRequest: 'building-show-service/1.0.0/bk/brand/list',
+        addBrandToFloorRequest: 'building-show-service/1.0.0/bk/floors/addBrand',
+        removeBrandToFloorRequest: 'building-show-service/1.0.0/bk/floors/removeBrand',
 
 
         floorList: [],
@@ -189,8 +217,7 @@
         },
         pagination: {
           page: 1,
-          size: 10,
-          total: 0
+          size: 20,
         },
         formData: {
           id: 0,
@@ -208,23 +235,23 @@
           status: null
         },
         floorFormData: {
-          "url": '',
-          "location": '',
-          "orderNum": null,
-          "iosEnable": false,
-          "androidEnable": false,
-          "status": 0,
+          buildingName: '',
+          "status": 1,
           "id": '',
+          floorsRank: ''
         },
-        dialogFormVisible: false,
         dialogStatus: "",
         textMap: {
           update: "Edit",
           create: "Create"
         },
+        editFloorTextMap: {
+          update: "编辑楼层",
+          create: "创建楼层"
+        },
         dialogPvVisible: false,
         rules: {
-          name: [{
+          chosenBrandName: [{
             required: true,
             message: "此项为不能为空",
             trigger: "change"
@@ -232,10 +259,14 @@
         },
         loading: false,
         deviceType: 'ios',
-        chosenGameName: '',
-        buildingName: '',
-        addFloorFormVisible: false
-
+        editFloorDialogFlag: false,
+        addBrandDialogFlag: false,
+        currentSortData: [],
+        chosenBrandData: {},
+        currentBrandId: '',
+        currentFloorData: {
+          chosenBrandName: '',
+        }
       };
     },
     computed: {
@@ -255,7 +286,7 @@
       "formData.bigImageUrl": function (value) {
         console.warn(value);
       },
-      chosenGameName(value) {
+      chosenBrandName(value) {
         this.queryModel.name = value;
       },
       initSortData(value) {
@@ -266,17 +297,8 @@
       this.getSortList();
     },
     methods: {
-
       getSortList() {
-        let deviceTypeList = ["android", "ios"];
-
-        // let queryModel={};
-        // Object.keys(this.queryModel).forEach(item=>{
-        //   if(item!=='brandName'){
-        //     queryModel[item]=this.queryModel[item]
-        //   }
-        // });
-        let queryModel=this.queryModel;
+        let queryModel = this.queryModel;
 
         this.$http.get(this.$baseUrl + this.floorsListRequest, {
           params: Object.assign(queryModel, this.pagination)
@@ -284,132 +306,171 @@
           console.log(response);
           this.loading = false;
           this.floorList = response.list;
-          this.buildingName = response.list[0].buildingName;
+          this.floorFormData.buildingName = response.list[0].buildingName;
           this.pagination.total = response.total;
-        });
-      },
-      handleUpdate(scope) {
-        console.log(scope);
-        this.formData = Object.assign({}, scope.row);
-        this.effectiveDuration = [scope.row.startDate, scope.row.endDate];
-
-        this.dialogStatus = "update";
-        this.dialogFormVisible = true;
-        this.$nextTick(() => {
-          this.$refs["formData"].clearValidate();
         });
       },
 
       handleAddFloor() {
-        this.addFloorFormVisible = true;
-
+        this.dialogStatus = "create";
+        this.editFloorDialogFlag = true;
+        this.floorFormData = Object.assign(this.floorFormData, {
+          id: '',
+          status: 1
+        })
       },
-      addFloor() {
-        this.$http.post(this.$baseUrl + this.floorsAddOrUpdateRequest, Object.assign(this.floorFormData, {
-          orderNum: this.pagination.total + 1
-        })).then(response => {
+      handleUpdateFloor(data) {
+        console.log(data)
+        this.dialogStatus = "update";
+        this.editFloorDialogFlag = true;
+        this.floorFormData = Object.assign(this.floorFormData, {
+          id: data.id,
+          buildingName: '',
+          floorsRank:data.floorsRank
+        })
+      },
+      updateFloor() {
+        this.$http.post(this.$baseUrl + this.addOrUpdateFloorsRequest, this.floorFormData).then(response => {
           console.log(response)
           this.getSortList();
-          this.$message.success('已添加一层楼')
+          this.editFloorDialogFlag = false;
+          this.$message.success('楼层信息修改成功')
         }).catch(error => {
           this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },
-
-      addGame() {
-        if (Object.keys(this.chosenGameInfo).length > 0) {
-          let result = [];
-          result = this.currentSortData;
-          result.push(this.chosenGameInfo);
-          this.currentSortData = result;
-          console.log(this.currentSortData);
-          console.log(this.initSortData);
-          this.dialogFormVisible = false;
-
-        } else {
-          this.$message.warning("无游戏可添加");
-        }
+      handleAddBrand(data) {
+        this.dialogStatus = "update";
+        this.addBrandDialogFlag = true;
+        this.currentFloorData.chosenBrandName = '';
+        this.currentFloorData = data;
       },
-      minusGame(index) {
-        let result = this.currentSortData;
-        result.splice(index, 1);
-        this.currentSortData = result;
-        console.log(this.currentSortData);
+      addBrand() {
+        this.$refs['currentFloorData'].validate(valid => {
+          if (valid) {
+            this.$http.post(this.$baseUrl + this.addBrandToFloorRequest + `/${this.currentFloorData.id}/${this.chosenBrandData.id}`, {}).then(response => {
+              console.log(response)
+
+              switch (response.code) {
+                case 10000:
+                  this.$message.success('品牌添加成功');
+                  this.getSortList();
+                  this.addBrandDialogFlag = false;
+                  break;
+                case 30002:
+                  this.$message.warning(response.message);
+                  break;
+                case 30004:
+                  this.$message.error(response.message);
+                  break;
+                default:
+                  this.$message.success(response.message);
+                  this.getSortList();
+                  this.addBrandDialogFlag = false;
+              }
+            }).catch(error => {
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+            })
+          }
+        });
+      },
+      removeBrand(data) {
+        this.$confirm('确认删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.currentFloorData = data;
+
+          this.$http.post(this.$baseUrl + this.removeBrandToFloorRequest + `/${this.currentFloorData.id}`, {}).then(response => {
+            console.log(response)
+
+            switch (response.code) {
+              case 10000:
+                this.$message.success('品牌移除成功');
+                this.getSortList();
+                break;
+              case 30001:
+                this.$message.error(response.message);
+                break;
+              default:
+                this.$message.success(response.message);
+                this.getSortList();
+            }
+            this.getSortList();
+
+          })
+        }).catch(error => {
+
+        })
+      },
+      removeFloor(data) {
+
+        this.$confirm('确认删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http.delete(this.$baseUrl + this.deleteFloorsRequest + `/${data.id}`).then(response => {
+            console.log(response)
+
+            switch (response.code) {
+              case 10000:
+                this.$message.success('楼层移除成功')
+                this.getSortList();
+                break;
+              case 30001:
+                this.$message.error(response.message);
+                break;
+              default:
+                this.$message.success(response.message);
+                this.getSortList();
+            }
+
+          }).catch(error => {
+            this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+          })
+        }).catch(() => {
+
+        })
       },
 
-      handleAddBrand() {
-        this.dialogFormVisible = true;
-        this.queryModel.name = "";
-        this.chosenGameName = "";
-        let requestBody = {};
-        if (this.currentSortData.length === 0) {
-          this.$message.warning("排序列表不能为空");
-          return;
-        }
-        if (this.currentDeviceType === "ios") {
-          requestBody = {
-            iosGameIdList: this.currentSortData.map(item => item.id)
-          };
-        } else if (this.currentDeviceType === "android") {
-          requestBody = {
-            androidGameIdList: this.currentSortData.map(item => item.id)
-          };
-        }
-        this.$http.post(this.$baseUrl + this.rankGameByTypeRequest + `/${this.currentGameTypeId}`, requestBody).then(response => {
+
+      focusSortList(queryString, callback) {
+        console.log(this.gameOptions);
+
+
+        this.$http.get(this.$baseUrl + this.brandListRequest, {
+          params: {
+            page: this.pagination.page,
+            size: this.pagination.size,
+            sort: this.queryModel.sort,
+            brandName: this.currentFloorData.chosenBrandName
+          }
+        }).then(response => {
           console.log(response);
-          this.getSortList();
+          let result = [];
+          if (response.list.length !== 0) {
+            response.list.forEach((item, index) => {
+              result.push(Object.assign(item, {
+                value: item.brandName
+              }));
+            });
+
+            console.log(result)
+            callback(result)
+          }
+
         }).catch(error => {
           this.$message.error(
             `${error.response.status.toString()}  ${error.response.data.error}`
           );
         });
       },
-      focusSortList(queryString, callback) {
-        console.log(this.gameOptions);
-        this.loading = true;
 
-        this.queryModel = Object.assign(this.queryModel, {
-          limit: 999,
-          page: 1,
-          status: 1,
-          title: "",
-          description: "",
-          gameTypeId: ""
-        });
-        console.log(this.queryModel);
-
-        this.$http.get(this.$baseUrl + this.game_infoListRequest, {
-          params: this.queryModel
-        }).then(response => {
-          console.log(response);
-          this.loading = false;
-          this.total = response.total;
-          let result = [];
-          if (response.list.length !== 0) {
-            response.list.forEach((item, index) => {
-              result.push(
-                Object.assign(item, {
-                  value: item.name
-                })
-              );
-            });
-            this.currentSortData.forEach(item1 => {
-              result = result.filter(item2 => item1.name !== item2.name);
-            });
-
-            console.log(111, result);
-
-            callback(result);
-
-            console.log(222, this.gameOptions);
-          }
-        });
-      },
-
-      chooseGame(data) {
+      chooseBrand(data) {
         console.log(333, data);
-        this.chosenGameInfo = data;
-        this.queryModel.name = data.value;
+        this.chosenBrandData = data;
       },
       openAdvertiseUrl(data) {
         window.open('//' + data)
@@ -424,7 +485,14 @@
       },
       uploadSuccess(response) {
         console.log(response)
-        this.brandFormData.icon = response.url;
+        this.floorFormData.url = response.url;
+      },
+      resetTemp() {
+        this.floorFormData = {
+          id: '',
+          buildingName: '',
+          status: 1
+        };
       },
     }
   };
