@@ -5,7 +5,22 @@
     <el-row type="flex" justify='center'>
       <el-col :span="24">
         <div class="edifice_main_container common_sortlist_wrapper">
-          <div class="buildingname">大楼名称：{{floorFormData.buildingName}}</div>
+          <el-form :inline="true">
+            <div v-if="!editBuildingNameFlag" class="buildingname">
+              <el-form-item label="大楼名称：">
+                {{floorFormData.buildingName}}
+                <el-button type="text" icon="el-icon-edit-outline" @click="editBuildingNameFlag=true"></el-button>
+              </el-form-item>
+            </div>
+            <div v-else class="buildingname">
+              <el-form-item label="大楼名称：">
+                <el-input v-model="floorFormData.buildingName" @blur="editBuildingNameFlag=false">
+                  <el-button slot="append" icon="el-icon-check" @click="saveBuildingName"></el-button>
+                </el-input>
+              </el-form-item>
+            </div>
+          </el-form>
+
           <ul class="add">
             <li>
               <a class="plus" @click="handleAddFloor">
@@ -18,9 +33,10 @@
               <el-row>
                 <el-col :span="1">
                   <div class="floornumber">
-                    <span>{{item.floorsRank}}</span>
-                    <label>楼</label>
-
+                    <span>
+                      {{item.floorsRank}}
+                    <p>楼</p>
+                    </span>
                   </div>
                 </el-col>
                 <el-col :span="23">
@@ -96,7 +112,7 @@
                       <el-form>
                         <el-row>
                           <el-form-item>
-                            <a v-if="item.floorsRank===pagination.total-1" @click="removeFloor(item)" class="minus">
+                            <a v-if="item.floorsRank===pagination.total" @click="removeFloor(item)" class="minus">
                               <span class="add el-icon-remove-outline"></span>
                             </a>
                           </el-form-item>
@@ -120,14 +136,12 @@
                               </el-button>
                             </li>
                           </ul>
-
                         </el-row>
                       </el-form>
                     </el-col>
                   </el-row>
                 </el-col>
               </el-row>
-
             </li>
           </ul>
         </div>
@@ -266,7 +280,8 @@
         currentBrandId: '',
         currentFloorData: {
           chosenBrandName: '',
-        }
+        },
+        editBuildingNameFlag: false
       };
     },
     computed: {
@@ -306,7 +321,7 @@
           console.log(response);
           this.loading = false;
           this.floorList = response.list;
-          this.floorFormData.buildingName = response.list[0].buildingName;
+          this.floorFormData.buildingName = response.list.filter(item => item.buildingName !== '' && item.buildingName !== null)[0].buildingName;
           this.pagination.total = response.total;
         });
       },
@@ -326,7 +341,7 @@
         this.floorFormData = Object.assign(this.floorFormData, {
           id: data.id,
           buildingName: '',
-          floorsRank:data.floorsRank
+          floorsRank: data.floorsRank
         })
       },
       updateFloor() {
@@ -494,6 +509,22 @@
           status: 1
         };
       },
+      saveBuildingName() {
+        this.editBuildingNameFlag = true;
+
+        this.floorFormData = Object.assign(this.floorFormData, {
+          id: this.floorList[0].id,
+          floorsRank: this.floorList[0].floorsRank
+        });
+        this.$http.post(this.$baseUrl + this.addOrUpdateFloorsRequest, this.floorFormData).then(response => {
+          console.log(response)
+          this.getSortList();
+          this.$message.success('大楼名称修改成功')
+          this.editBuildingNameFlag = false;
+        }).catch(error => {
+          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+        })
+      }
     }
   };
 </script>

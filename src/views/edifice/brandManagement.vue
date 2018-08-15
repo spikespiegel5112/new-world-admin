@@ -208,8 +208,7 @@
         brandAddOrUpdateRequest: 'building-show-service/1.0.0/bk/brand/addOrUpdate',
         brandAdvertisementAddOrUpdateRequest: 'building-show-service/1.0.0/bk/brandAdvertisement/addOrUpdate',
 
-
-        brandDeleteRequest: 'building-show-service/1.0.0/brand/delete',
+        brandDeleteRequest: 'building-show-service/1.0.0/bk/brand/delete',
 
         value2: '',
         value1: '',

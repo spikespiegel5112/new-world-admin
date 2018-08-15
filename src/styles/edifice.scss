@@ -21,12 +21,13 @@
           font-size: 25px;
           border-radius: 50%;
           vertical-align: middle;
+          p{
+            //display: inline-block;
+            //vertical-align: bottom;
+            font-size: 15px;
+          }
         }
-        label{
-          display: inline-block;
-          vertical-align: bottom;
-          font-size: 15px;
-        }
+
 
       }
       .maincontent {
@@ -36,9 +37,14 @@
   }
   .buildingname {
     margin: 10px 15px;
-    font-size: 20px;
+    min-height: 50px;
+    font-size: 15px;
     position: absolute;
     top: 0;
+    z-index: 1;
+    label{
+      font-size: 15px;
+    }
   }
   .floordesc {
     > li {
