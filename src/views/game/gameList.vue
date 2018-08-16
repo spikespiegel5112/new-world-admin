@@ -234,11 +234,11 @@
           version: ''
         },
         rules: {
-          title: [{required: true, message: '请输入显示名称', trigger: 'change'}],
-          name: [{required: true, message: '请输入唯一表示名称', trigger: 'change'}],
-          description: [{required: true, message: '请输入游戏描述', trigger: 'change'}],
-          iconUrl: [{required: true, message: '请上传图片', trigger: 'change'}],
-          bigImageUrl: [{required: true, message: '请上传图片', trigger: 'change'}],
+          name: [{required: true, message: '请输入名称', trigger: 'change'}],
+          title: [{required: false, message: '请输入标题', trigger: 'change'}],
+          description: [{required: false, message: '请输入游戏描述', trigger: 'change'}],
+          iconUrl: [{required: false, message: '请上传图片', trigger: 'change'}],
+          bigImageUrl: [{required: false, message: '请上传图片', trigger: 'change'}],
           iosDownloadUrl: [{required: false, message: '此项为必填项', trigger: 'change'}],
           androidDownloadUrl: [{required: false, message: '此项为必填项', trigger: 'change'}],
           webGameUrl: [{required: false, message: '此项为必填项', trigger: 'change'}],

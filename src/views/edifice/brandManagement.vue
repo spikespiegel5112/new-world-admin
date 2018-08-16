@@ -164,7 +164,7 @@
                   <ul class="edifice_sortadvertise_wrapper">
                     <Draggable v-model="currentSortData" :options="{}" @start="drag=true" @end="handleDragEnd">
                       <li v-for="(item2, index2) in currentSortData">
-                        <img :src="item2.url!==''?item2.url+'-style_100x100':item2.url"/>
+                        <img :src="item2.url!==''?item2.url+'-style_100x100':'/static/img/default/empty_700_700.jpg'"/>
                         <a>{{item.isCurrent?'当前广告位':''}}{{item2.name}}</a>
                       </li>
                     </Draggable>

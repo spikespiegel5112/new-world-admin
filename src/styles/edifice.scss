@@ -96,6 +96,16 @@
     border:1px solid #ccc;
     border-radius: 5px;
     vertical-align: middle;
+    img{
+      display: inline-block;
+      width: 100%;
+      vertical-align: middle;
+    }
+    &:before{
+      content: '';
+      display: inline-block;
+      vertical-align: middle;
+    }
     &:hover{
       cursor: move;
     }
