@@ -69,7 +69,12 @@
                               <span>{{item.brand.keyNumPerUser}}</span>
                             </el-form-item>
                           </el-col>
-
+                          <el-col class="brandmeta" :span="3">
+                            <el-form-item label="key是否可用：">
+                              <el-tag v-if="item.brand.keyEnable===1" type="success">可用</el-tag>
+                              <el-tag v-if="item.brand.keyEnable===0" type="error">不可用</el-tag>
+                            </el-form-item>
+                          </el-col>
                         </el-row>
                         <el-row class="advertisedesc">
                           <el-col v-if="item.brand!==null" class="brandmeta" :span="3">
