@@ -326,7 +326,7 @@
           console.log(response);
           this.loading = false;
           this.floorList = response.list;
-          this.floorFormData.buildingName = response.list.filter(item => item.buildingName !== '' && item.buildingName !== null)[0].buildingName;
+          this.floorFormData.buildingName = item.buildingName !== '' ? response.list.filter(item => item.buildingName !== '' && item.buildingName !== null)[0].buildingName : '';
           this.pagination.total = response.total;
         });
       },
