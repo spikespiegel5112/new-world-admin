@@ -171,10 +171,8 @@
                   </ul>
                 </el-form-item>
               </el-form>
-
             </el-collapse-item>
           </el-collapse>
-
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
@@ -200,7 +198,6 @@
       CommonTag,
       CommonQuery,
       Draggable,
-
     },
     data() {
       return {
@@ -346,8 +343,6 @@
           })
         });
         console.log(this.advertisementFormDataList)
-
-
       }
     },
     mounted() {
@@ -449,6 +444,7 @@
         // })
       },
       refreshData(rawData) {
+        console.log(rawData)
         let sortListResult = [];
         this.advertisementFormDataList = [];
         if (rawData.length > 0) {
@@ -538,40 +534,49 @@
       },
       updateAdvertisementData() {
         console.log(this.$refs.advertisementFormData)
-        this.$refs['advertisementFormData'][this.currentAdvertisementTabIndex].validate((valid) => {
-          if (valid) {
-            this.advertisementFormDataList[this.currentAdvertisementTabIndex] = this.advertisementFormData;
-
-            this.$http.post(this.$baseUrl + this.brandAdvertisementAddOrUpdateRequest + `/${this.brandFormData.id}`, this.advertisementFormDataList).then((response) => {
-              console.log(response)
-              this.advertisementDialogFlag = false;
-
-              switch (response.code) {
-                case 10000:
-                  this.$message.success('信息修改成功');
-                  this.getTableData();
-                  // this.refreshData();
-                  break;
-                case 30002:
-                  this.$message.error(response.message);
-                  break;
-                case 30003:
-                  this.$message.success('信息修改成功');
-                  setTimeout(() => {
-                    this.$message.warning(response.message);
-                  }, 1000);
-                  break;
-                default:
-                  this.$message.success(response.message);
-                  this.getTableData();
-                // this.refreshData();
-              }
-            }).catch(error => {
-              console.log(error)
-              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
-            })
-          }
+        let validFlag = true;
+        this.$refs['advertisementFormData'].forEach((item, index) => {
+          this.$refs['advertisementFormData'][index].validate(valid => {
+            if (!valid) {
+              this.$message.warning('其他广告位表单输入不正确')
+              validFlag = false;
+            }
+          })
         });
+
+        if (validFlag) {
+          this.advertisementFormDataList[this.currentAdvertisementTabIndex] = this.advertisementFormData;
+
+          this.$http.post(this.$baseUrl + this.brandAdvertisementAddOrUpdateRequest + `/${this.brandFormData.id}`, this.advertisementFormDataList).then((response) => {
+            console.log(response)
+            this.advertisementDialogFlag = false;
+
+            switch (response.code) {
+              case 10000:
+                this.$message.success('信息修改成功');
+                this.getTableData();
+                // this.refreshData();
+                break;
+              case 30002:
+                this.$message.error(response.message);
+                break;
+              case 30003:
+                this.$message.success('信息修改成功');
+                setTimeout(() => {
+                  this.$message.warning(response.message);
+                }, 1000);
+                break;
+              default:
+                this.$message.success(response.message);
+                this.getTableData();
+              // this.refreshData();
+            }
+          }).catch(error => {
+            console.log(error)
+            this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+          })
+        }
+
       },
       handleDragEnd(event) {
         console.log(event)
@@ -611,7 +616,7 @@
       },
       uploadSuccess2(response) {
         this.advertisementFormDataList[this.currentAdvertisementTabIndex].url = response.url;
-        this.advertisementFormData.url=response.url;
+        this.advertisementFormData.url = response.url;
       },
       uploadAvatarExceeded(files, fileList) {
         if (fileList.length > 0) {

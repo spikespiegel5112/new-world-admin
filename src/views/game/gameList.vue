@@ -49,12 +49,20 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="来源" prop="source"></el-table-column>
+      <el-table-column align="center" label="合同时间范围" width="200px">
+        <template slot-scope="scope">
+          {{scope.row.startDate}} 至 {{scope.row.endDate}}
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="操作" width="200px">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
+
+
+
     </el-table>
     <!-- 分页 -->
     <div class="common-pagination-wrapper">
@@ -137,6 +145,15 @@
             </el-form-item>
             <el-form-item label="来源" prop="source">
               <el-input v-model="formData.source"></el-input>
+            </el-form-item>
+            <el-form-item label="合同时间范围" prop="startDate">
+              <el-date-picker
+                v-model="effectiveDuration"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
             </el-form-item>
           </el-form>
         </el-col>
@@ -272,7 +289,8 @@
         searchTxt: '',
         expandQuery: '',
         showFileListFlag: false,
-        newFile: ''
+        newFile: '',
+        effectiveDuration: []
       }
     },
     computed: {
@@ -343,7 +361,9 @@
           android: false,
           status: null,
           iosAppId: '',
-          source: ''
+          source: '',
+          startDate: '',
+          endDate: ''
         };
         this.fileList = []
       },
@@ -391,7 +411,9 @@
               android: this.formData.android,
               status: this.formData.status,
               iosAppId: this.formData.iosAppId,
-              source: this.formData.source
+              source: this.formData.source,
+              startDate: this.formData.startDate,
+              endDate: this.formData.endDate,
             }).then((response) => {
               console.log(response)
               this.dialogFormVisible = false;
@@ -475,20 +497,6 @@
           return false;
         }
         this.loading = true;
-      },
-      editAvailability(scope) {
-        console.log(scope.row)
-
-        this.availabilityFormData = Object.assign({}, {
-          "moduleId": scope.row.id,
-          "type": scope.row.type,
-          "iosEnable": scope.row.iosEnable,
-          "androidEnable": scope.row.androidEnable,
-          "version": scope.row.version,
-        })
-        console.log(this.availabilityFormData)
-        this.availabilityFlag = true;
-
       },
       expand() {
         this.expandQuery = !this.expandQuery;
