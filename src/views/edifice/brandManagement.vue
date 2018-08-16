@@ -439,7 +439,7 @@
         let rawData = scope.row.advertisements;
         this.brandFormData.id = scope.row.id;
 
-        this.refreshData(rawData)
+        this.refreshData(rawData);
 
         this.dialogStatus = 'update';
         this.advertisementDialogFlag = true;
@@ -662,8 +662,10 @@
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(repsonse => {
+        }).then(() => {
           this.advertisementFormDataList.splice(index, 1);
+          this.refreshData(this.advertisementFormDataList);
+
           this.currentAdvertisementTabIndex = 0;
         });
       },
