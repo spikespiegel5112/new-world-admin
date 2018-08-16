@@ -59,7 +59,7 @@
       >
       </el-pagination>
     </div>
-    <!-- 弹框 -->
+    <!-- 编辑品牌 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="850px">
       <el-row type="flex" justify="center">
         <el-col :span="20">
@@ -114,7 +114,7 @@
       </div>
     </el-dialog>
 
-    <!-- 弹框 -->
+    <!-- 编辑广告 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="advertisementDialogFlag" width="850px">
       <el-row type="flex" justify="center">
         <el-col :span="20">
@@ -134,7 +134,7 @@
               </div>
               <el-form :rules="rules" ref="advertisementFormData" :model="advertisementFormData" label-position="right"
                        label-width="140px">
-                <el-form-item label="Icon" prop="icon">
+                <el-form-item label="Icon" prop="url">
                   <CommonUploadImage
                     :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                     @on-success="uploadSuccess2"
@@ -284,10 +284,10 @@
         },
         dialogPvVisible: false,
         rules: {
-          brandName: [{required: true, message: '请输入显示名称', trigger: 'change'}],
-          type: [{required: true, message: '请输入显示名称', trigger: 'change'}],
-          icon: [{required: true, message: '请输入显示名称', trigger: 'change'}],
-          endDate: [{required: true, message: '请输入显示名称', trigger: 'change'}],
+          brandName: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          type: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          icon: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          endDate: [{required: true, message: '此项为必填项', trigger: 'change'}],
           status: [{required: true, message: '此项为必填项', trigger: 'change'}],
 
 
@@ -611,6 +611,7 @@
       },
       uploadSuccess2(response) {
         this.advertisementFormDataList[this.currentAdvertisementTabIndex].url = response.url;
+        this.advertisementFormData.url=response.url;
       },
       uploadAvatarExceeded(files, fileList) {
         if (fileList.length > 0) {
