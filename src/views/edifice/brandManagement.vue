@@ -100,8 +100,14 @@
             <el-form-item label="钥匙被领取数" prop="keyReceived">
               <el-input-number v-model="brandFormData.keyReceived"></el-input-number>
             </el-form-item>
-            <el-form-item label="品牌过期时间" prop="endDate">
-              <el-date-picker v-model="brandFormData.endDate"></el-date-picker>
+            <el-form-item label="合同时间范围" prop="startDate">
+              <el-date-picker
+                v-model="effectiveDuration"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
             </el-form-item>
 
           </el-form>
@@ -255,6 +261,7 @@
           "type": '',
           "icon": '',
           "status": '',
+          "startDate": '',
           "endDate": '',
           "keyNumPerUser": '',
           "keyTotal": '',
@@ -284,6 +291,7 @@
           brandName: [{required: true, message: '此项为必填项', trigger: 'change'}],
           type: [{required: true, message: '此项为必填项', trigger: 'change'}],
           icon: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          startDate:[{required: true, message: '此项为必填项', trigger: 'change'}],
           endDate: [{required: true, message: '此项为必填项', trigger: 'change'}],
           status: [{required: true, message: '此项为必填项', trigger: 'change'}],
 
@@ -321,6 +329,7 @@
         advertisementDialogFlag: false,
         currentAdvertisementTabIndex: 0,
         currentSortData: [],
+        effectiveDuration: []
 
       }
     },
@@ -330,6 +339,14 @@
       }
     },
     watch: {
+      effectiveDuration(value) {
+        console.log(value);
+        if (value === null) {
+          value = [];
+        }
+        this.brandFormData.startDate = value[0];
+        this.brandFormData.endDate = value[1];
+      },
       currentAdvertisementTabIndex(value) {
         console.log(value)
       },
@@ -423,6 +440,7 @@
       handleUpdate(scope) {
         console.log(scope)
         this.brandFormData = Object.assign({}, scope.row);
+        this.effectiveDuration = [scope.row.startDate, scope.row.endDate]
 
         this.dialogStatus = 'update';
         this.dialogFormVisible = true;
@@ -513,6 +531,9 @@
               "type": this.brandFormData.type,
               "icon": this.brandFormData.icon,
               "status": this.brandFormData.status,
+
+                "startDate": this.brandFormData.startDate,
+
               "endDate": this.brandFormData.endDate,
               "keyNumPerUser": this.brandFormData.keyNumPerUser,
               "keyTotal": this.brandFormData.keyTotal,
