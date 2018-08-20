@@ -158,7 +158,7 @@
                 </div>
                 <div v-else v-for="(item, index) in formData.detailImage" class="image-item">
                   <span v-if="defaultImageIndex===index" class="check el-icon-circle-check"></span>
-                  <img :src="item+'-style_100x100'" class="avatar" />
+                  <img :src="item+'-style_100x100'" class="avatar"/>
                   <ul class="operator">
                     <li @click="setDefault(index)">
                       <a>设为默认</a>
@@ -606,9 +606,15 @@
               effectiveEndTime: this.formData.effectiveEndTime
             }).then(response => {
               console.log(response)
-              this.dialogFormVisible = false;
-              this.$message.success('商品添加成功');
-              this.getTableData();
+              if (response.code === 200) {
+                this.getTableData();
+                this.resetForm();
+                console.log(response)
+                this.$message.success('商品添加成功');
+                this.dialogFormVisible = false;
+              } else {
+                this.$message.error(response.message)
+              }
             })
           }
         })
@@ -682,11 +688,18 @@
               effectiveStartTime: this.formData.effectiveStartTime,
               effectiveEndTime: this.formData.effectiveEndTime
             }).then(response => {
-              this.dialogFormVisible = false;
-              this.$message.success('产品信息更新成功');
-              this.getTableData();
-              this.resetForm();
-              console.log(response)
+              if (response.code === 200) {
+                this.getTableData();
+                this.resetForm();
+                console.log(response)
+                this.$message.success('产品信息更新成功');
+                this.dialogFormVisible = false;
+              } else {
+                this.$message.error(response.message)
+              }
+            }).catch(error => {
+              console.log(error)
+              this.$message.error(error)
             })
           }
         })
