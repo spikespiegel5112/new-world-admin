@@ -30,7 +30,8 @@
             <el-row>
               <el-col :span="8">
                 <el-form-item label="类型：">
-                  <el-select v-if="calendarTypeOptions.length!==0" clearable v-model="queryModel.location" placeholder="请选择">
+                  <el-select v-if="calendarTypeOptions.length!==0" clearable v-model="queryModel.location"
+                             placeholder="请选择">
                     <el-option v-for="item in calendarTypeOptions" :key="item.code" :label="item.name"
                                :value="item.code">
                     </el-option>
@@ -171,7 +172,7 @@
                   暂无图片
                 </div>
                 <div v-else v-for="(item, index) in [formData.image]" class="image-item">
-                  <img :src="item+'-style_100x100'" class="avatar" />
+                  <img :src="item+'-style_100x100'" class="avatar"/>
                   <ul class="operator">
                     <li>
                       <a class="el-icon-delete" @click="deleteImage(index)"></a>
@@ -369,8 +370,16 @@
     methods: {
       getTableData() {
         this.listLoading = true;
+        let queryObj = {};
+        if (this.queryModel.location === '') {
+          Object.keys(this.queryModel).forEach(item => {
+            if (item !== 'location') {
+              queryObj[item] = this.queryModel[item]
+            }
+          })
+        }
         this.$http.get(this.$baseUrl + this.advertisingListRequest, {
-          params: Object.assign(this.queryModel, this.pagination)
+          params: Object.assign(queryObj, this.pagination)
         }).then(response => {
           console.log(response)
           this.pagination.total = response.total;
