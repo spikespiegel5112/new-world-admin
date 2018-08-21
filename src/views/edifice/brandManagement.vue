@@ -29,7 +29,7 @@
       </el-table-column>
       <el-table-column align="center" label="类型">
         <template slot-scope="scope">
-          {{(scope.row.type!==''&&scope.row.type!==null)?brandTypeDictionary.filter(item=>item.code===scope.row.type)[0].name:''}}
+          {{(scope.row.type!==''&&scope.row.type!==null)?$store.state.app.brandTypeDictionary.filter(item=>item.code===scope.row.type)[0].name:''}}
         </template>
       </el-table-column>
       <el-table-column align="center" label="是否有钥匙" prop="status">
@@ -69,7 +69,7 @@
             </el-form-item>
             <el-form-item label="类型" prop="type">
               <el-select v-model="brandFormData.type">
-                <el-option v-for="item in brandTypeDictionary" :label="item.name" :value="item.code"
+                <el-option v-for="item in $store.state.app.brandTypeDictionary" :label="item.name" :value="item.code"
                            :key="item.code"></el-option>
               </el-select>
             </el-form-item>

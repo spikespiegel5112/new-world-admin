@@ -40,6 +40,7 @@ module.exports = {
       'uploader_modified$': resolve('/static/assets/js/simditor/uploader_modified.js'),
       // 'simpleHotkeys$': resolve('/static/assets/js/simditor/hotkeys.js'),
       '@': resolve('src'),
+      'swiper$': resolve('/src/assets/swiper/swiper.esm.bundle.js'),
     }
   },
   module: {
@@ -94,6 +95,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
+      swiper: 'Swiper',
       // simpleUploader: 'uploader_modified',
       // simpleHotkeys: 'simpleHotkeys'
 

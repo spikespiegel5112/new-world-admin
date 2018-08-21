@@ -7,7 +7,6 @@ import {baseUrl} from "./utils/request";
 import moment from 'moment';
 
 
-
 // import locale from 'element-ui/lib/locale/lang/zh-CN' // lang i18n
 
 import '@/styles/index.scss' // global css
@@ -73,7 +72,7 @@ Vue.prototype.$moment = moment;
 Vue.prototype.$moment.locale('zh-cn');
 
 Vue.prototype.$prodBaseUrl = 'http://gateway.zan-qian.com/';
-Vue.prototype.$prodEnv=process.env.NODE_ENV !== 'production';
+Vue.prototype.$prodEnv = process.env.NODE_ENV !== 'production';
 Vue.prototype.$baseUrl = baseUrl;
 console.log(baseUrl)
 // Vue.prototype.$baseUrl = 'http://testgate.zan-qian.com/';
@@ -85,7 +84,6 @@ import CommonLoading from './views/common/CommonLoading.vue'
 
 Vue.component('CommonUploadImage', CommonUploadImage);
 Vue.component('CommonLoading', CommonLoading);
-
 
 
 const VueInstance = new Vue({

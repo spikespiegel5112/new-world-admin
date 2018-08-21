@@ -66,7 +66,17 @@ const app = {
     }, {
       name: '全部',
       code: 'all'
-    }]
+    }],
+    brandTypeDictionary: [{
+      name: '16:9',
+      code: 1
+    }, {
+      name: '9:16（一条）',
+      code: 2
+    }, {
+      name: '9:16（三条）',
+      code: 3
+    }],
   },
   mutations: {
     UPDATE_LAYOUT_HEIGHT(state, payload) {

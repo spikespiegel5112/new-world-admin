@@ -8,7 +8,8 @@
           <el-form :inline="true">
             <div v-if="!editBuildingNameFlag" class="buildingname">
               <el-form-item label="大楼名称：">
-                {{floorFormData.buildingName}}
+                趣谷大厦
+                <!--{{floorFormData.buildingName}}-->
                 <el-button type="text" icon="el-icon-edit-outline" @click="editBuildingNameFlag=true"></el-button>
               </el-form-item>
             </div>
@@ -43,50 +44,60 @@
                   <el-row>
                     <el-col :span="23" :style="{minHeight:'10px'}">
                       <el-form ref="form" label-width="150px" class="maincontent">
-                        <el-row v-if="item.brand!==null" class="floordesc">
-                          <el-col class="brandmeta" :span="4">
-                            <el-form-item label="品牌名称：">
-                              <span>{{item.brand.brandName}}</span>
-                            </el-form-item>
-                          </el-col>
-                          <el-col class="brandmeta" :span="3">
-                            <el-form-item label="key总数量：">
-                              <span>{{item.brand.keyTotal}}</span>
-                            </el-form-item>
-                          </el-col>
-                          <el-col class="brandmeta" :span="3">
-                            <el-form-item label="key已领取数：">
-                              <span>{{item.brand.keyReceived}}</span>
-                            </el-form-item>
-                          </el-col>
-                          <el-col class="brandmeta" :span="3">
-                            <el-form-item label="key可用数：">
-                              <span>{{item.brand.keyEnable}}</span>
-                            </el-form-item>
-                          </el-col>
-                          <el-col class="brandmeta" :span="3">
-                            <el-form-item label="每用户可领取key数：">
-                              <span>{{item.brand.keyNumPerUser}}</span>
-                            </el-form-item>
-                          </el-col>
-                          <el-col class="brandmeta" :span="3">
-                            <el-form-item label="key是否可用：">
-                              <el-tag v-if="item.brand.keyEnable===1" type="success">可用</el-tag>
-                              <el-tag v-if="item.brand.keyEnable===0" type="error">不可用</el-tag>
-                            </el-form-item>
-                          </el-col>
-                        </el-row>
-                        <el-row class="advertisedesc">
-                          <el-col v-if="item.brand!==null" class="brandmeta" :span="3">
+                        <div v-if="item.brand!==null" class="floordesc">
+                          <div class="swiper-container">
+                            <ul class="swiper-wrapper">
+                              <li class="swiper-slide brandmeta">
+                                <el-form-item label="品牌名称：">
+                                  <span>{{item.brand.brandName}}</span>
+                                </el-form-item>
+                              </li>
+                              <li class="swiper-slide brandmeta">
+                                <el-form-item label="key总数量：">
+                                  <span>{{item.brand.keyTotal}}</span>
+                                </el-form-item>
+                              </li>
+                              <li class="swiper-slide brandmeta">
+                                <el-form-item label="key已领取数：">
+                                  <span>{{item.brand.keyReceived}}</span>
+                                </el-form-item>
+                              </li>
+                              <li class="swiper-slide brandmeta">
+                                <el-form-item label="key可用数：">
+                                  <span>{{item.brand.keyEnable}}</span>
+                                </el-form-item>
+                              </li>
+                              <li class="swiper-slide brandmeta">
+                                <el-form-item label="每用户可领取key数：">
+                                  <span>{{item.brand.keyNumPerUser}}</span>
+                                </el-form-item>
+                              </li>
+                              <li class="swiper-slide brandmeta">
+                                <el-form-item label="key是否可用：">
+                                  <el-tag v-if="item.brand.keyEnable===1" type="success">可用</el-tag>
+                                  <el-tag v-if="item.brand.keyEnable===0" type="error">不可用</el-tag>
+                                </el-form-item>
+                              </li>
+                              <li class="swiper-slide brandmeta">
+                                <el-form-item label="广告类型：">
+                                  <span>{{item.brand!==null?$store.state.app.brandTypeDictionary.filter(item2=>item2.code===item.brand.type)[0].name:''}}</span>
+                                </el-form-item>
+                              </li>
+                            </ul>
+                            <div class="swiper-scrollbar'"></div>
+                          </div>
+                        </div>
+                        <div class="advertisedesc">
+                          <div v-if="item.brand!==null" class="brandicon">
                             <el-form-item label="品牌icon：">
                               <img :src="item.brand.icon+'-style_100x100'"/>
                             </el-form-item>
-                          </el-col>
-
-                          <el-col v-if="item.brand!==null" class="brandmeta" :span="21">
-                            <el-form-item label="广告：">
-                              <ul class="advertiselist">
-                                <li v-for="item2 in item.brand.advertisements">
+                          </div>
+                          <div v-if="item.brand!==null" class="advertiselist">
+                            <div class="content swiper-container">
+                              <ul class="swiper-wrapper">
+                                <label>广告：</label>
+                                <li v-for="item2 in item.brand.advertisements" class="brandmeta swiper-slide">
                                   <img
                                     :src="item2.url!==''?item2.url+'-style_100x100':'/static/img/default/empty_700_700.jpg'"/>
                                   <el-form ref="form" label-width="130px" class="advertisemeta">
@@ -99,18 +110,19 @@
                                       <el-tag v-if="item2.iosEnable===false" type="error">不可用</el-tag>
                                     </el-form-item>
                                     <el-form-item label="链接：">
-                                      <el-button class="location" type="text" @click="openAdvertiseUrl(item2.location)">
+                                      <el-button class="location" type="text"
+                                                 @click="openAdvertiseUrl(item2.location)">
                                         {{item2.url}}
                                       </el-button>
                                     </el-form-item>
                                   </el-form>
                                 </li>
                               </ul>
-                            </el-form-item>
-                          </el-col>
-                          <el-col class="operation" :span="3">
-                          </el-col>
-                        </el-row>
+                            </div>
+                          </div>
+                        </div>
+                        <!--<el-col class="operation" :span="3">-->
+                        <!--</el-col>-->
                       </el-form>
                     </el-col>
                     <el-col :span="1">
@@ -209,6 +221,7 @@
   import CommonTag from "@/views/common/CommonTag.vue";
   import CommonQuery from "@/views/common/CommonQuery.vue";
   import Draggable from "vuedraggable";
+  import Swiper from "swiper";
 
   export default {
     components: {
@@ -243,7 +256,7 @@
           "status": 1,
           "id": '',
           floorsRank: '',
-          createTime:''
+          createTime: ''
         },
         dialogStatus: "",
         textMap: {
@@ -272,7 +285,9 @@
         currentFloorData: {
           chosenBrandName: '',
         },
-        editBuildingNameFlag: false
+        editBuildingNameFlag: false,
+        swiper1: {},
+        swiper2: {}
       };
     },
     computed: {
@@ -303,9 +318,34 @@
           this.floorList = response.list;
           this.floorFormData.buildingName = response.list.filter(item => item.buildingName !== '' && item.buildingName !== null).length > 0 ? response.list.filter(item => item.buildingName !== '' && item.buildingName !== null)[0].buildingName : '';
           this.pagination.total = response.total;
+
+          this.$nextTick(() => {
+            this.initSwiper()
+          });
         });
       },
+      initSwiper() {
+        this.swiper = new Swiper('.swiper-container', {
+          slidesPerView: 'auto',
+          freeMode: true,
+          scrollbar: {
+            el: '.swiper-scrollbar',
+          },
+          mousewheel: true,
+        });
+        setTimeout(() => {
+          this.swiper2 = new Swiper('.advertiselist .content', {
+            slidesPerView: 'auto',
+            freeMode: true,
+            scrollbar: {
+              el: '.swiper-scrollbar',
+            },
+            mousewheel: true,
+          });
+        }, 2000);
 
+
+      },
       handleAddFloor() {
         this.dialogStatus = "create";
         this.editFloorDialogFlag = true;
@@ -512,4 +552,6 @@
 
 <style lang='scss'>
   @import "../../styles/edifice.scss";
+  @import '../../assets/swiper/css/swiper.min.css';
+
 </style>
