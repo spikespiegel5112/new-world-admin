@@ -627,8 +627,7 @@
 
         this.formData = Object.assign({}, scope.row);
         this.formData.timestamp = new Date(this.formData.timestamp);
-        this.effectiveDuration[0] = this.formData.effectiveStartTime;
-        this.effectiveDuration[1] = this.formData.effectiveEndTime;
+        this.effectiveDuration = [scope.row.effectiveStartTime, scope.row.effectiveEndTime];
 
         this.dialogStatus = 'update';
         this.dialogFormVisible = true;

@@ -359,8 +359,8 @@
         if (value === null) {
           value = [];
         }
-        this.formData.createDate = value[0];
-        this.formData.endDate = value[1];
+        this.formData.createDate = this.$moment(value[0]).format('YYYY-MM-DD');
+        this.formData.endDate = this.$moment(value[1]).format('YYYY-MM-DD');
       }
     },
     mounted() {

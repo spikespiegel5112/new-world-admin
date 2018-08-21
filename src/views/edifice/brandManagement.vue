@@ -9,7 +9,7 @@
       </template>
       <template slot="query1">
         <div class="common-search-wrapper" @keyup.enter="search">
-          <input v-model="queryModel.name" type="text" placeholder="请输入游戏名称"/>
+          <input v-model="queryModel.brandName" type="text" placeholder="请输入游戏名称"/>
           <a>
             <span @click="search" class="el-icon-search"></span>
           </a>
@@ -39,10 +39,10 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="260px">
+      <el-table-column align="center" label="操作" width="300px">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdateAdvertisement(scope)">编辑广告</el-button>
-          <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
+          <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑品牌</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
@@ -97,8 +97,9 @@
             <el-form-item label="总钥匙数" prop="keyTotal">
               <el-input-number v-model="brandFormData.keyTotal"></el-input-number>
             </el-form-item>
-            <el-form-item label="钥匙被领取数" prop="keyReceived">
-              <el-input-number v-model="brandFormData.keyReceived"></el-input-number>
+            <el-form-item label="钥匙被领取数">
+              <label>{{brandFormData.keyReceived}}</label>
+              <!--<el-input-number v-model="brandFormData.keyReceived"></el-input-number>-->
             </el-form-item>
             <el-form-item label="合同时间范围" prop="startDate">
               <el-date-picker
@@ -232,7 +233,8 @@
           code: 3
         }],
         queryModel: {
-          sort: 'desc'
+          sort: 'desc',
+          brandName:''
         },
         natureDictionary: [{
           code: 1,
@@ -268,7 +270,8 @@
           "keyReceived": '',
           "keyEnable": '',
           "id": '',
-          "floorID": ''
+          "floorID": '',
+          createTime:''
         },
         advertisementFormDataList: [],
         advertisementFormData: {
@@ -291,7 +294,7 @@
           brandName: [{required: true, message: '此项为必填项', trigger: 'change'}],
           type: [{required: true, message: '此项为必填项', trigger: 'change'}],
           icon: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          startDate:[{required: true, message: '此项为必填项', trigger: 'change'}],
+          startDate: [{required: true, message: '此项为必填项', trigger: 'change'}],
           endDate: [{required: true, message: '此项为必填项', trigger: 'change'}],
           status: [{required: true, message: '此项为必填项', trigger: 'change'}],
 
@@ -344,8 +347,8 @@
         if (value === null) {
           value = [];
         }
-        this.brandFormData.startDate = value[0];
-        this.brandFormData.endDate = value[1];
+        this.brandFormData.startDate = this.$moment(value[0]).format('YYYY-MM-DD');
+        this.brandFormData.endDate = this.$moment(value[1]).format('YYYY-MM-DD');
       },
       currentAdvertisementTabIndex(value) {
         console.log(value)
@@ -405,7 +408,8 @@
           nature: "",
           ios: false,
           android: false,
-          status: null
+          status: null,
+          createTime: ''
         };
         this.advertisementFormData = {
           id: '',
@@ -440,7 +444,8 @@
       handleUpdate(scope) {
         console.log(scope)
         this.brandFormData = Object.assign({}, scope.row);
-        this.effectiveDuration = [scope.row.startDate, scope.row.endDate]
+        this.effectiveDuration = [];
+        this.effectiveDuration = [this.$moment(scope.row.startDate).format('YYYY-MM-DD'), this.$moment(scope.row.endDate).format('YYYY-MM-DD')];
 
         this.dialogStatus = 'update';
         this.dialogFormVisible = true;
@@ -532,7 +537,7 @@
               "icon": this.brandFormData.icon,
               "status": this.brandFormData.status,
 
-                "startDate": this.brandFormData.startDate,
+              "startDate": this.brandFormData.startDate,
 
               "endDate": this.brandFormData.endDate,
               "keyNumPerUser": this.brandFormData.keyNumPerUser,
@@ -540,7 +545,8 @@
               "keyReceived": this.brandFormData.keyReceived,
               "keyEnable": this.brandFormData.keyEnable,
               "id": this.brandFormData.id,
-              "floorID": this.brandFormData.floorID
+              "floorID": this.brandFormData.floorID,
+              createTime:this.brandFormData.createTime
             }).then((response) => {
               console.log(response)
               this.dialogFormVisible = false;

@@ -238,26 +238,12 @@
           page: 1,
           size: 20,
         },
-        formData: {
-          id: 0,
-          name: "",
-          title: "",
-          description: "",
-          iconUrl: "",
-          bigImageUrl: "",
-          iosDownloadUrl: "",
-          androidDownloadUrl: "",
-          webGameUrl: "",
-          nature: "",
-          ios: false,
-          android: false,
-          status: null
-        },
         floorFormData: {
           buildingName: '',
           "status": 1,
           "id": '',
-          floorsRank: ''
+          floorsRank: '',
+          createTime:''
         },
         dialogStatus: "",
         textMap: {
@@ -295,17 +281,6 @@
       }
     },
     watch: {
-      effectiveDuration(value) {
-        console.log(value);
-        if (value === null) {
-          value = [];
-        }
-        this.formData.startDate = value[0];
-        this.formData.endDate = value[1];
-      },
-      "formData.bigImageUrl": function (value) {
-        console.warn(value);
-      },
       chosenBrandName(value) {
         this.queryModel.name = value;
       },
@@ -346,7 +321,8 @@
         this.floorFormData = Object.assign(this.floorFormData, {
           id: data.id,
           buildingName: '',
-          floorsRank: data.floorsRank
+          floorsRank: data.floorsRank,
+          createTime: data.createTime
         })
       },
       updateFloor() {
