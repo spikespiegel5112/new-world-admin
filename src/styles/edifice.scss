@@ -5,12 +5,13 @@
     > li {
       margin: 20px auto;
       width: 98%;
-      height: 200px;
+      height: 230px;
       .floornumber {
-        margin: 10px;
+        margin: 20px auto;
+        text-align: center;
         //width: 100%;
-        position: absolute;
-        left: 0;
+        //position: absolute;
+        //left: 0;
         span {
           display: inline-block;
           width: 40px;
@@ -81,8 +82,8 @@
     }
     .advertiselist {
       display: inline-block;
-      //width: 1160px;
-      width: 600px;
+      width: 1150px;
+      //width: 600px;
       vertical-align: top;
       >label{
         display: inline-block;
@@ -91,25 +92,29 @@
       .content{
         display: inline-block;
         vertical-align: top;
-        .brandmeta {
-          display: inline-block;
-          margin: 0 10px 0 0;
-          width: 360px;
-          img {
+
+        >ul{
+          .brandmeta {
             display: inline-block;
-            width: 120px;
-          }
-          .advertisemeta {
-            display: inline-block;
-            vertical-align: top;
-            .location {
-              width: 100px;
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
+            margin: 0 10px 0 0;
+            width: 360px;
+            img {
+              display: inline-block;
+              width: 120px;
+            }
+            .advertisemeta {
+              display: inline-block;
+              vertical-align: top;
+              .location {
+                width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              }
             }
           }
         }
+
       }
 
     }

@@ -42,7 +42,7 @@
                 </el-col>
                 <el-col :span="23">
                   <el-row>
-                    <el-col :span="23" :style="{minHeight:'10px'}">
+                    <el-col :span="22" :style="{minHeight:'10px'}">
                       <el-form ref="form" label-width="150px" class="maincontent">
                         <div v-if="item.brand!==null" class="floordesc">
                           <div class="swiper-container">
@@ -83,49 +83,59 @@
                                   <span>{{item.brand!==null?$store.state.app.brandTypeDictionary.filter(item2=>item2.code===item.brand.type)[0].name:''}}</span>
                                 </el-form-item>
                               </li>
+                              <li class="swiper-slide brandmeta">
+                                <el-form-item label="广告类型：">
+                                  <span>{{item.brand!==null?$store.state.app.keyTypeDictionary.filter(item2=>item2.code===item.brand.keyType)[0].name:''}}</span>
+                                </el-form-item>
+                              </li>
                             </ul>
                             <div class="swiper-scrollbar'"></div>
                           </div>
                         </div>
-                        <div class="advertisedesc">
-                          <div v-if="item.brand!==null" class="brandicon">
-                            <el-form-item label="品牌icon：">
-                              <img :src="item.brand.icon+'-style_100x100'"/>
-                            </el-form-item>
-                          </div>
-                          <div v-if="item.brand!==null" class="advertiselist">
-                            <div class="content swiper-container">
-                              <ul class="swiper-wrapper">
-                                <label>广告：</label>
-                                <li v-for="item2 in item.brand.advertisements" class="brandmeta swiper-slide">
-                                  <img
-                                    :src="item2.url!==''?item2.url+'-style_100x100':'/static/img/default/empty_700_700.jpg'"/>
-                                  <el-form ref="form" label-width="130px" class="advertisemeta">
-                                    <el-form-item label="Android可用性：">
-                                      <el-tag v-if="item2.androidEnable===true" type="success">可用</el-tag>
-                                      <el-tag v-if="item2.androidEnable===false" type="error">不可用</el-tag>
-                                    </el-form-item>
-                                    <el-form-item label="iOS可用性：">
-                                      <el-tag v-if="item2.iosEnable===true" type="success">可用</el-tag>
-                                      <el-tag v-if="item2.iosEnable===false" type="error">不可用</el-tag>
-                                    </el-form-item>
-                                    <el-form-item label="链接：">
-                                      <el-button class="location" type="text"
-                                                 @click="openAdvertiseUrl(item2.location)">
-                                        {{item2.url}}
-                                      </el-button>
-                                    </el-form-item>
-                                  </el-form>
-                                </li>
-                              </ul>
+                        <div class="advertisedesc swiper-container" v-if="item.brand!==null">
+                          <div class="swiper-wrapper">
+                            <div class="brandicon swiper-slide">
+                              <el-form-item label="品牌icon：">
+                                <img :src="item.brand.icon+'-style_100x100'"/>
+                              </el-form-item>
+                            </div>
+                            <div class="advertiselist swiper-slide" :style="{width:360*item.brand.advertisements.length+120+'px'}">
+                              <label>广告：</label>
+
+                              <div class="content ">
+
+                                <ul class="">
+                                  <li v-for="(item2) in item.brand.advertisements" class="brandmeta">
+                                    <img
+                                      :src="item2.url!==''?item2.url+'-style_100x100':'/static/img/default/empty_700_700.jpg'"/>
+                                    <el-form ref="form" label-width="130px" class="advertisemeta">
+                                      <el-form-item label="Android可用性：">
+                                        <el-tag v-if="item2.androidEnable===true" type="success">可用</el-tag>
+                                        <el-tag v-if="item2.androidEnable===false" type="error">不可用</el-tag>
+                                      </el-form-item>
+                                      <el-form-item label="iOS可用性：">
+                                        <el-tag v-if="item2.iosEnable===true" type="success">可用</el-tag>
+                                        <el-tag v-if="item2.iosEnable===false" type="error">不可用</el-tag>
+                                      </el-form-item>
+                                      <el-form-item label="链接：">
+                                        <el-button class="location" type="text"
+                                                   @click="openAdvertiseUrl(item2.location)">
+                                          {{item2.url}}
+                                        </el-button>
+                                      </el-form-item>
+                                    </el-form>
+                                  </li>
+                                </ul>
+                              </div>
                             </div>
                           </div>
+
                         </div>
                         <!--<el-col class="operation" :span="3">-->
                         <!--</el-col>-->
                       </el-form>
                     </el-col>
-                    <el-col :span="1">
+                    <el-col :span="2">
                       <el-form>
                         <el-row>
                           <el-form-item>

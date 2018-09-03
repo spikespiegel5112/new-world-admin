@@ -4,7 +4,6 @@ import {baseUrl} from "@/utils/request";
 import VueInstance from "@/main";
 
 
-
 const app = {
   state: {
     sidebar: {
@@ -75,6 +74,16 @@ const app = {
       code: 2
     }, {
       name: '9:16（三条）',
+      code: 3
+    }],
+    keyTypeDictionary: [{
+      name: '只能领一次',
+      code: 1
+    }, {
+      name: '每日',
+      code: 2
+    }, {
+      name: '每周',
       code: 3
     }],
   },

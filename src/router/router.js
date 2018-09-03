@@ -206,6 +206,30 @@ export const constantRouterMap = [{
     meta: {title: '楼层管理', icon: 'table'}
   }]
 }, {
+  path: '/wheel',
+  component: Layout,
+  name: 'wheel',
+  meta: {
+    title: '转盘抽奖',
+    icon: 'table'
+  },
+  children: [{
+    path: 'product',
+    name: 'thirdPartyProductManagement',
+    component: () => import('@/views/wheel/ThirdPartyProductManagement'),
+    meta: {title: '第三方产品', icon: 'table'}
+  }, {
+    path: 'prize',
+    name: 'prizeContentManagement',
+    component: () => import('@/views/wheel/PrizeContentManagement'),
+    meta: {title: '活动属性', icon: 'table'}
+  }, {
+    path: 'wheel',
+    name: 'wheelManagement',
+    component: () => import('@/views/wheel/WheelManagement'),
+    meta: {title: '转盘内容', icon: 'table'}
+  }]
+}, {
   path: '*',
   redirect: '/404',
   hidden: true

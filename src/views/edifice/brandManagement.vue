@@ -27,9 +27,14 @@
           <img :src="scope.row.icon+'-style_100x100'" width="80">
         </template>
       </el-table-column>
-      <el-table-column align="center" label="类型">
+      <el-table-column align="center" label="广告类型">
         <template slot-scope="scope">
           {{(scope.row.type!==''&&scope.row.type!==null)?$store.state.app.brandTypeDictionary.filter(item=>item.code===scope.row.type)[0].name:''}}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="钥匙类型">
+        <template slot-scope="scope">
+          {{(scope.row.type!==''&&scope.row.keyType!==null)?$store.state.app.keyTypeDictionary.filter(item=>item.code===scope.row.keyType)[0].name:''}}
         </template>
       </el-table-column>
       <el-table-column align="center" label="是否有钥匙" prop="status">
@@ -96,6 +101,12 @@
             </el-form-item>
             <el-form-item label="总钥匙数" prop="keyTotal">
               <el-input-number v-model="brandFormData.keyTotal"></el-input-number>
+            </el-form-item>
+            <el-form-item label="钥匙类型" prop="keyType">
+              <el-select v-model="brandFormData.keyType">
+                <el-option v-for="item in $store.state.app.keyTypeDictionary" :label="item.name" :value="item.code" :key="item.code"></el-option>
+              </el-select>
+
             </el-form-item>
             <el-form-item label="钥匙被领取数">
               <label>{{brandFormData.keyReceived}}</label>
@@ -255,6 +266,7 @@
           size: 20,
         },
         importanceOptions: [1, 2, 3],
+
         sortOptions: [{label: 'ID Ascending', key: '+id'}, {label: 'ID Descending', key: '-id'}],
         statusOptions: ['published', 'draft', 'deleted'],
         showReviewer: false,
@@ -269,6 +281,7 @@
           "keyTotal": '',
           "keyReceived": '',
           "keyEnable": '',
+          keyType:'',
           "id": '',
           "floorID": '',
           createTime:''
@@ -536,13 +549,12 @@
               "type": this.brandFormData.type,
               "icon": this.brandFormData.icon,
               "status": this.brandFormData.status,
-
               "startDate": this.brandFormData.startDate,
-
               "endDate": this.brandFormData.endDate,
               "keyNumPerUser": this.brandFormData.keyNumPerUser,
               "keyTotal": this.brandFormData.keyTotal,
               "keyReceived": this.brandFormData.keyReceived,
+              "keyType": this.brandFormData.keyType,
               "keyEnable": this.brandFormData.keyEnable,
               "id": this.brandFormData.id,
               "floorID": this.brandFormData.floorID,
