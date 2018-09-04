@@ -377,6 +377,8 @@
               queryObj[item] = this.queryModel[item]
             }
           })
+        }else{
+          queryObj=this.queryModel;
         }
         this.$http.get(this.$baseUrl + this.advertisingListRequest, {
           params: Object.assign(queryObj, this.pagination)
