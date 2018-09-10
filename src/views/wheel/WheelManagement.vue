@@ -69,46 +69,20 @@
           <el-form :rules="rules" ref="formData" :model="formData"
                    label-position="right"
                    label-width="140px">
-            <el-table-column label="No" type="index" width="50" align="center" fixed></el-table-column>
-            <el-table-column label="活动ID" align="center" prop="activityId"></el-table-column>
-            <el-table-column label="奖品数量" align="center" prop="number">
-              <template slot-scope="scope">
-                {{scope.row.number.toString()!=='-1'?scope.row.number:'无限次'}}
-              </template>
-            </el-table-column>
-            <el-table-column label="中奖率" align="center" prop="probability"></el-table-column>
-            <el-table-column label="奖品ID" align="center" prop="rewardId"></el-table-column>
-            <el-table-column label="奖品名称" align="center" prop="rewardName"></el-table-column>
-            <el-table-column label="是否可用" align="center" prop="status">
-              <template slot-scope="scope">
-                <el-switch
-                  v-model="scope.row.status"
-                  :active-value="1"
-                  :inactive-value="0"
-                  active-color="#13ce66"
-                  inactive-color="#ff4949"
-                  disabled
-                >
-                </el-switch>
-              </template>
-            </el-table-column>
 
-
-
-
-            <el-form-item label="描述" prop="desc">
-              <el-input type="textarea" v-model="formData.desc"></el-input>
+            <el-form-item label="活动ID" prop="activityId">
+              <el-input type="textarea" v-model="formData.activityId"></el-input>
             </el-form-item>
-            <el-form-item label="产品名称" prop="name">
-              <el-input v-model="formData.name"></el-input>
+            <el-form-item label="奖品数量" prop="number">
+              <el-input v-model="formData.number"></el-input>
             </el-form-item>
-            <el-form-item label="原价" prop="originalPrice">
-              <el-input v-model.number="formData.originalPrice"></el-input>
+            <el-form-item label="中奖率" prop="probability">
+              <el-input v-model.number="formData.probability"></el-input>
             </el-form-item>
-            <el-form-item label="地址" prop="url">
-              <el-input v-model="formData.url"></el-input>
+            <el-form-item label="奖品ID" prop="rewardId">
+              <el-input v-model="formData.rewardId"></el-input>
             </el-form-item>
-            <el-form-item label="可用性" prop="status">
+            <el-form-item label="是否可用" prop="status">
               <el-switch v-model="formData.status"
                          :active-value="1"
                          :inactive-value="0"
@@ -116,12 +90,6 @@
                          inactive-color="#ff4949"
               >
               </el-switch>
-            </el-form-item>
-            <el-form-item label="奖励类型" prop="rewardType">
-              <el-select v-model="formData.rewardType" placeholder=''>
-                <el-option v-for="item in rewardTypeDictionary" :key="item.id" :label="item.name"
-                           :value="item.code"></el-option>
-              </el-select>
             </el-form-item>
           </el-form>
         </el-col>
@@ -351,10 +319,8 @@
         this.updateData();
       },
       handleUpdate(scope) {
-        console.log(scope)
+        console.log('handleUpdate', scope)
         this.formData = Object.assign({}, scope.row);
-        this.effectiveDuration = [];
-        this.effectiveDuration = [this.$moment(scope.row.startDate).format('YYYY-MM-DD'), this.$moment(scope.row.endDate).format('YYYY-MM-DD')];
 
         this.dialogStatus = 'update';
         this.dialogFormVisible = true;
