@@ -286,6 +286,7 @@
         listLoading: true,
         queryModel: {
           name: '',
+          type:'',
           goodsNumber: null
         },
         pagination: {
@@ -538,7 +539,7 @@
       },
       reset() {
         this.queryModel.name = '';
-        this.queryModel.type = null;
+        this.queryModel.type = '';
         this.queryModel.goodsNumber = '';
         this.pagination.page = 1;
         this.getTableData();
