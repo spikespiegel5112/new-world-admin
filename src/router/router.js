@@ -214,15 +214,20 @@ export const constantRouterMap = [{
     icon: 'table'
   },
   children: [{
+    path: 'activity',
+    name: 'wheelActivityManagement',
+    component: () => import('@/views/wheel/WheelActivityManagement'),
+    meta: {title: '活动属性', icon: 'table'}
+  }, {
     path: 'product',
     name: 'thirdPartyProductManagement',
     component: () => import('@/views/wheel/ThirdPartyProductManagement'),
     meta: {title: '第三方产品', icon: 'table'}
   }, {
     path: 'prize',
-    name: 'prizeContentManagement',
-    component: () => import('@/views/wheel/PrizeContentManagement'),
-    meta: {title: '活动属性', icon: 'table'}
+    name: 'prizeManagement',
+    component: () => import('@/views/wheel/PrizeManagement'),
+    meta: {title: '奖品管理', icon: 'table'}
   }, {
     path: 'wheel',
     name: 'wheelManagement',

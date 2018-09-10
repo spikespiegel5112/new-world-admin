@@ -377,8 +377,8 @@
               queryObj[item] = this.queryModel[item]
             }
           })
-        }else{
-          queryObj=this.queryModel;
+        } else {
+          queryObj = this.queryModel;
         }
         this.$http.get(this.$baseUrl + this.advertisingListRequest, {
           params: Object.assign(queryObj, this.pagination)
@@ -566,7 +566,7 @@
           "iosEnable": scope.row.iosEnable,
           "androidEnable": scope.row.androidEnable,
           "version": scope.row.version,
-        })
+        });
         console.log(this.availabilityFormData)
         this.availabilityFlag = true;
 

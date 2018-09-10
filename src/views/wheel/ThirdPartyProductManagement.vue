@@ -22,7 +22,7 @@
               :height="tableHeight">
       <el-table-column label="No" type="index" width="50" align="center" fixed></el-table-column>
       <el-table-column label="公司名称" align="center" prop="companyName"></el-table-column>
-      <el-table-column label="产品ID" align="center" prop="productId"></el-table-column>
+      <el-table-column label="产品Code" align="center" prop="productId"></el-table-column>
       <el-table-column label="产品名称" align="center" prop="name"></el-table-column>
       <el-table-column label="Icon" align="center" width="150">
         <template slot-scope="scope">
@@ -81,6 +81,14 @@
           <el-form :rules="rules" ref="formData" :model="formData"
                    label-position="right"
                    label-width="140px">
+
+            <el-form-item label="产品名称" prop="name">
+              <el-input v-model="formData.name"></el-input>
+            </el-form-item>
+            <el-form-item label="产品Code" prop="productId">
+              <el-input v-model="formData.productId"></el-input>
+            </el-form-item>
+
             <el-form-item label="Icon" prop="icon">
               <CommonUploadImage
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
@@ -97,16 +105,19 @@
               />
               <el-input v-show="false" v-model="formData.image"></el-input>
             </el-form-item>
-            <el-form-item label="描述" prop="desc">
-              <el-input type="textarea" v-model="formData.desc"></el-input>
-            </el-form-item>
-            <el-form-item label="产品名称" prop="name">
-              <el-input v-model="formData.name"></el-input>
+            <el-form-item label="价格" prop="price">
+              <el-input v-model.number="formData.price"></el-input>
             </el-form-item>
             <el-form-item label="原价" prop="originalPrice">
               <el-input v-model.number="formData.originalPrice"></el-input>
             </el-form-item>
-            <el-form-item label="地址" prop="url">
+            <el-form-item label="描述" prop="desc">
+              <el-input type="textarea" v-model="formData.desc"></el-input>
+            </el-form-item>
+            <el-form-item label="公司名称" prop="companyName">
+              <el-input v-model="formData.companyName"></el-input>
+            </el-form-item>
+            <el-form-item label="产品链接" prop="url">
               <el-input v-model="formData.url"></el-input>
             </el-form-item>
             <el-form-item label="可用性" prop="status">
@@ -117,11 +128,6 @@
                          inactive-color="#ff4949"
               >
               </el-switch>
-            </el-form-item>
-            <el-form-item label="奖励类型" prop="rewardType">
-              <el-select v-model="formData.rewardType" placeholder=''>
-                <el-option v-for="item in rewardTypeDictionary" :key="item.id" :label="item.name" :value="item.code"></el-option>
-              </el-select>
             </el-form-item>
           </el-form>
         </el-col>
@@ -204,17 +210,17 @@
         showReviewer: false,
         formData: {
           id: '',
-          companyName:'',
-          name:'',
+          companyName: '',
+          name: '',
           "desc": '',
           "icon": '',
           "image": '',
           "originalPrice": '',
           "url": '',
-          "status": '',
-          price:'',
-          productId:'',
-          rewardType:'',
+          "status": 0,
+          price: '',
+          productId: '',
+          rewardType: 'third_link',
         },
         dialogFormVisible: false,
         dialogStatus: '',
@@ -225,16 +231,17 @@
         dialogPvVisible: false,
         rules: {
           id: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          companyName:[{required: true, message: '此项为必填项', trigger: 'change'}],
-          name:[{required: true, message: '此项为必填项', trigger: 'change'}],
-          price:[{required: true, message: '此项为必填项', trigger: 'change'}],
-          productId:[{required: true, message: '此项为必填项', trigger: 'change'}],
-          rewardType:[{required: true, message: '此项为必填项', trigger: 'change'}],
+          companyName: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          name: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          price: [{required: true, message: '此项为必填项', trigger: 'change'},
+            {type: 'number', message: '必须为数字值', trigger: "change"}],
+          originalPrice: [{required: true, message: '此项为必填项', trigger: 'change'},
+            {type: 'number', message: '必须为数字值', trigger: "change"}],
+          productId: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          rewardType: [{required: true, message: '此项为必填项', trigger: 'change'}],
           desc: [{required: true, message: '此项为必填项', trigger: 'change'}],
           image: [{required: true, message: '此项为必填项', trigger: 'change'}],
           icon: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          originalPrice: [{required: true, message: '此项为必填项', trigger: 'change'},
-            {type: 'number', message: '必须为数字值', trigger: "change"}],
           status: [{required: true, message: '此项为必填项', trigger: 'change'}],
           url: [{required: true, message: '此项为必填项', trigger: 'change'}],
         },
@@ -327,13 +334,18 @@
       },
       resetTemp() {
         this.formData = {
+          id: '',
+          companyName: '',
+          name: '',
           "desc": '',
           "icon": '',
           "image": '',
-          "title": '',
           "originalPrice": '',
           "url": '',
-          "status": '',
+          "status": 0,
+          price: '',
+          productId: '',
+          rewardType: 'third_link',
         };
 
       },
@@ -355,9 +367,6 @@
       handleUpdate(scope) {
         console.log(scope)
         this.formData = Object.assign({}, scope.row);
-        this.effectiveDuration = [];
-        this.effectiveDuration = [this.$moment(scope.row.startDate).format('YYYY-MM-DD'), this.$moment(scope.row.endDate).format('YYYY-MM-DD')];
-
         this.dialogStatus = 'update';
         this.dialogFormVisible = true;
         this.$nextTick(() => {
@@ -365,22 +374,14 @@
         })
       },
       updateData() {
+        let params = this.formData;
+        if (this.dialogStatus === 'create') {
+          delete params.id;
+        }
+
         this.$refs['formData'].validate((valid) => {
           if (valid) {
-            this.$http.post(this.$baseUrl + this.addAndUpdateRewardProductRequest, {
-              id: this.formData.id,
-              "desc": this.formData.desc,
-              "icon": this.formData.icon,
-              "image": this.formData.image,
-              "originalPrice": this.formData.originalPrice,
-              "url": this.formData.url,
-              "status": this.formData.status,
-              companyName:this.formData.companyName,
-              name:this.formData.name,
-              price:this.formData.price,
-              productId:this.formData.productId,
-              rewardType:this.formData.rewardType,
-            }).then((response) => {
+            this.$http.post(this.$baseUrl + this.addAndUpdateRewardProductRequest, params).then((response) => {
               console.log(response)
               this.dialogFormVisible = false;
               this.$message.success('信息修改成功');
@@ -398,15 +399,15 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http.delete(this.$baseUrl + this.brandDeleteRequest + `/${scope.row.id}`).then((response) => {
-            console.log(response)
-            this.dialogFormVisible = false;
-            this.$message.success('删除成功');
-            this.getTableData();
-          }).catch(error => {
-            console.log(error)
-            this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
-          })
+          // this.$http.delete(this.$baseUrl + this.brandDeleteRequest + `/${scope.row.id}`).then((response) => {
+          //   console.log(response)
+          //   this.dialogFormVisible = false;
+          //   this.$message.success('删除成功');
+          //   this.getTableData();
+          // }).catch(error => {
+          //   console.log(error)
+          //   this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+          // })
         }).catch(() => {
           this.$message({
             type: 'info',

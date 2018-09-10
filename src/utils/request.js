@@ -50,7 +50,7 @@ service.interceptors.response.use(
   error => {
     const result_response = error.response;
 
-    if (result_response.status === 401) {
+    if (result_response.status && result_response.status === 401) {
       store.dispatch('FedLogOut').then(() => {
         location.reload()// 为了重新实例化vue-router对象 避免bug
       })

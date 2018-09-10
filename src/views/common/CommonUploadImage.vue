@@ -10,7 +10,7 @@
       <div v-else v-for="(item, index) in innerFileList" class="image-item">
         <img :src="$checkOSS(item.url, '-style_100x100')" class="avatar"/>
         <ul class="operator">
-          <li>
+          <li :class="{disabled:disabled===true}">
             <a class="el-icon-delete" @click="deleteImage(index)"></a>
           </li>
         </ul>
@@ -29,9 +29,10 @@
       :on-success="uploadSuccess"
       :on-exceed="uploadAvatarExceeded"
       :file-list="innerFileList"
-      :data="params">
+      :data="params"
+      :disabled="disabled">
 
-      <el-button v-waves size="small" type="primary">点击上传</el-button>
+      <el-button v-waves size="small" type="primary" :disabled="disabled">点击上传</el-button>
       <div slot="tip" class="el-upload__tip">
         只能上传jpg/png文件，且不超过10MB
       </div>
@@ -89,10 +90,15 @@
         required: false,
         default: false
       },
-      returnUrlList:{
+      returnUrlList: {
         type: String,
         required: false,
         default: ''
+      },
+      disabled: {
+        type: Boolean,
+        required: false,
+        default: false
       }
     },
     data() {
@@ -127,7 +133,7 @@
       },
       newFile(value) {
       },
-      returnUrlList (value) {
+      returnUrlList(value) {
         console.log(value)
         this.updateFile(value)
 
@@ -141,7 +147,7 @@
       updateFile(value) {
         // console.log(value)
         let valueArr = [];
-        if (typeof value === 'string' && value !== ''&& value !== null) {
+        if (typeof value === 'string' && value !== '' && value !== null) {
           valueArr.push(value)
           // debugger
         }
@@ -207,7 +213,9 @@
 
       },
       handleRemove() {
-        this.$emit('on-remove', '');
+        if (!this.disabled) {
+          this.$emit('on-remove', '');
+        }
       },
       uploadSuccess(response) {
         this.showFileList = false;
@@ -224,11 +232,14 @@
         console.log(fileList)
       },
       deleteImage(index) {
-        this.innerFileList.splice(index, 1);
-        console.log(this.innerFileList)
-        console.log(this.innerFileList.length)
-        this.updateUrlList();
-        this.$emit('update:return-file-list', this.innerFileList);
+        if(!this.disabled){
+          this.innerFileList.splice(index, 1);
+          console.log(this.innerFileList)
+          console.log(this.innerFileList.length)
+          this.updateUrlList();
+          this.$emit('update:return-file-list', this.innerFileList);
+        }
+
       },
 
     }

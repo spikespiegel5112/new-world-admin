@@ -86,6 +86,19 @@ const app = {
       name: '每周',
       code: 3
     }],
+    rewardTypeDictionary: [{
+      name: '积分',
+      code: 'point'
+    }, {
+      name: '趣豆',
+      code: 'coin'
+    }, {
+      name: '百视通会员',
+      code: 'bes_tv'
+    }, {
+      name: '第三方链接',
+      code: 'third_link'
+    }],
   },
   mutations: {
     UPDATE_LAYOUT_HEIGHT(state, payload) {
