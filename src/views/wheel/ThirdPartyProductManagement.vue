@@ -26,7 +26,7 @@
       <el-table-column label="产品名称" align="center" prop="name"></el-table-column>
       <el-table-column label="Icon" align="center" width="150">
         <template slot-scope="scope">
-          <img :src="scope.row.icon+'-style_100x100'" width="80">
+          <img :style="{height:'80px'}" :src="$checkOSS(scope.row.icon)" width="80">
         </template>
       </el-table-column>
       <el-table-column label="图片" align="center" width="150">
