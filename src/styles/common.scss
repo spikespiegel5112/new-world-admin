@@ -287,9 +287,9 @@
       cursor: pointer;
     }
   }
-  //.el-table__body-wrapper {
-  //	overflow-x: hidden;
-  //}
+  .el-table__body-wrapper {
+  	overflow: auto;
+  }
   //.common-tree-wrapper {
   //	margin: 15px 0 15px 15px;
   //}
