@@ -41,7 +41,7 @@ export const constantRouterMap = [{
   redirect: '/task/tryplay',
   name: 'task',
   meta: {
-    title: '任务墙', icon: 'table'
+    title: '任务', icon: 'table'
   },
   children: [{
     path: 'demogame',
@@ -68,6 +68,11 @@ export const constantRouterMap = [{
     name: 'registrationInvitation',
     component: () => import('@/views/task/registrationInvitation'),
     meta: {title: '注册邀请', icon: 'list'}
+  }, {
+    path: 'blackcard',
+    name: 'blackCard',
+    component: () => import('@/views/task/blackCard'),
+    meta: {title: '黑卡', icon: 'list'}
   }]
 }, {
   path: '/metadata',

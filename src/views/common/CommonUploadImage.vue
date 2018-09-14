@@ -1,14 +1,28 @@
 <template>
   <div class="">
     <div class="common-imguploadpreview-wrapper">
-      <a v-if="innerFileList.length!==0" class="close">
-        <span class="iconfont icon-crosswide"></span>
-      </a>
       <div v-if="innerFileList.length===0">
         暂无图片
       </div>
-      <div v-else v-for="(item, index) in innerFileList" class="image-item">
-        <img :src="$checkOSS(item.url, '-style_100x100')" class="avatar"/>
+      <a v-if="innerFileList.length!==0" class="close">
+        <span class="iconfont icon-crosswide"></span>
+      </a>
+      <div v-for="(item, index) in innerFileList" class="image-item">
+
+        <!--<img :src="$checkOSS(item.url, '-style_100x100')" class="avatar"/>-->
+        <img v-if="checkFileType(item.url)==='image'" :src="$checkOSS(item.url, '-style_100x100')" class="avatar"/>
+        <div v-else-if="checkFileType(item.url)==='word'">
+          <img src="/src/img/filetype/doc2.png"/>
+        </div>
+        <div v-else-if="checkFileType(item.url)==='excel'">
+          <img src="/src/img/filetype/xls.png"/>
+        </div>
+        <div v-else-if="checkFileType(item.url)==='pdf'">
+          <img src="/src/img/filetype/pdf.png"/>
+        </div>
+        <div v-else-if="checkFileType(item.url)==='file'">
+          <img src="/src/img/filetype/file.png"/>
+        </div>
         <ul class="operator">
           <li :class="{disabled:disabled===true}">
             <a class="el-icon-delete" @click="deleteImage(index)"></a>
@@ -99,7 +113,12 @@
         type: Boolean,
         required: false,
         default: false
-      }
+      },
+      fileType: {
+        type: String,
+        required: false,
+        default: ''
+      },
     },
     data() {
       return {
@@ -108,8 +127,22 @@
           folderName: 'icon'
         },
         fileList: [],
+        innerFileType: '',
         innerFileList: [],
-        showFileList: false
+        showFileList: false,
+        fileTypeDictionary: [{
+          name: 'image',
+          suffixList: ['jpg', 'jpeg', 'png']
+        }, {
+          name: 'excel',
+          suffixList: ['csv', 'xls', 'xlsx']
+        }, {
+          name: 'word',
+          suffixList: ['doc']
+        }, {
+          name: 'pdf',
+          suffixList: ['pdf']
+        }]
       }
     },
     computed: {
@@ -125,7 +158,7 @@
         set(val) {
           this.$emit("update:fileList", val);
         }
-      }
+      },
     },
     watch: {
       fileList(value) {
@@ -137,11 +170,12 @@
         console.log(value)
         this.updateFile(value)
 
-      }
+      },
     },
 
     mounted() {
-      this.updateFile(this.returnUrlList)
+      this.updateFile(this.returnUrlList);
+      // this.fileType = '';
     },
     methods: {
       updateFile(value) {
@@ -156,9 +190,11 @@
         valueArr.forEach((item, index) => {
           this.$set(this.innerFileList, index, {
             name: this.innerFileList.length,
-            url: item
+            url: item,
+            type: this.fileTypeDictionary.filter(item2 => item2 === this.checkFileType(item)).name
           })
         });
+
         this.$emit('update:return-file-list', this.innerFileList);
         this.updateUrlList();
         // console.log(this.innerFileList)
@@ -183,18 +219,26 @@
         // })[0])
       },
       handleBeforeUpload(file) {
-        console.log(file)
+        console.log('handleBeforeUpload', file)
         let suffixDictionary = ['jpg', 'jpeg', 'png'];
-        let index1 = file.name.lastIndexOf('.') + 1;
-        let index2 = file.name.length;
-        let fileSuffix = file.name.substring(index1, index2);
-        if (suffixDictionary.filter(item => item === fileSuffix).length === 0) {
+
+        let currentFileType = '';
+
+
+        if (this.fileType !== this.checkFileType(file.name) && this.fileType !== '') {
           this.$message({
-            message: '文件必须为' + suffixDictionary.join('、') + '类型文件',
+            message: '文件必须为' + this.fileTypeDictionary.filter(item => item.name === this.checkFileType(file.name))[0].suffixList.join('、') + '类型文件',
             type: 'error'
           });
           return false;
         }
+        // if (suffixDictionary.filter(item => item === fileSuffix).length === 0) {
+        //   this.$message({
+        //     message: '文件必须为' + suffixDictionary.join('、') + '类型文件',
+        //     type: 'error'
+        //   });
+        //   return false;
+        // }
         if (file.size > 1024 * 1024 * 2) {
           this.$message({
             message: '文件不得大于2M',
@@ -232,7 +276,7 @@
         console.log(fileList)
       },
       deleteImage(index) {
-        if(!this.disabled){
+        if (!this.disabled) {
           this.innerFileList.splice(index, 1);
           console.log(this.innerFileList)
           console.log(this.innerFileList.length)
@@ -241,6 +285,28 @@
         }
 
       },
+      checkFileType(url) {
+
+        let index1 = url.lastIndexOf('.') + 1;
+        let index2 = url.length;
+        let resultFileType = '';
+        let fileSuffix = url.substring(index1, index2);
+
+        let fileTypeMatchFlag = false;
+        this.fileTypeDictionary.forEach((item1, index1) => {
+          item1.suffixList.forEach((item2, index2) => {
+            if (item2 === fileSuffix) {
+              resultFileType = this.fileTypeDictionary[index1].name;
+
+              fileTypeMatchFlag = true;
+            }
+          });
+          if (!fileTypeMatchFlag && index1 === this.fileTypeDictionary.length - 1) {
+            resultFileType = 'file';
+          }
+        });
+        return resultFileType;
+      }
 
     }
 
