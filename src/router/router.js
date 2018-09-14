@@ -51,7 +51,7 @@ export const constantRouterMap = [{
   }, {
     path: 'bankcard',
     name: 'bankCard',
-    component: () => import('@/views/task/bankCard'),
+    component: () => import('@/views/task/BankCard'),
     meta: {title: '银行办卡', icon: 'list'}
   }, {
     path: 'registermakemoney',
@@ -71,7 +71,7 @@ export const constantRouterMap = [{
   }, {
     path: 'blackcard',
     name: 'blackCard',
-    component: () => import('@/views/task/blackCard'),
+    component: () => import('@/views/task/BlackCard'),
     meta: {title: '黑卡', icon: 'list'}
   }]
 }, {

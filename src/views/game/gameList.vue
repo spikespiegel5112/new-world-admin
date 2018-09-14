@@ -61,8 +61,6 @@
         </template>
       </el-table-column>
 
-
-
     </el-table>
     <!-- 分页 -->
     <div class="common-pagination-wrapper">
@@ -97,6 +95,7 @@
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 @on-success="uploadSuccess1"
                 :returnUrlList.sync="formData.iconUrl"
+                fileType="image"
               />
               <el-input v-show="false" v-model="formData.iconUrl"></el-input>
             </el-form-item>
@@ -105,6 +104,7 @@
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 @on-success="uploadSuccess2"
                 :returnUrlList.sync="formData.bigImageUrl"
+                fileType="image"
               />
               <el-input v-show="false" v-model="formData.bigImageUrl"></el-input>
             </el-form-item>

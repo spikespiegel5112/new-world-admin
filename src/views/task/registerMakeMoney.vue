@@ -157,6 +157,7 @@
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 @on-success="uploadSuccess"
                 :returnUrlList.sync="formData.iconPath"
+                fileType="image"
               />
               <el-input v-show="false" v-model="formData.iconPath"></el-input>
             </el-form-item>

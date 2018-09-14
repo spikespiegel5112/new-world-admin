@@ -12,7 +12,7 @@
         <!--<img :src="$checkOSS(item.url, '-style_100x100')" class="avatar"/>-->
         <img v-if="checkFileType(item.url)==='image'" :src="$checkOSS(item.url, '-style_100x100')" class="avatar"/>
         <div v-else-if="checkFileType(item.url)==='word'">
-          <img src="/src/img/filetype/doc2.png"/>
+          <img src="/src/img/filetype/doc.png"/>
         </div>
         <div v-else-if="checkFileType(item.url)==='excel'">
           <img src="/src/img/filetype/xls.png"/>
@@ -225,20 +225,20 @@
         let currentFileType = '';
 
 
-        if (this.fileType !== this.checkFileType(file.name) && this.fileType !== '') {
+        if (this.fileType === '' && this.checkFileType(file.name) === '') {
           this.$message({
-            message: '文件必须为' + this.fileTypeDictionary.filter(item => item.name === this.checkFileType(file.name))[0].suffixList.join('、') + '类型文件',
+            message: '未知的文件类型',
+            type: 'error'
+          });
+          return false;
+        } else if (this.fileType !== '' && this.checkFileType(file.name) !== this.fileType) {
+          this.$message({
+            message: '文件必须为' + this.fileTypeDictionary.filter(item => item.name === this.fileType)[0].suffixList.join('、') + '类型文件',
             type: 'error'
           });
           return false;
         }
-        // if (suffixDictionary.filter(item => item === fileSuffix).length === 0) {
-        //   this.$message({
-        //     message: '文件必须为' + suffixDictionary.join('、') + '类型文件',
-        //     type: 'error'
-        //   });
-        //   return false;
-        // }
+
         if (file.size > 1024 * 1024 * 2) {
           this.$message({
             message: '文件不得大于2M',

@@ -83,6 +83,7 @@
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 @on-success="uploadSuccess1"
                 :returnUrlList.sync="brandFormData.icon"
+                fileType="image"
               />
               <el-input v-show="false" v-model="brandFormData.icon"></el-input>
             </el-form-item>
@@ -157,6 +158,7 @@
                     :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                     @on-success="uploadSuccess2"
                     :returnUrlList.sync="advertisementFormData.url"
+                    fileType="image"
                   />
                   <el-input v-show="false" v-model="advertisementFormData.url"></el-input>
                 </el-form-item>

@@ -272,7 +272,7 @@
   export default {
     components: {
       CommonTag,
-      CommonQuery
+      CommonQuerynm,
     },
     data() {
       return {

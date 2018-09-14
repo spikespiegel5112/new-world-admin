@@ -99,6 +99,7 @@
                 @on-success="uploadSuccess2"
                 :returnUrlList.sync="formData.rewardImage"
                 :disabled="formData.rewardType==='third_link'"
+                fileType="image"
               />
               <el-input v-show="false" v-model="formData.rewardImage"></el-input>
             </el-form-item>

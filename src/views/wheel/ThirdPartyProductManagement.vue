@@ -94,6 +94,7 @@
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 @on-success="uploadSuccess1"
                 :returnUrlList.sync="formData.icon"
+                fileType="image"
               />
               <el-input v-show="false" v-model="formData.icon"></el-input>
             </el-form-item>
@@ -102,6 +103,7 @@
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 @on-success="uploadSuccess2"
                 :returnUrlList.sync="formData.image"
+                fileType="image"
               />
               <el-input v-show="false" v-model="formData.image"></el-input>
             </el-form-item>
