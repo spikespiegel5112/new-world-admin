@@ -5,8 +5,12 @@
         <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate" v-waves>
           新增
         </el-button>
-        <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate" v-waves>
+        <el-button size="mini" type="primary" icon="el-icon-plus" @click="exportCsvFlag=true" v-waves>
           导出任务完成流水
+        </el-button>
+        <el-button size="mini" type="primary" icon="el-icon-plus" @click="importCsv" v-waves>
+          导入任务完成流水
+
         </el-button>
       </template>
       <template slot="query1">
@@ -42,7 +46,7 @@
           {{scope.row.name}}
         </template>
       </el-table-column>
-      <el-table-column label="Icon" align="center" width="100">
+      <el-table-column label="Icon" align="center" width="150">
         <template slot-scope="scope">
           <img v-if="scope.row.iconPath!==''&&scope.row.iconPath!==null" :src="scope.row.iconPath+'-style_100x100'"
                width="100px" height="100px">
@@ -56,14 +60,14 @@
       </el-table-column>
       <el-table-column align="center" prop="isIosEnable" label="iOS可用性">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.isIosEnable" :active-value="1" :inactive-value="0" active-color="#13ce66"
+          <el-switch v-model="scope.row.isIosEnable" active-color="#13ce66"
                      inactive-color="#ff4949" disabled>
           </el-switch>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="isAndroidEnable" label="安卓可用性">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.isAndroidEnable" :active-value="1" :inactive-value="0" active-color="#13ce66"
+          <el-switch v-model="scope.row.isAndroidEnable" active-color="#13ce66"
                      inactive-color="#ff4949" disabled>
           </el-switch>
         </template>
@@ -87,7 +91,7 @@
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope)" v-waves>编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope)" v-waves>删除</el-button>
+          <!--<el-button size="mini" type="danger" @click="handleDelete(scope)" v-waves>删除</el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -103,18 +107,17 @@
       <el-row type="flex" justify="center">
         <el-col :span="20">
           <el-form :rules="rules" ref="formData" :model="formData" label-position="right" label-width="150px">
-
-
             <el-form-item label="任务名称" prop="name">
               <el-input v-model="formData.name"></el-input>
             </el-form-item>
 
             <el-form-item label="任务图片" prop="iconPath">
+              <!--{{formData.iconPath}}-->
               <CommonUploadImage
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 @on-success="uploadSuccess"
-                :returnUrlList.sync="formData.iconPath"
-                fileType="pdf"
+                :return-url-list.sync="formData.iconPath"
+                fileType="image"
               />
               <el-input v-show="false" v-model="formData.iconPath"></el-input>
             </el-form-item>
@@ -125,12 +128,12 @@
               <el-input v-model="formData.submitPath"></el-input>
             </el-form-item>
             <el-form-item label="iOS可用性" prop="isIosEnable">
-              <el-switch v-model="formData.isIosEnable" :active-value="1" :inactive-value="0" active-color="#13ce66"
+              <el-switch v-model="formData.isIosEnable" active-color="#13ce66"
                          inactive-color="#ff4949">
               </el-switch>
             </el-form-item>
             <el-form-item label="Android可用性" prop="isAndroidEnable">
-              <el-switch v-model="formData.isAndroidEnable" :active-value="1" :inactive-value="0" active-color="#13ce66"
+              <el-switch v-model="formData.isAndroidEnable" active-color="#13ce66"
                          inactive-color="#ff4949">
               </el-switch>
             </el-form-item>
@@ -163,6 +166,43 @@
         <el-button v-else type="primary" @click="updateData" v-waves>{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
+    <!-- 弹框 -->
+    <el-dialog title="导出任务完成流水" :visible.sync="exportCsvFlag" width='width: 400px;'>
+      <el-row type="flex" justify="center">
+        <el-col :span="20">
+          <el-date-picker
+            v-model="taskEffectiveDuration"
+            type="daterange"
+            value-format="yyyy-MM-dd"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期">
+          </el-date-picker>
+        </el-col>
+      </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="exportCsvFlag = false" v-waves>{{$t('table.cancel')}}</el-button>
+        <el-button type="primary" @click="exportCsv" v-waves>导出</el-button>
+      </div>
+    </el-dialog>
+    <!-- 弹框 -->
+    <el-dialog title="导入任务完成流水" :visible.sync="importCsvFlag" width='width: 400px;'>
+      <el-row type="flex" justify="center">
+        <el-col :span="20">
+          <CommonUploadImage
+            :action="$baseUrl+importUserTaskRequest"
+            @on-success="uploadSuccess2"
+            fileType="excel"
+            :returnUrlList.sync="temporaryCsv"
+          />
+        </el-col>
+      </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="importCsvFlag = false" v-waves>{{$t('table.cancel')}}</el-button>
+        <el-button v-if="dialogStatus==='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 
 </template>
@@ -179,7 +219,11 @@
     data() {
       return {
         getBlackTaskPageRequest: 'task-service/2.0.0/task/bk/getBlackTaskPage/',
-        saveBlackCardTaskRequest:'task-service/2.0.0/task/bk/saveBlackCardTask',
+        saveBlackCardTaskRequest: 'task-service/2.0.0/task/bk/saveBlackCardTask',
+
+        exportUserTaskRequest: 'task-service/2.0.0/task/bk/exportUserTask',
+        importUserTaskRequest: 'task-service/2.0.0/task/bk/importUserTask',
+
 
         value2: "",
         value1: "",
@@ -189,7 +233,7 @@
         listLoading: true,
         queryModel: {
           keyword: '',
-          category:''
+          category: ''
         },
         pagination: {
           page: 1,
@@ -281,7 +325,7 @@
             message: "此项为必填项",
             trigger: "change"
           }],
-          isShow: [{
+          submitPath: [{
             required: true,
             message: "此项为必填项",
             trigger: "change"
@@ -328,7 +372,11 @@
           bucketName: "funyvalley",
           folderName: "task"
         },
-        fileList: []
+        fileList: [],
+        importCsvFlag: false,
+        temporaryCsv: '',
+        exportCsvFlag: false,
+        taskEffectiveDuration: []
       };
     },
     computed: {
@@ -344,7 +392,15 @@
         }
         this.formData.startDate = this.$moment(value[0]).format('YYYY-MM-DD');
         this.formData.endDate = this.$moment(value[1]).format('YYYY-MM-DD');
-      }
+      },
+      taskEffectiveDuration(value) {
+        console.log(value)
+        if (value === null) {
+          value = [];
+        }
+        this.formData.startDate = this.$moment(value[0]).format('YYYY-MM-DD');
+        this.formData.endDate = this.$moment(value[1]).format('YYYY-MM-DD');
+      },
     },
     filters: {
       statusFilter(status) {
@@ -393,7 +449,19 @@
           this.$refs["formData"].clearValidate();
         });
       },
+      createData() {
+
+
+        this.updateData();
+      },
       updateData() {
+        let params;
+        if (this.dialogStatus === 'create') {
+          params = this.formData;
+          delete params.id;
+        } else {
+          params = this.formData;
+        }
         this.$refs.formData.validate(valid => {
           if (valid) {
             this.$http.post(this.$baseUrl + this.saveBlackCardTaskRequest, {
@@ -486,11 +554,10 @@
       },
       uploadSuccess(response, file, fileList) {
         this.loading = false;
-        console.log(file);
         console.log(response);
         console.log(6, fileList);
         this.formData.iconPath = response.url;
-        this.fileList.push(response);
+        // this.fileList.push(response);
         console.log(fileList);
 
         this.loading = false;
@@ -499,6 +566,51 @@
           type: "success"
         });
       },
+      uploadSuccess2(response, file, fileList) {
+        console.log('uploadSuccess2', response)
+        if (response.operation) {
+          this.$message({
+            message: "CSV上传成功",
+            type: "success"
+          });
+        } else {
+          this.$message({
+            message: response.message,
+            type: "error"
+          });
+          this.temporaryCsv = '';
+        }
+
+      },
+      exportCsv() {
+        let params = {
+          startDate: this.taskEffectiveDuration[0],
+          endDate: this.taskEffectiveDuration[1],
+          access_token:this.$store.getters.token
+        };
+
+        this.$http.get(this.$baseUrl + this.exportUserTaskRequest, {
+          params: params
+        }).then(response => {
+          console.log(response)
+          window.open(this.$baseUrl + this.exportUserTaskRequest + `?startDate=${params.startDate}&endDate=${params.endDate}&access_token=${params.access_token}`)
+        }).catch(error => {
+          console.log(error)
+
+        })
+        //
+        // window.open(this.$baseUrl + this.exportUserTaskRequest+`?startDate=${params.startDate}&endDate=${params.endDate}`)
+      },
+      importCsv() {
+        this.temporaryCsv = '';
+        this.importCsvFlag = true;
+        // this.$http.post(this.$baseUrl+this.importUserTaskRequest,{
+        //   headers:{
+        //     'Content-Type':'multipart/form-data'
+        //   }
+        // })
+      },
+
     }
   }
 

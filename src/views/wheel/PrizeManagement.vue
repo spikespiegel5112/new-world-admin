@@ -24,7 +24,7 @@
       <el-table-column align="center" label="奖品图片">
         <template slot-scope="scope">
           <img v-if="scope.row.rewardImage!==''&&scope.row.rewardImage!==null"
-               :src="scope.row.rewardImage+'-style_100x100'" width="80"
+               :src="scope.row.rewardImage+'-style_100x100'" width="100" height="100"
                onerror="this.src='/src/img/default/empty_700_700.jpg'">
           <div v-else>
             无
