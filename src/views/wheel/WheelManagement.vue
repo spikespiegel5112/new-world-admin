@@ -6,6 +6,9 @@
         <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate" v-waves>
           新增
         </el-button>
+        <el-select v-model="formData.activityId">
+          <el-option v-for="item in activityList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+        </el-select>
       </template>
       <template slot="query1">
         <div class="common-search-wrapper" @keyup.enter="search">
@@ -71,16 +74,29 @@
                    label-width="140px">
 
             <el-form-item label="活动ID" prop="activityId">
-              <el-input type="textarea" v-model="formData.activityId"></el-input>
+              <el-select v-model="formData.activityId" :disabled="true">
+                <el-option v-for="item in activityList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="奖品数量" prop="number">
-              <el-input v-model="formData.number"></el-input>
+              <!--<el-input v-model="formData.number"></el-input>-->
+
+              <el-radio-group v-model="dailyLimitMode" size="mini" @change="changeDailyLimitMode">
+                <el-radio-button label="unlimited">无限次</el-radio-button>
+                <el-radio-button label="limited">有限次</el-radio-button>
+              </el-radio-group>
+              <el-input-number v-show="dailyLimitMode==='limited'" v-model="formData.number"></el-input-number>
             </el-form-item>
             <el-form-item label="中奖率" prop="probability">
               <el-input v-model.number="formData.probability"></el-input>
             </el-form-item>
-            <el-form-item label="奖品ID" prop="rewardId">
-              <el-input v-model="formData.rewardId"></el-input>
+            <el-form-item label="奖品名称" prop="rewardName">
+              <el-autocomplete
+                v-model="chosenReward"
+                :fetch-suggestions="focusSortList"
+                placeholder="请输入内容"
+                @select="chooseThirdPartyProduct"
+              ></el-autocomplete>
             </el-form-item>
             <el-form-item label="是否可用" prop="status">
               <el-switch v-model="formData.status"
@@ -119,6 +135,12 @@
       return {
         queryRewardInfoByActivityTypeRequest: 'promotion-service/1.0.0/queryRewardInfoByActivityType',
         addAndUpdateRotaryTableActivityRequest: 'promotion-service/1.0.0/addAndUpdateRotaryTableActivity',
+
+        updateRewardInfoByActivityTypeRequest: 'promotion-service/1.0.0/activity_reward_mapping/updateRewardInfoByActivityType',
+        queryRewardProductByNameRequest: 'promotion-service/1.0.0/queryRewardProductByName',
+        deleteActivityRewardMappingByIdRequest: 'promotion-service/1.0.0/activity_reward_mapping/deleteActivityRewardMappingById',
+        queryRotaryTableActivityListRequest: 'promotion-service/1.0.0/queryRotaryTableActivityList',
+
 
         value2: '',
         value1: '',
@@ -169,19 +191,14 @@
         statusOptions: ['published', 'draft', 'deleted'],
         showReviewer: false,
         formData: {
-          id: '',
-          companyName: '',
-          name: '',
-          "desc": '',
-          "icon": '',
-          "image": '',
-          "originalPrice": '',
-          "url": '',
+          "id": '',
           "status": '',
-          price: '',
-          productId: '',
-          rewardType: '',
+          "activityId": '',
+          "rewardId": '',
+          "number": '',
+          "probability": ''
         },
+        dailyLimitMode: '',
         dialogFormVisible: false,
         dialogStatus: '',
         textMap: {
@@ -191,18 +208,11 @@
         dialogPvVisible: false,
         rules: {
           id: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          companyName: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          name: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          price: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          productId: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          rewardType: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          desc: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          image: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          icon: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          originalPrice: [{required: true, message: '此项为必填项', trigger: 'change'},
-            {type: 'number', message: '必须为数字值', trigger: "change"}],
           status: [{required: true, message: '此项为必填项', trigger: 'change'}],
-          url: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          "activityId": [{required: true, message: '此项为必填项', trigger: 'change'}],
+          "rewardId": [{required: true, message: '此项为必填项', trigger: 'change'}],
+          "number": [{required: true, message: '此项为必填项', trigger: 'change'}],
+          "probability": [{required: true, message: '此项为必填项', trigger: 'change'}]
         },
         downloadLoading: false,
         pickerOptions0: {
@@ -231,7 +241,11 @@
         advertisementDialogFlag: false,
         currentAdvertisementTabIndex: 0,
         currentSortData: [],
-        effectiveDuration: []
+        effectiveDuration: [],
+        chosenThirdPartyProductInfo: {},
+        chosenReward: '',
+        activityList: [],
+        currentActivityId: ''
 
       }
     },
@@ -262,21 +276,39 @@
           })
         });
         console.log(this.tableList)
+      },
+      'formData.activityId': function (value) {
+        this.getTableData();
       }
     },
     mounted() {
-      this.getTableData()
+      this.getActivityList();
     },
     methods: {
       getTableData() {
         this.listLoading = true;
         this.queryModel = Object.assign(this.queryModel, this.pagination);
-        this.$http.get(this.$baseUrl + this.queryRewardInfoByActivityTypeRequest + '/2').then(response => {
+        this.$http.get(this.$baseUrl + this.queryRewardInfoByActivityTypeRequest + `/${this.formData.activityId}`).then(response => {
           console.log(response)
 
           this.tableList = response.data;
           this.total = response.total;
           this.listLoading = false
+
+
+        })
+      },
+      getActivityList() {
+        this.listLoading = true;
+        this.$http.get(this.$baseUrl + this.queryRotaryTableActivityListRequest).then(response => {
+          console.log(response)
+
+          this.activityList = response.data;
+          this.formData.activityId = response.data[0].id;
+          this.total = response.total;
+          this.listLoading = false
+          this.getTableData();
+
         })
       },
       handleFilter() {
@@ -292,23 +324,22 @@
         this.getTableData()
       },
       resetTemp() {
-        this.formData = {
-          "desc": '',
-          "icon": '',
-          "image": '',
-          "title": '',
-          "originalPrice": '',
-          "url": '',
+        this.formData = Object.assign(this.formData, {
+          "id": '',
           "status": '',
-        };
-
+          // "activityId": '',
+          "rewardId": '',
+          rewardName: '',
+          "number": '',
+          "probability": ''
+        });
       },
       handleCreate() {
         this.resetTemp();
         this.dialogStatus = 'create';
         this.dialogFormVisible = true;
         if (this.$refs.formData !== undefined) {
-          this.$refs.formData.resetFields();
+          // this.$refs.formData.resetFields();
           this.$nextTick(() => {
             this.$refs['formData'].clearValidate()
           })
@@ -321,6 +352,7 @@
       handleUpdate(scope) {
         console.log('handleUpdate', scope)
         this.formData = Object.assign({}, scope.row);
+        this.chosenReward = scope.row.rewardName;
 
         this.dialogStatus = 'update';
         this.dialogFormVisible = true;
@@ -329,22 +361,22 @@
         })
       },
       updateData() {
+        let params;
+        if (this.dialogStatus === 'create') {
+          params = {
+            "status": this.formData.status,
+            "activityId": this.formData.activityId,
+            "rewardId": this.formData.rewardId,
+            "number": this.formData.number,
+            "probability": this.formData.probability
+          };
+        } else {
+          params = this.formData;
+        }
+
         this.$refs['formData'].validate((valid) => {
           if (valid) {
-            this.$http.post(this.$baseUrl + this.addAndUpdateRotaryTableActivityRequest, {
-              id: this.formData.id,
-              "desc": this.formData.desc,
-              "icon": this.formData.icon,
-              "image": this.formData.image,
-              "originalPrice": this.formData.originalPrice,
-              "url": this.formData.url,
-              "status": this.formData.status,
-              companyName: this.formData.companyName,
-              name: this.formData.name,
-              price: this.formData.price,
-              productId: this.formData.productId,
-              rewardType: this.formData.rewardType,
-            }).then((response) => {
+            this.$http.post(this.$baseUrl + this.updateRewardInfoByActivityTypeRequest, params).then((response) => {
               console.log(response)
               this.dialogFormVisible = false;
               this.$message.success('信息修改成功');
@@ -362,7 +394,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http.delete(this.$baseUrl + this.brandDeleteRequest + `/${scope.row.id}`).then((response) => {
+          this.$http.get(this.$baseUrl + this.deleteActivityRewardMappingByIdRequest + `/${scope.row.id}`).then((response) => {
             console.log(response)
             this.dialogFormVisible = false;
             this.$message.success('删除成功');
@@ -403,6 +435,55 @@
       },
       uploadSuccess2(response) {
         this.formData.image = response.url;
+      },
+      changeDailyLimitMode(data) {
+        this.formData.number = data.toString() === 'unlimited' ? '-1' : this.formData.number;
+      },
+      chooseThirdPartyProduct(data) {
+        this.chosenThirdPartyProductInfo = data;
+        this.formData.rewardId = data.id;
+      },
+      focusSortList(queryString, callback) {
+        this.loading = true;
+
+        // this.queryModel = Object.assign(this.queryModel, {
+        //   limit: 999,
+        //   page: 1,
+        //   status: 1,
+        //   title: '',
+        //   description: '',
+        //   gameTypeId: '',
+        // });
+        // console.log(this.queryModel)
+
+
+        this.$http.get(this.$baseUrl + this.queryRewardProductByNameRequest, {
+          params: {
+            name: this.chosenReward
+          }
+        }).then(response => {
+          console.log(response)
+          this.loading = false;
+          // this.total = response.total;
+          let result = [];
+          if (response.data.length !== 0) {
+            response.data.forEach((item, index) => {
+              result.push(Object.assign(item, {
+                value: item.name
+              }));
+            });
+            // this.aaaa.forEach(item1 => {
+            //   result = result.filter(item2 => item1.name !== item2.name)
+            // });
+
+            console.log(111, result)
+
+            callback(result)
+
+          }
+
+
+        })
       },
     }
   }

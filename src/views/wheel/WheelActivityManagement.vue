@@ -26,6 +26,11 @@
           {{scope.row.dailyLimit.toString()!=='-1'?scope.row.dailyLimit:'无限次'}}
         </template>
       </el-table-column>
+      <el-table-column align="center" label="每个账号的每月次数">
+        <template slot-scope="scope">
+          {{scope.row.monthLimit.toString()!=='-1'?scope.row.monthLimit:'无限次'}}
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="每个账号的总领奖次数" prop='limit'>
         <template slot-scope="scope">
           {{scope.row.limit.toString()!=='-1'?scope.row.limit:'无限次'}}
@@ -85,6 +90,13 @@
               </el-radio-group>
               <el-input-number v-show="dailyLimitMode==='limited'" v-model="formData.dailyLimit"></el-input-number>
             </el-form-item>
+            <el-form-item label="每个账号的每月领奖次数" prop="monthLimit">
+              <el-radio-group v-model="monthLimitMode" size="mini" @change="changeMonthLimitMode">
+                <el-radio-button label="unlimited">无限次</el-radio-button>
+                <el-radio-button label="limited">有限次</el-radio-button>
+              </el-radio-group>
+              <el-input-number v-show="monthLimitMode==='limited'" v-model="formData.monthLimit"></el-input-number>
+            </el-form-item>
             <el-form-item label="每个账号的总领奖次数" prop="limit">
               <el-radio-group v-model="limitMode" size="mini" @change="changeLimitMode">
                 <el-radio-button label="unlimited">无限次</el-radio-button>
@@ -141,6 +153,7 @@
         value2: '',
         value1: '',
         dailyLimitMode: '',
+        monthLimitMode:'',
         limitMode: '',
         tableKey: 0,
         tableList: [],
@@ -173,6 +186,7 @@
           "description": '',
           "status": 0,
           "dailyLimit": 0,
+          monthLimit:0,
           "limit": 0,
           "startDate": "",
           "endDate": ''
@@ -288,6 +302,7 @@
           "description": '',
           "status": 0,
           "dailyLimit": 0,
+          monthLimit:0,
           "limit": 0,
           "startDate": "",
           "endDate": ''
@@ -332,6 +347,7 @@
               "description": this.formData.description,
               "status": this.formData.status,
               "dailyLimit": this.formData.dailyLimit,
+              "monthLimit": this.formData.monthLimit,
               "limit": this.formData.limit,
               "startDate": this.formData.startDate,
               "endDate": this.formData.endDate,
@@ -388,11 +404,12 @@
       },
       changeDailyLimitMode(data) {
         this.formData.dailyLimit = data.toString() === 'unlimited' ? '-1' : this.formData.dailyLimit;
-
+      },
+      changeMonthLimitMode(data){
+        this.formData.monthLimit = data.toString() === 'unlimited' ? '-1' : this.formData.monthLimit;
       },
       changeLimitMode(data) {
         this.formData.limit = data.toString() === 'unlimited' ? '-1' : this.formData.limit;
-        alert(this.formData.limit)
       }
     }
   }

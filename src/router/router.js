@@ -105,8 +105,13 @@ export const constantRouterMap = [{
   children: [{
     path: 'list',
     name: 'advertisingList',
-    component: () => import('@/views/advertising/advertistingList'),
+    component: () => import('@/views/advertising/advertisingList'),
     meta: {title: '广告列表', icon: 'list'}
+  },{
+    path: 'popup',
+    name: 'popupAdvertisingList',
+    component: () => import('@/views/advertising/popupAdvertisingList'),
+    meta: {title: '弹窗广告', icon: 'list'}
   }]
 }, {
   path: '/notice',
@@ -238,6 +243,20 @@ export const constantRouterMap = [{
     name: 'wheelManagement',
     component: () => import('@/views/wheel/WheelManagement'),
     meta: {title: '转盘内容', icon: 'table'}
+  }]
+}, {
+  path: '/message',
+  component: Layout,
+  name: 'message',
+  meta: {
+    title: '消息管理',
+    icon: 'table'
+  },
+  children: [{
+    path: 'sendmessage',
+    name: 'sendMessage',
+    component: () => import('@/views/message/SendMessage'),
+    meta: {title: '发送消息', icon: 'table'}
   }]
 }, {
   path: '*',
