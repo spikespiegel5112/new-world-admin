@@ -23,7 +23,7 @@
           <li>
             <slot name="query3"></slot>
           </li>
-          <li>
+          <li v-if="expand">
             <el-button size="mini" class="expand" type="text" @click='handleExpand'>高级搜索<i
               class="el-icon-arrow-down"></i></el-button>
           </li>

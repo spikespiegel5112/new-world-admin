@@ -123,13 +123,11 @@
 <script>
   import CommonTag from '@/views/common/CommonTag.vue'
   import CommonQuery from '@/views/common/CommonQuery.vue'
-  import Draggable from 'vuedraggable'
 
   export default {
     components: {
       CommonTag,
       CommonQuery,
-      Draggable,
     },
     data() {
       return {

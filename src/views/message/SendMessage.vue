@@ -1,23 +1,20 @@
 <
 <template>
   <el-row class="app-container">
-    <CommonQuery>
+    <CommonQuery :expand="false">
       <template slot="button1">
         <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleCreate" v-waves>
-          新增
+          发送消息
         </el-button>
-        <el-select v-model="formData.activityId">
-          <el-option v-for="item in activityList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-        </el-select>
       </template>
-      <template slot="query1">
-        <div class="common-search-wrapper" @keyup.enter="search">
-          <input v-model="queryModel.brandName" type="text" placeholder="请输入游戏名称"/>
-          <a>
-            <span @click="search" class="el-icon-search"></span>
-          </a>
-        </div>
-      </template>
+      <!--<template slot="query1">-->
+      <!--<div>-->
+      <!--<el-select v-model="formData.activityId">-->
+      <!--<el-option v-for="item in messageTypeDictionary" :key="item.id" :label="item.name"-->
+      <!--:value="item.id"></el-option>-->
+      <!--</el-select>-->
+      <!--</div>-->
+      <!--</template>-->
     </CommonQuery>
 
     <el-table :data="tableList" v-loading.body="listLoading" element-loading-text="Loading" border fit
@@ -58,89 +55,241 @@
       </el-pagination>
     </div>
     <!-- 编辑品牌 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="850px">
+    <el-dialog title="发送消息" :visible.sync="dialogFormVisible" width="850px"
+               :close-on-click-modal="false">
       <el-row type="flex" justify="center">
         <el-col :span="20">
           <el-form :rules="rules" ref="formData" :model="formData"
                    label-position="right"
                    label-width="140px">
 
-            <el-form-item label="活动ID" prop="activityId">
-              <el-select v-model="formData.activityId" :disabled="true">
-                <el-option v-for="item in activityList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            <el-form-item label="topics" prop="topics">
+              <el-radio v-for="item in topicsDictionary" :key="item.code" v-model="currentTopicsType" :label="item.code"
+                        @change="chooseTopicsType">{{item.name}}
+              </el-radio>
+              <el-select v-if="currentTopicsType==='@me_'" v-model="formData.topics" @change="changeTopics" multiple>
+                <el-option v-for="item in topicsList" :key="item" :label="item"
+                           :value="item"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="奖品数量" prop="number">
-              <!--<el-input v-model="formData.number"></el-input>-->
-
-              <el-radio-group v-model="dailyLimitMode" size="mini" @change="changeDailyLimitMode">
-                <el-radio-button label="unlimited">无限次</el-radio-button>
-                <el-radio-button label="limited">有限次</el-radio-button>
-              </el-radio-group>
-              <el-input-number v-show="dailyLimitMode==='limited'" v-model="formData.number"></el-input-number>
+            <el-form-item label="消息类型" prop="type">
+              <el-select v-model="formData.type" @change="chooseContentType">
+                <el-option v-for="item in messageTypeDictionary" :key="item.code" :label="item.name"
+                           :value="item.code"></el-option>
+              </el-select>
             </el-form-item>
-            <el-form-item label="中奖率" prop="probability">
-              <el-input v-model.number="formData.probability"></el-input>
+            <el-form-item label="内容" prop="content">
+              <el-input v-if="currentContentType==='text'" type="textarea" v-model="formData.content"></el-input>
+              <el-button v-else type="primary" :disabled="currentContentType===''" @click="editContent">编辑</el-button>
             </el-form-item>
-            <el-form-item label="奖品名称" prop="rewardName">
-              <el-autocomplete
-                v-model="chosenReward"
-                :fetch-suggestions="focusSortList"
-                placeholder="请输入内容"
-                @select="chooseThirdPartyProduct"
-              ></el-autocomplete>
+            <div v-if="currentContentType!=='text'" class="sendmessage_contentformdata_wrapper">
+              <el-table :data="[contentFormData]">
+                <el-table-column v-for="(item, index) in contentFormData" :key="index" :label="index">
+                  <template slot-scope="scope">
+                    <div :style="{'min-height':'50px'}">
+                      {{contentFormData[index]}}
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+            <el-form-item label="iOS可用性" prop="iosEnable">
+              <el-switch
+                v-model="formData.iosEnable"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
+              </el-switch>
             </el-form-item>
-            <el-form-item label="是否可用" prop="status">
-              <el-switch v-model="formData.status"
-                         :active-value="1"
-                         :inactive-value="0"
-                         active-color="#13ce66"
-                         inactive-color="#ff4949"
-              >
+            <el-form-item label="Android可用性" prop="androidEnable">
+              <el-switch
+                v-model="formData.androidEnable"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
               </el-switch>
             </el-form-item>
           </el-form>
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus==='create'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
-        <el-button v-else type="primary" @click="updateData" v-waves>{{$t('table.confirm')}}</el-button>
+        <el-button @click="dialogFormVisible=false" v-waves>关闭</el-button>
+        <el-button type="primary" @click="sendMessage" v-waves>发送消息</el-button>
       </div>
     </el-dialog>
+    <!-- 编辑品牌 -->
+    <el-dialog :title="'编辑'+currentContentTitle+'内容'" :visible.sync="editContentFlag" width="850px"
+               :close-on-click-modal="false">
+      <el-row type="flex" justify="center">
+        <el-col :span="20">
+          <el-form v-if="currentContentType!==''" :rules="rules2" ref="contentFormData" :model="contentFormData"
+                   label-position="right"
+                   label-width="140px">
+            <el-form-item v-if="contentFormDictionary[currentContentType].title" label="title" prop="title">
+              <el-input v-model="contentFormData.title"></el-input>
+            </el-form-item>
+            <el-form-item v-if="contentFormDictionary[currentContentType].subtitle" label="subtitle" prop="subtitle">
+              <el-input v-model="contentFormData.subtitle"></el-input>
+            </el-form-item>
+            <el-form-item v-if="contentFormDictionary[currentContentType].topics" label="topics" prop="topics">
+              <el-select v-model="contentFormData.topics">
+                <el-option v-for="item in topicsDictionary" :key="item.code" :label="item.name"
+                           :value="item.code"></el-option>
+              </el-select>
+              <el-input v-model="contentFormData.subtitle"></el-input>
+            </el-form-item>
 
+            <el-form-item v-if="contentFormDictionary[currentContentType].image_thumbnail" label="image_thumbnail"
+                          prop="image_thumbnail">
+              <CommonUploadImage
+                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
+                @on-success="uploadSuccess1"
+                :returnUrlList.sync="contentFormData.image_thumbnail"
+                fileType="image"
+              />
+              <el-input v-show="false" v-model="contentFormData.image_thumbnail"></el-input>
+            </el-form-item>
+            <el-form-item v-if="contentFormDictionary[currentContentType].link" label="link" prop="link">
+              <el-input type="textarea" v-model="contentFormData.link"></el-input>
+            </el-form-item>
+            <el-form-item v-if="contentFormDictionary[currentContentType].desc" label="desc" prop="desc">
+              <el-input type="textarea" v-model="contentFormData.desc"></el-input>
+            </el-form-item>
+            <el-form-item v-if="contentFormDictionary[currentContentType].image" label="image" prop="image">
+              <CommonUploadImage
+                :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
+                @on-success="uploadSuccess2"
+                :returnUrlList.sync="contentFormData.image"
+                fileType="image"
+              />
+              <el-input v-show="false" v-model="contentFormData.image"></el-input>
+            </el-form-item>
+            <el-form-item v-if="contentFormDictionary[currentContentType].url" label="url" prop="url">
+              <el-input v-model="contentFormData.url"></el-input>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editContentFlag = false" v-waves>{{$t('table.cancel')}}</el-button>
+        <el-button type="primary" @click="encodeData">{{$t('table.confirm')}}</el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>`
 
 <script>
-  import CommonTag from '@/views/common/CommonTag.vue'
   import CommonQuery from '@/views/common/CommonQuery.vue'
-  import Draggable from 'vuedraggable'
 
   export default {
     components: {
-      CommonTag,
       CommonQuery,
-      Draggable,
     },
     data() {
       return {
         sendMessageRequest: 'notification-service/1.0.0/message',
         formData: {
-          "id": '',
-          "status": '',
-          "activityId": '',
-          "rewardId": '',
-          "number": '',
-          "probability": ''
+          "topics": [],
+          "content": '',
+          "type": '',
+          "iosEnable": '',
+          "androidEnable": ''
         },
-
-
+        contentFormData: {
+          title: '',
+          subtitle: '',
+          image_thumbnail: '',
+          link: '',
+          desc: '',
+          image: '',
+          url: ''
+        },
+        topicsDictionary: [{
+          name: '全体',
+          code: '@sys'
+          // }, {
+          //   name: '个人',
+          //   code: '@me_'
+        }],
+        messageTypeDictionary: [{
+          name: '文本',
+          code: 'text'
+        }, {
+          name: 'HTML',
+          code: 'html'
+        }, {
+          name: '弹窗',
+          code: 'popup'
+        }],
+        queryModel: {},
+        listLoading: false,
+        tableList: [],
+        pagination: {
+          page: 1,
+          size: 20,
+        },
+        total: 0,
+        dialogStatus: '',
+        textMap: {
+          update: 'Edit',
+          create: 'Create'
+        },
+        rules: {
+          topics: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          content: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          "type": [{required: true, message: '此项为必填项', trigger: 'change'}],
+          "iosEnable": [{required: true, message: '此项为必填项', trigger: 'change'}],
+          "androidEnable": [{required: true, message: '此项为必填项', trigger: 'change'}],
+        },
+        rules2: {
+          title: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          subtitle: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          "image_thumbnail": [{required: true, message: '此项为必填项', trigger: 'change'}],
+          "link": [{required: true, message: '此项为必填项', trigger: 'change'}],
+          "desc": [{required: true, message: '此项为必填项', trigger: 'change'}],
+          "image": [{required: true, message: '此项为必填项', trigger: 'change'}],
+          "url": [{required: true, message: '此项为必填项', trigger: 'change'}],
+        },
+        dialogFormVisible: false,
+        editContentFlag: false,
+        contentFormDictionary: {
+          html: {
+            title: true,
+            subtitle: true,
+            image_thumbnail: true,
+            link: true,
+            desc: false,
+            image: false,
+            url: false
+          },
+          popup: {
+            title: true,
+            subtitle: false,
+            image_thumbnail: false,
+            link: false,
+            desc: true,
+            image: true,
+            url: true
+          },
+          text: {
+            title: false,
+            subtitle: false,
+            image_thumbnail: false,
+            link: false,
+            desc: false,
+            image: false,
+            url: false
+          }
+        },
+        currentContentType: '',
+        currentTopicsType: '',
+        topicsList: ['18260045855', '17521558498'],
       }
     },
     computed: {
       tableHeight() {
-        return this.$store.state.app.tableHeight;
+        return this.$store.state.app.tableHeight - 5;
+      },
+      currentContentTitle() {
+        return this.currentContentType !== '' ? this.messageTypeDictionary.find(item => item.code === this.currentContentType).name : '';
       }
     },
     watch: {
@@ -166,40 +315,25 @@
         });
         console.log(this.tableList)
       },
-      'formData.activityId': function (value) {
-        this.getTableData();
-      }
     },
     mounted() {
-      this.getActivityList();
+
     },
     methods: {
-      getTableData() {
-        this.listLoading = true;
-        this.queryModel = Object.assign(this.queryModel, this.pagination);
-        this.$http.get(this.$baseUrl + this.queryRewardInfoByActivityTypeRequest + `/${this.formData.activityId}`).then(response => {
-          console.log(response)
+      // getTableData() {
+      //   this.listLoading = true;
+      //   this.queryModel = Object.assign(this.queryModel, this.pagination);
+      //   this.$http.get(this.$baseUrl + this.queryRewardInfoByActivityTypeRequest + `/${this.formData.activityId}`).then(response => {
+      //     console.log(response)
+      //
+      //     this.tableList = response.data;
+      //     this.total = response.total;
+      //     this.listLoading = false
+      //
+      //
+      //   })
+      // },
 
-          this.tableList = response.data;
-          this.total = response.total;
-          this.listLoading = false
-
-
-        })
-      },
-      getActivityList() {
-        this.listLoading = true;
-        this.$http.get(this.$baseUrl + this.queryRotaryTableActivityListRequest).then(response => {
-          console.log(response)
-
-          this.activityList = response.data;
-          this.formData.activityId = response.data[0].id;
-          this.total = response.total;
-          this.listLoading = false
-          this.getTableData();
-
-        })
-      },
       handleFilter() {
         this.pagination.page = 1;
         this.getTableData()
@@ -212,17 +346,8 @@
         this.pagination.page = val;
         this.getTableData()
       },
-      resetTemp() {
-        this.formData = Object.assign(this.formData, {
-          "id": '',
-          "status": '',
-          // "activityId": '',
-          "rewardId": '',
-          rewardName: '',
-          "number": '',
-          "probability": ''
-        });
-      },
+
+
       handleCreate() {
         this.resetTemp();
         this.dialogStatus = 'create';
@@ -234,49 +359,18 @@
           })
         }
       },
-      createData() {
-        this.formData.id = '';
-        this.updateData();
-      },
+
       handleUpdate(scope) {
         console.log('handleUpdate', scope)
         this.formData = Object.assign({}, scope.row);
-        this.chosenReward = scope.row.rewardName;
-
-        this.dialogStatus = 'update';
+        // this.chosenReward = scope.row.rewardName;
+        // this.dialogStatus = 'update';
         this.dialogFormVisible = true;
         this.$nextTick(() => {
           this.$refs['formData'].clearValidate()
         })
       },
-      updateData() {
-        let params;
-        if (this.dialogStatus === 'create') {
-          params = {
-            "status": this.formData.status,
-            "activityId": this.formData.activityId,
-            "rewardId": this.formData.rewardId,
-            "number": this.formData.number,
-            "probability": this.formData.probability
-          };
-        } else {
-          params = this.formData;
-        }
 
-        this.$refs['formData'].validate((valid) => {
-          if (valid) {
-            this.$http.post(this.$baseUrl + this.updateRewardInfoByActivityTypeRequest, params).then((response) => {
-              console.log(response)
-              this.dialogFormVisible = false;
-              this.$message.success('信息修改成功');
-              this.getTableData();
-            }).catch(error => {
-              console.log(error)
-              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
-            })
-          }
-        });
-      },
       handleDelete(scope) {
         this.$confirm('确认删除?', '提示', {
           confirmButtonText: '确定',
@@ -305,9 +399,7 @@
       search() {
         this.getTableData();
       },
-      reset() {
-        this.queryModel.available = true;
-      },
+
       deleteAdvertise(data, index) {
         this.$confirm('确认删除?', '提示', {
           confirmButtonText: '确定',
@@ -318,12 +410,13 @@
         });
       },
 
+
       uploadSuccess1(response) {
-        console.log(response)
-        this.formData.icon = response.url;
+        this.contentFormData.image_thumbnail = response.url;
       },
       uploadSuccess2(response) {
-        this.formData.image = response.url;
+        console.log(response)
+        this.contentFormData.image = response.url;
       },
       changeDailyLimitMode(data) {
         this.formData.number = data.toString() === 'unlimited' ? '-1' : this.formData.number;
@@ -334,18 +427,6 @@
       },
       focusSortList(queryString, callback) {
         this.loading = true;
-
-        // this.queryModel = Object.assign(this.queryModel, {
-        //   limit: 999,
-        //   page: 1,
-        //   status: 1,
-        //   title: '',
-        //   description: '',
-        //   gameTypeId: '',
-        // });
-        // console.log(this.queryModel)
-
-
         this.$http.get(this.$baseUrl + this.queryRewardProductByNameRequest, {
           params: {
             name: this.chosenReward
@@ -374,10 +455,88 @@
 
         })
       },
+
+      chooseContentType() {
+        this.currentContentType = this.formData.type;
+        this.resetContentData();
+        this.formData.content = '';
+      },
+      changeTopics(value) {
+        console.log(value)
+        let result = [];
+
+        value.forEach(item => {
+          result.push(item.indexOf('@me_') === -1 ? this.currentTopicsType + item : item);
+        });
+        this.formData.topics = result;
+        console.log(this.formData.topics)
+
+      },
+      chooseTopicsType(value) {
+        console.log(value)
+        if (this.currentTopicsType === '@sys') {
+          this.formData.topics = ['@sys']
+        }
+      },
+      editContent() {
+        this.editContentFlag = true;
+        // alert(this.currentContentType)
+      },
+      resetContentData() {
+        Object.keys(this.contentFormData).forEach(item => {
+          this.contentFormData[item] = '';
+        })
+        console.log(this.$refs['contentFormData'])
+        // this.$refs['contentFormData'].resetFields();
+      },
+      resetTemp() {
+        this.formData = Object.assign(this.formData, {
+          "topics": '',
+          "content": '',
+          "type": '',
+          "iosEnable": '',
+          "androidEnable": ''
+        });
+      },
+      encodeData() {
+        this.$refs['contentFormData'].validate(valid => {
+          if (valid) {
+            let result = {};
+            let checker = this.contentFormDictionary[this.currentContentType];
+            Object.keys(checker).forEach(item => {
+              if (checker[item]) {
+                result[item] = this.contentFormData[item]
+              }
+            });
+
+            result = JSON.stringify(result)
+            console.log(result)
+            this.formData.content = result;
+            this.editContentFlag = false;
+          }
+        })
+      },
+      sendMessage() {
+        this.$refs['formData'].validate(valid => {
+          if (valid) {
+            this.$http.post(this.$baseUrl + this.sendMessageRequest, [this.formData]).then(response => {
+              console.log(response)
+              this.$message.success('发送成功');
+
+            }).catch(error => {
+              this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+            })
+          }
+
+        })
+
+      },
+
     }
   }
 </script>
 <style lang="scss">
-  @import '../../styles/edifice.scss';
-
+  .sendmessage_contentformdata_wrapper {
+    /*height: 500px;*/
+  }
 </style>
