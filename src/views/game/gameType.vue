@@ -31,7 +31,7 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="200px">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
+          <el-button type="primary" size="mini" @click="handleUpdate(scope)" disabled>编辑</el-button>
           <!--<el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>-->
         </template>
       </el-table-column>
@@ -212,8 +212,8 @@
         if (value === null) {
           value = [];
         }
-        this.formData.startDate = value[0];
-        this.formData.endDate = value[1];
+        this.formData.startDate = this.$moment(value[0]).format('YYYY-MM-DD');
+        this.formData.endDate = this.$moment(value[1]).format('YYYY-MM-DD');
       }
     },
     mounted() {

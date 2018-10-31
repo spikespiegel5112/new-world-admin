@@ -48,12 +48,19 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="来源" prop="source"></el-table-column>
+      <el-table-column align="center" label="合同时间范围" width="200px">
+        <template slot-scope="scope">
+          {{scope.row.startDate}} 至 {{scope.row.endDate}}
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="操作" width="200px">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope)">编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
+
     </el-table>
     <!-- 分页 -->
     <div class="common-pagination-wrapper">
@@ -88,6 +95,7 @@
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 @on-success="uploadSuccess1"
                 :returnUrlList.sync="formData.iconUrl"
+                fileType="image"
               />
               <el-input v-show="false" v-model="formData.iconUrl"></el-input>
             </el-form-item>
@@ -96,6 +104,7 @@
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 @on-success="uploadSuccess2"
                 :returnUrlList.sync="formData.bigImageUrl"
+                fileType="image"
               />
               <el-input v-show="false" v-model="formData.bigImageUrl"></el-input>
             </el-form-item>
@@ -115,6 +124,9 @@
                            :key="item.code"></el-option>
               </el-select>
             </el-form-item>
+            <el-form-item label="iOS App ID" prop="iosAppId">
+              <el-input v-model="formData.iosAppId"></el-input>
+            </el-form-item>
             <el-form-item label="iOS可用性" prop="ios">
               <el-switch v-model="formData.ios" :active-value="true" :inactive-value="false" active-color="#13ce66"
                          inactive-color="#ff4949">
@@ -130,6 +142,18 @@
                 <el-option v-for="item in statusDictionary" :label="item.name" :value="item.code"
                            :key="item.code"></el-option>
               </el-select>
+            </el-form-item>
+            <el-form-item label="来源" prop="source">
+              <el-input v-model="formData.source"></el-input>
+            </el-form-item>
+            <el-form-item label="合同时间范围" prop="startDate">
+              <el-date-picker
+                v-model="effectiveDuration"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
             </el-form-item>
           </el-form>
         </el-col>
@@ -208,7 +232,9 @@
           nature: "",
           ios: false,
           android: false,
-          status: null
+          status: null,
+          iosAppId: '',
+          source: ''
         },
         dialogFormVisible: false,
         dialogStatus: '',
@@ -225,11 +251,11 @@
           version: ''
         },
         rules: {
-          title: [{required: true, message: '请输入显示名称', trigger: 'change'}],
-          name: [{required: true, message: '请输入唯一表示名称', trigger: 'change'}],
-          description: [{required: true, message: '请输入游戏描述', trigger: 'change'}],
-          iconUrl: [{required: true, message: '请上传图片', trigger: 'change'}],
-          bigImageUrl: [{required: true, message: '请上传图片', trigger: 'change'}],
+          name: [{required: true, message: '请输入名称', trigger: 'change'}],
+          title: [{required: false, message: '请输入标题', trigger: 'change'}],
+          description: [{required: false, message: '请输入游戏描述', trigger: 'change'}],
+          iconUrl: [{required: false, message: '请上传图片', trigger: 'change'}],
+          bigImageUrl: [{required: false, message: '请上传图片', trigger: 'change'}],
           iosDownloadUrl: [{required: false, message: '此项为必填项', trigger: 'change'}],
           androidDownloadUrl: [{required: false, message: '此项为必填项', trigger: 'change'}],
           webGameUrl: [{required: false, message: '此项为必填项', trigger: 'change'}],
@@ -237,6 +263,8 @@
           ios: [{required: true, message: '此项为必填项', trigger: 'change'}],
           android: [{required: true, message: '此项为必填项', trigger: 'change'}],
           status: [{required: true, message: '此项为必填项', trigger: 'change'}],
+          iosAppId: [{required: false, message: '此项为必填项', trigger: 'change'}],
+          source: [{required: true, message: '此项为必填项', trigger: 'change'}],
         },
         downloadLoading: false,
         pickerOptions0: {
@@ -261,7 +289,8 @@
         searchTxt: '',
         expandQuery: '',
         showFileListFlag: false,
-        newFile: ''
+        newFile: '',
+        effectiveDuration: []
       }
     },
     computed: {
@@ -275,8 +304,8 @@
         if (value === null) {
           value = [];
         }
-        this.formData.startDate = value[0];
-        this.formData.endDate = value[1];
+        this.formData.startDate = this.$moment(value[0]).format('YYYY-MM-DD');
+        this.formData.endDate = this.$moment(value[1]).format('YYYY-MM-DD');
       },
     },
     mounted() {
@@ -285,7 +314,15 @@
     methods: {
       getTableData() {
         this.listLoading = true;
-        this.queryModel = Object.assign(this.queryModel, this.pagination);
+        let queryModel = {};
+        Object.values(this.queryModel).forEach((item, index) => {
+          if (item !== '') {
+            queryModel[Object.keys(this.queryModel)[index]] = item;
+          }
+        });
+        console.log(this.queryModel)
+        console.log(queryModel)
+        this.queryModel = Object.assign(queryModel, this.pagination);
         this.$http.get(this.$baseUrl + this.game_infoListRequest, {
           params: this.queryModel
         }).then(response => {
@@ -322,7 +359,11 @@
           nature: "",
           ios: false,
           android: false,
-          status: null
+          status: null,
+          iosAppId: '',
+          source: '',
+          startDate: '',
+          endDate: ''
         };
         this.fileList = []
       },
@@ -368,7 +409,11 @@
               nature: this.formData.nature,
               ios: this.formData.ios,
               android: this.formData.android,
-              status: this.formData.status
+              status: this.formData.status,
+              iosAppId: this.formData.iosAppId,
+              source: this.formData.source,
+              startDate: this.formData.startDate,
+              endDate: this.formData.endDate,
             }).then((response) => {
               console.log(response)
               this.dialogFormVisible = false;
@@ -452,20 +497,6 @@
           return false;
         }
         this.loading = true;
-      },
-      editAvailability(scope) {
-        console.log(scope.row)
-
-        this.availabilityFormData = Object.assign({}, {
-          "moduleId": scope.row.id,
-          "type": scope.row.type,
-          "iosEnable": scope.row.iosEnable,
-          "androidEnable": scope.row.androidEnable,
-          "version": scope.row.version,
-        })
-        console.log(this.availabilityFormData)
-        this.availabilityFlag = true;
-
       },
       expand() {
         this.expandQuery = !this.expandQuery;

@@ -63,7 +63,7 @@
     </div>
     <el-table :data="tableData" v-loading.body="listLoading" element-loading-text="Loading" border fit
               highlight-current-row :height="tableHeight">
-      <el-table-column align="center" label='ID' width="50">
+      <el-table-column align="center" label='ID' width="100">
         <template slot-scope="scope">
           {{scope.row.id}}
         </template>
@@ -114,7 +114,7 @@
           {{groundingStatusDictionary.filter(item=>item.code===scope.row.status)[0].name}}
         </template>
       </el-table-column>
-      <el-table-column label="上架时间范围" width="160">
+      <el-table-column label="折扣有效时间范围" width="160">
         <template slot-scope="scope">
           <div v-if="scope.row.effectiveStartTime!==null">
             {{$moment(scope.row.effectiveStartTime).format('YYYY-MM-DD HH:mm:ss')}} ~
@@ -158,7 +158,7 @@
                 </div>
                 <div v-else v-for="(item, index) in formData.detailImage" class="image-item">
                   <span v-if="defaultImageIndex===index" class="check el-icon-circle-check"></span>
-                  <img :src="item+'-style_100x100'" class="avatar" />
+                  <img :src="item+'-style_100x100'" class="avatar"/>
                   <ul class="operator">
                     <li @click="setDefault(index)">
                       <a>设为默认</a>
@@ -226,7 +226,7 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false" v-waves>{{$t('table.cancel')}}</el-button>
         <el-button v-if="dialogStatus==='create'" type="primary" @click="addGoods">{{$t('table.confirm')}}</el-button>
-        <el-button v-else type="primary" @click="updatedGoods">{{$t('table.confirm')}}</el-button>
+        <el-button v-else type="primary" @click="updateGoods">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
     <!--  -->
@@ -286,6 +286,7 @@
         listLoading: true,
         queryModel: {
           name: '',
+          type:'',
           goodsNumber: null
         },
         pagination: {
@@ -538,7 +539,7 @@
       },
       reset() {
         this.queryModel.name = '';
-        this.queryModel.type = null;
+        this.queryModel.type = '';
         this.queryModel.goodsNumber = '';
         this.pagination.page = 1;
         this.getTableData();
@@ -606,9 +607,15 @@
               effectiveEndTime: this.formData.effectiveEndTime
             }).then(response => {
               console.log(response)
-              this.dialogFormVisible = false;
-              this.$message.success('商品添加成功');
-              this.getTableData();
+              if (response.code === 200) {
+                this.getTableData();
+                this.resetForm();
+                console.log(response)
+                this.$message.success('商品添加成功');
+                this.dialogFormVisible = false;
+              } else {
+                this.$message.error(response.message)
+              }
             })
           }
         })
@@ -621,8 +628,7 @@
 
         this.formData = Object.assign({}, scope.row);
         this.formData.timestamp = new Date(this.formData.timestamp);
-        this.effectiveDuration[0] = this.formData.effectiveStartTime;
-        this.effectiveDuration[1] = this.formData.effectiveEndTime;
+        this.effectiveDuration = [scope.row.effectiveStartTime, scope.row.effectiveEndTime];
 
         this.dialogStatus = 'update';
         this.dialogFormVisible = true;
@@ -658,7 +664,7 @@
           this.$refs['formData'].clearValidate()
         })
       },
-      updatedGoods() {
+      updateGoods() {
         console.log(this.formData)
         this.$refs.formData.validate(valid => {
           if (valid) {
@@ -682,11 +688,18 @@
               effectiveStartTime: this.formData.effectiveStartTime,
               effectiveEndTime: this.formData.effectiveEndTime
             }).then(response => {
-              this.dialogFormVisible = false;
-              this.$message.success('产品信息更新成功');
-              this.getTableData();
-              this.resetForm();
-              console.log(response)
+              if (response.code === 200) {
+                this.getTableData();
+                this.resetForm();
+                console.log(response)
+                this.$message.success('产品信息更新成功');
+                this.dialogFormVisible = false;
+              } else {
+                this.$message.error(response.message)
+              }
+            }).catch(error => {
+              console.log(error)
+              this.$message.error(error)
             })
           }
         })

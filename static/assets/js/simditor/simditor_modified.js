@@ -4486,7 +4486,7 @@ ImageButton = (function(superClass) {
     this.editor.uploader.on('uploadsuccess', (function(_this) {
       return function(e, file, result) {
         var $img, img_path, msg;
-        debugger
+        // debugger
         if (!file.inline) {
           return;
         }

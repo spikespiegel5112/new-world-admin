@@ -1,5 +1,6 @@
 <template>
   <el-scrollbar wrapClass="scrollbar-wrapper">
+    {{isCollapse}}
     <el-menu
       mode="vertical"
       :show-timeout="200"
@@ -26,19 +27,31 @@
       }
     },
     mounted() {
-      this.routeData = this.$router.options.routes
+      let result = [];
+      this.$router.options.routes.forEach((item, index) => {
+        this.$set(result, index, item)
+      })
+      this.routeData = result;
     },
     computed: {
       ...mapGetters([
         'sidebar'
       ]),
       routes() {
-        // debugger
-        console.log(this.$router.options.routes)
         return this.$router.options.routes
       },
       isCollapse() {
         return !this.sidebar.opened
+      },
+    },
+    watch: {
+      isCollapse() {
+        let result = [];
+        this.$router.options.routes.forEach((item, index) => {
+          this.$set(result, index, item)
+        })
+        this.routeData = result;
+
       }
     }
   }

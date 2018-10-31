@@ -41,7 +41,7 @@ export const constantRouterMap = [{
   redirect: '/task/tryplay',
   name: 'task',
   meta: {
-    title: '任务墙', icon: 'table'
+    title: '任务', icon: 'table'
   },
   children: [{
     path: 'demogame',
@@ -51,7 +51,7 @@ export const constantRouterMap = [{
   }, {
     path: 'bankcard',
     name: 'bankCard',
-    component: () => import('@/views/task/bankCard'),
+    component: () => import('@/views/task/BankCard'),
     meta: {title: '银行办卡', icon: 'list'}
   }, {
     path: 'registermakemoney',
@@ -68,6 +68,11 @@ export const constantRouterMap = [{
     name: 'registrationInvitation',
     component: () => import('@/views/task/registrationInvitation'),
     meta: {title: '注册邀请', icon: 'list'}
+  }, {
+    path: 'blackcard',
+    name: 'blackCard',
+    component: () => import('@/views/task/BlackCard'),
+    meta: {title: '黑卡', icon: 'list'}
   }]
 }, {
   path: '/metadata',
@@ -100,8 +105,13 @@ export const constantRouterMap = [{
   children: [{
     path: 'list',
     name: 'advertisingList',
-    component: () => import('@/views/advertising/advertistingList'),
+    component: () => import('@/views/advertising/advertisingList'),
     meta: {title: '广告列表', icon: 'list'}
+  },{
+    path: 'popup',
+    name: 'popupAdvertisingList',
+    component: () => import('@/views/advertising/popupAdvertisingList'),
+    meta: {title: '弹窗广告', icon: 'list'}
   }]
 }, {
   path: '/notice',
@@ -185,6 +195,68 @@ export const constantRouterMap = [{
     name: 'gameType',
     component: () => import('@/views/game/gameType'),
     meta: {title: '游戏版块', icon: 'table'}
+  }]
+}, {
+  path: '/edifice',
+  component: Layout,
+  name: 'edifice',
+  meta: {
+    title: '趣谷大厦',
+    icon: 'table'
+  },
+  children: [{
+    path: 'brand',
+    name: 'brandManagement',
+    component: () => import('@/views/edifice/brandManagement'),
+    meta: {title: '品牌管理', icon: 'table'}
+  }, {
+    path: 'management',
+    name: 'edificeManagement',
+    component: () => import('@/views/edifice/edificeManagement'),
+    meta: {title: '楼层管理', icon: 'table'}
+  }]
+}, {
+  path: '/wheel',
+  component: Layout,
+  name: 'wheel',
+  meta: {
+    title: '转盘抽奖',
+    icon: 'table'
+  },
+  children: [{
+    path: 'activity',
+    name: 'wheelActivityManagement',
+    component: () => import('@/views/wheel/WheelActivityManagement'),
+    meta: {title: '活动属性', icon: 'table'}
+  }, {
+    path: 'product',
+    name: 'thirdPartyProductManagement',
+    component: () => import('@/views/wheel/ThirdPartyProductManagement'),
+    meta: {title: '第三方产品', icon: 'table'}
+  }, {
+    path: 'prize',
+    name: 'prizeManagement',
+    component: () => import('@/views/wheel/PrizeManagement'),
+    meta: {title: '奖品管理', icon: 'table'}
+  }, {
+    path: 'wheel',
+    name: 'wheelManagement',
+    component: () => import('@/views/wheel/WheelManagement'),
+    meta: {title: '转盘内容', icon: 'table'}
+  }]
+}, {
+  path: '/message',
+  component: Layout,
+  name: 'message',
+  meta: {
+    title: '消息管理',
+    icon: 'table'
+  },
+  children: [{
+    path: 'sendmessage',
+    name: 'sendMessage',
+    component: () => import('@/views/message/SendMessage'),
+    meta: {title: '发送消息', icon: 'table'}
   }]
 }, {
   path: '*',

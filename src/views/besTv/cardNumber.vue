@@ -83,8 +83,8 @@
       <el-table-column label="创建时间" align="center" prop="createDate" width="200"></el-table-column>
       <el-table-column label="确认已发给代理商" align="center" prop="note" width="350">
         <template slot-scope="scope">
-          <el-button :disabled="$store.state.user.login_id!==scope.row.adminId" size="mini" type="primary"
-                     @click="sendToAgent(scope)">发送
+          <el-button :disabled="$store.state.user.login_id!==scope.row.adminId||scope.row.isSend===1" size="mini" :type="scope.row.isSend===1?'info':'primary'"
+                     @click="sendToAgent(scope)">{{scope.row.isSend===1?'已发送':'发送'}}
           </el-button>
         </template>
       </el-table-column>
@@ -160,6 +160,7 @@
         batchaddcodeRequest: 'besttv-service/1.0.0/bk/batchaddcode',
         downloadexcelRequest: 'besttv-service/1.0.0/bk/downloadexcel',
         productsRequest: 'besttv-service/1.0.0/products',
+        changIsSendRequest: 'besttv-service/1.0.0/bk/changIsSend',
         value2: "",
         value1: "",
         tableKey: 0,
@@ -272,8 +273,8 @@
         if (value === null) {
           value = [];
         }
-        this.formData.startDate = value[0];
-        this.formData.endDate = value[1];
+        this.formData.startDate = this.$moment(value[0]).format('YYYY-MM-DD');
+        this.formData.endDate = this.$moment(value[1]).format('YYYY-MM-DD');
       }
     },
     filters: {
@@ -503,6 +504,14 @@
         console.log(scope)
         this.$confirm('请核实是否确实已给发送给代理商？此操作不可逆。', '提示', {
           type: 'warning'
+        }).then(() => {
+          this.$http.post(this.$baseUrl + this.changIsSendRequest+`/${scope.row.id}`, {}).then(response => {
+            console.log(response)
+            this.$message.success('已确认发送');
+            this.getTableData()
+          }).catch(error => {
+            this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+          })
         })
       }
     }

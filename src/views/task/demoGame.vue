@@ -164,6 +164,7 @@
                 :action="$baseUrl+'image-upload-service/1.0.0/file/upload'"
                 @on-success="uploadSuccess"
                 :returnUrlList.sync="formData.iconPath"
+                fileType="image"
               />
               <el-input v-show="false" v-model="formData.iconPath"></el-input>
             </el-form-item>
@@ -383,8 +384,8 @@
         if (value === null) {
           value = [];
         }
-        this.formData.startDate = value[0];
-        this.formData.endDate = value[1];
+        this.formData.startDate = this.$moment(value[0]).format('YYYY-MM-DD');
+        this.formData.endDate = this.$moment(value[1]).format('YYYY-MM-DD');
       }
     },
     filters: {

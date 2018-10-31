@@ -4,7 +4,6 @@ import {baseUrl} from "@/utils/request";
 import VueInstance from "@/main";
 
 
-
 const app = {
   state: {
     sidebar: {
@@ -66,7 +65,40 @@ const app = {
     }, {
       name: '全部',
       code: 'all'
-    }]
+    }],
+    brandTypeDictionary: [{
+      name: '16:9',
+      code: 1
+    }, {
+      name: '9:16（一条）',
+      code: 2
+    }, {
+      name: '9:16（三条）',
+      code: 3
+    }],
+    keyTypeDictionary: [{
+      name: '只能领一次',
+      code: 1
+    }, {
+      name: '每日',
+      code: 2
+    }, {
+      name: '每周',
+      code: 3
+    }],
+    rewardTypeDictionary: [{
+      name: '积分',
+      code: 'point'
+    }, {
+      name: '趣豆',
+      code: 'coin'
+    }, {
+      name: '百视通会员',
+      code: 'bes_tv'
+    }, {
+      name: '第三方链接',
+      code: 'third_link'
+    }],
   },
   mutations: {
     UPDATE_LAYOUT_HEIGHT(state, payload) {

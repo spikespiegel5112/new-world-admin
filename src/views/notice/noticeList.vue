@@ -329,8 +329,8 @@
         if (value === null) {
           value = [];
         }
-        this.formData.createDate = value[0];
-        this.formData.endDate = value[1];
+        this.formData.createDate = this.$moment(value[0]).format('YYYY-MM-DD');
+        this.formData.endDate = this.$moment(value[1]).format('YYYY-MM-DD');
       }
     },
     filters: {
@@ -363,6 +363,7 @@
           this.tableList = response.content;
           this.listLoading = false;
         }).catch(error => {
+          console.log(error)
           this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
         })
       },
@@ -439,30 +440,30 @@
           }
         });
         console.log(scope)
-        this.$http.post(this.$baseUrl + this.queryNoticedetailRequest, {
-          id: scope.row.id,
-          deviceType: scope.row.deviceType
-        }).then(response => {
-          console.log(response)
-          this.formData = Object.assign(this.formData, {
-            id: scope.row.id,
-            image: scope.row.image,
-            url: scope.row.url,
-            location: scope.row.location,
-            ios: scope.row.ios,
-            android: scope.row.android,
-            video: scope.row.video,
-            status: scope.row.status.toString(),
-            endDate: scope.row.endDate,
-          });
-          this.dialogStatus = 'update';
-          this.dialogFormVisible = true;
-          this.$nextTick(() => {
-            this.$refs['formData'].clearValidate()
-          })
-        }).catch(error => {
-          this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
-        })
+        // this.$http.post(this.$baseUrl + this.queryNoticedetailRequest, {
+        //   id: scope.row.id,
+        //   deviceType: scope.row.deviceType
+        // }).then(response => {
+        //   console.log(response)
+        //   this.formData = Object.assign(this.formData, {
+        //     id: scope.row.id,
+        //     image: scope.row.image,
+        //     url: scope.row.url,
+        //     location: scope.row.location,
+        //     ios: scope.row.ios,
+        //     android: scope.row.android,
+        //     video: scope.row.video,
+        //     status: scope.row.status.toString(),
+        //     endDate: scope.row.endDate,
+        //   });
+        //   this.dialogStatus = 'update';
+        //   this.dialogFormVisible = true;
+        //   this.$nextTick(() => {
+        //     this.$refs['formData'].clearValidate()
+        //   })
+        // }).catch(error => {
+        //   this.$message.error(`${error.response.status.toString()}  ${error.response.data.error}`)
+        // })
 
       },
       updateData() {

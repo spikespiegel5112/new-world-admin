@@ -63,13 +63,13 @@ module.exports = {
      * then assetsPublicPath should be set to "/bar/".
      * In most cases please use '/' !!!
      */
-    assetsPublicPath: '/', // If you are deployed on the root path, please use '/'
+    assetsPublicPath: './', // If you are deployed on the root path, please use '/'
 
     /**
      * Source Maps
      */
 
-    productionSourceMap: false,
+    productionSourceMap: true,
     // https://webpack.js.org/configuration/devtool/#production
     devtool: '#source-map',
 
