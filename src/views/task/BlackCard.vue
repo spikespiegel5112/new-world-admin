@@ -186,7 +186,7 @@
       </div>
     </el-dialog>
     <!-- 弹框 -->
-    <el-dialog title="导入任务完成流水" :visible.sync="importCsvFlag" width='width: 400px;'>
+    <el-dialog title="导入任务完成流水" :visible.sync="importExcelFlag" width='width: 400px;'>
       <el-row type="flex" justify="center">
         <el-col :span="20">
           <CommonUploadImage
@@ -198,7 +198,7 @@
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="importCsvFlag = false" v-waves>{{$t('table.cancel')}}</el-button>
+        <el-button @click="importExcelFlag = false" v-waves>{{$t('table.cancel')}}</el-button>
         <el-button v-if="dialogStatus==='create'" type="primary" @click="createData" v-waves>{{$t('table.confirm')}}
         </el-button>
       </div>
@@ -373,7 +373,7 @@
           folderName: "task"
         },
         fileList: [],
-        importCsvFlag: false,
+        importExcelFlag: false,
         temporaryCsv: '',
         exportCsvFlag: false,
         taskEffectiveDuration: []
@@ -603,7 +603,7 @@
       },
       importCsv() {
         this.temporaryCsv = '';
-        this.importCsvFlag = true;
+        this.importExcelFlag = true;
         // this.$http.post(this.$baseUrl+this.importUserTaskRequest,{
         //   headers:{
         //     'Content-Type':'multipart/form-data'

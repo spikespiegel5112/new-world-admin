@@ -3,7 +3,9 @@ const webpack = require('webpack')
 const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
+const manifest = require('../vendor-manifest.json')
 const vueLoaderConfig = require('./vue-loader.conf')
+const AssetsPlugin = require('assets-webpack-plugin')
 
 function resolve(dir) {
   return path.join(__dirname, '..', dir)
@@ -23,7 +25,7 @@ const createLintingRule = () => ({
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    app: './src/main.js'
+    app: ['babel-polyfill', './src/main.js']
   },
   output: {
     path: config.build.assetsRoot,
@@ -92,6 +94,10 @@ module.exports = {
     ]
   },
   plugins: [
+    // 关联dll拆分出去的依赖
+    new webpack.DllReferencePlugin({
+      manifest
+    }),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',

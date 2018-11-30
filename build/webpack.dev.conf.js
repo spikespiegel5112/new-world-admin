@@ -8,6 +8,7 @@ const baseWebpackConfig = require('./webpack.base.conf')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
+const bundleConfig = require("../bundle-config.json")
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -55,7 +56,12 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       template: 'index.html',
       inject: true,
       favicon: resolve('favicon.ico'),
-      title: 'vue-element-admin'
+      title: 'vue-element-admin',
+      // 加载dll文件
+      polyfillJsName: bundleConfig.polyfill.js,
+      vendorJsName: bundleConfig.vendor.js,
+      // serviceWorkerLoader: `<script>${fs.readFileSync(path.join(__dirname,
+      // 	'./service-worker-dev.js'), 'utf-8')}</script>`
     }),
   ]
 })

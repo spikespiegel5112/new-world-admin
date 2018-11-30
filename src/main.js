@@ -5,6 +5,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import service from './utils/request'
 import {baseUrl} from "./utils/request";
 import moment from 'moment';
+// import Cookies from 'js-cookie'
 
 
 // import locale from 'element-ui/lib/locale/lang/zh-CN' // lang i18n
@@ -52,7 +53,7 @@ Vue.use(row);
 // Vue.use(form);
 // Vue.use(form.item);
 // Vue.use(input);
-Vue.use(select);
+// Vue.use(select);
 // Vue.use(content);
 // Vue.use(header);
 // Vue.use(sider);

@@ -259,6 +259,35 @@ export const constantRouterMap = [{
     meta: {title: '发送消息', icon: 'table'}
   }]
 }, {
+  path: '/ecommerce',
+  component: Layout,
+  name: 'eCommerce',
+  meta: {
+    title: '电商管理',
+    icon: 'table'
+  },
+  children: [{
+  //   path: 'item',
+  //   name: 'eCommerceItemManagement',
+  //   component: () => import('@/views/eCommerce/ECommerceItemManagement'),
+  //   meta: {title: 'Item管理', icon: 'table'}
+  // },{
+    path: 'sku',
+    name: 'eCommerceSkuManagement',
+    component: () => import('@/views/eCommerce/ECommerceSkuManagement'),
+    meta: {title: 'SKU管理', icon: 'table'}
+  },{
+    path: 'virtualassets',
+    name: 'eCommerceVirtualAssetsManagement',
+    component: () => import('@/views/eCommerce/ECommerceVirtualAssetsManagement'),
+    meta: {title: '虚拟资产管理', icon: 'table'}
+  // },{
+  //   path: 'item',
+  //   name: 'eCommerceItemManagement',
+  //   component: () => import('@/views/message/ECommerceItemManagement'),
+  //   meta: {title: '发送消息', icon: 'table'}
+  }]
+}, {
   path: '*',
   redirect: '/404',
   hidden: true

@@ -99,6 +99,7 @@ const app = {
       name: '第三方链接',
       code: 'third_link'
     }],
+    accessToken:Cookies.get('Admin-Token')
   },
   mutations: {
     UPDATE_LAYOUT_HEIGHT(state, payload) {

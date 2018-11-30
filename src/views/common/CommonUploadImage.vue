@@ -47,6 +47,7 @@
       :on-exceed="uploadAvatarExceeded"
       :file-list="innerFileList"
       :data="params"
+      :headers="headers"
       :disabled="disabled">
 
       <el-button v-waves size="small" type="primary" :disabled="disabled">点击上传</el-button>
@@ -70,6 +71,13 @@
             bucketName: 'funyvalley',
             folderName: 'icon'
           }
+        }
+      },
+      headers:{
+        type: Object,
+        required: false,
+        default: function () {
+          return {}
         }
       },
       action: {
